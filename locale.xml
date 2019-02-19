@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+  <groups name="quiqqer/redirect" datatype="php,js">
+    <locale name="package.title">
+      <de><![CDATA[Weiterleitung]]></de>
+      <en><![CDATA[Redirect]]></en>
+    </locale>
+  <locale name="package.description"><de><![CDATA[Automatische Weiterleitung gelöschter/verschobener Seiten]]></de><en><![CDATA[Automatic redirect of moved/deleted sites]]></en></locale></groups>
+</locales>

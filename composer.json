@@ -1,0 +1,28 @@
+{
+    "name" : "quiqqer/redirect",
+    "type" : "quiqqer-module",
+    "description" : "Automatically adds redirects for moved and deleted sites",
+    "version" : "dev-dev",
+    "license" : "PCSG QL-1.0",
+    "authors" : [
+        {
+            "name": "Jan Wennrich",
+            "email": "jan.wennrich@pcsg.de",
+            "homepage": "http://www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "support" : {
+        "email": "support@pcsg.de",
+        "url": "http://www.pcsg.de"
+    },
+    "require": {
+        
+    }
+    ,"autoload": {
+  "psr-4": {
+      "QUI\\Redirect\\": "src/QUI/Redirect"
+   }
+}
+
+}
