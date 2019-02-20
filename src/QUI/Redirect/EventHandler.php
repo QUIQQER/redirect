@@ -18,7 +18,7 @@ use QUI\Projects\Site;
 class EventHandler
 {
     /**
-     * Called as an event (onErrorHeaderShowBefore)
+     * Called as an event when an error code/header is shown/returned
      *
      * @param $code
      * @param $url
@@ -32,7 +32,7 @@ class EventHandler
 
 
     /**
-     * Called as an event
+     * Called as an event when a site is deleted
      *
      * @param $siteId
      * @param Project $Project
@@ -55,7 +55,7 @@ class EventHandler
 
 
     /**
-     * Called as an event
+     * Called as an event when a site is moved to a new location
      *
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
@@ -81,6 +81,13 @@ class EventHandler
     }
 
 
+    /**
+     * Called as an event on package install
+     *
+     * @param Package $Package - The package being installed
+     *
+     * @throws \QUI\Database\Exception - redirects table couldn't be updated
+     */
     public static function onInstall(Package $Package)
     {
         if ($Package->getName() != "quiqqer/redirect") {
