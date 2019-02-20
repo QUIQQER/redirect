@@ -62,21 +62,37 @@ class EventHandler
      */
     public static function onSiteMove(Site\Edit $Site, $parentId)
     {
-        // TODO: popup zeigen und nachfragen ob redirect erstellt werden soll (?)
-
+        $totalMoveSuccessful = true;
         try {
             Handler::addRedirect($Site->getUrlRewritten(), $Site);
-
-            foreach ($Site->getChildren([], true) as $ChildSite) {
-                /** @var Site $ChildSite */
-                Handler::addRedirect($ChildSite->getUrlRewritten(), $ChildSite);
-            }
         } catch (Exception $Exception) {
-            $successful = false;
+            $totalMoveSuccessful = false;
         }
 
-        if (!$successful) {
-            // TODO: tell the user that redirect couldn't be added
+        foreach ($Site->getChildren([], true) as $ChildSite) {
+            /** @var Site $ChildSite */
+            // Use a separate try to continue on error
+            try {
+                $childMoveSuccessful = Handler::addRedirect($ChildSite->getUrlRewritten(), $ChildSite);
+            } catch (Exception $Exception) {
+                $childMoveSuccessful = false;
+            }
+
+            if (!$childMoveSuccessful) {
+                $totalMoveSuccessful = false;
+            }
+        }
+
+        // Move completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
+
+        if (!$totalMoveSuccessful) {
+            // Something went wrong moving (at least) one site
+            \QUI::getMessagesHandler()->addAttention(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            );
         }
     }
 

@@ -9,6 +9,18 @@
             <de><![CDATA[Automatische Weiterleitung gelöschter/verschobener Seiten]]></de>
             <en><![CDATA[Automatic redirect of moved/deleted sites]]></en>
         </locale>
+
+        <!-- region site move -->
+        <locale name="site.move.info">
+            <de><![CDATA[Umleitung für diese und alle Unterseiten hinzugefügt.]]></de>
+            <en><![CDATA[Redirect was added for this and all child-sites.]]></en>
+        </locale>
+
+        <locale name="site.move.error">
+            <de><![CDATA[Umleitung anlegen für eine Seite nicht möglich.]]></de>
+            <en><![CDATA[Failed adding redirect for a site.]]></en>
+        </locale>
+        <!-- endregion -->
     </groups>
 
     <groups name="quiqqer/redirect" datatype="js">
