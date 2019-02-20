@@ -10,6 +10,7 @@ use QUI\Exception;
 use QUI\Package\Package;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
+use QUI\System\Log;
 
 /**
  * Class EventHandler
@@ -39,17 +40,16 @@ class EventHandler
      */
     public static function onSiteDelete($siteId, Project $Project)
     {
-        // TODO: popup zeigen und nachfragen ob und wohin redirect erstellt werden soll
-
+        // TODO: rekursives löschen behandeln (?)
         try {
-            $Site       = new Site($Project, $siteId);
-            $successful = Handler::addRedirect($Site->getUrlRewritten(), $Site);
+            $Site = new Site($Project, $siteId);
+            $url  = $Site->getUrlRewritten();
+            \QUI::getAjax()->triggerGlobalJavaScriptCallback(
+                'redirectOnSiteDelete',
+                $url
+            );
         } catch (Exception $Exception) {
-            $successful = false;
-        }
-
-        if (!$successful) {
-            // TODO: tell the user that redirect couldn't be added
+            Log::writeException($Exception);
         }
     }
 
@@ -62,7 +62,7 @@ class EventHandler
      */
     public static function onSiteMove(Site\Edit $Site, $parentId)
     {
-        // TODO: popup zeigen und nachfragen ob redirect erstellt werden soll
+        // TODO: popup zeigen und nachfragen ob redirect erstellt werden soll (?)
 
         try {
             Handler::addRedirect($Site->getUrlRewritten(), $Site);
@@ -98,5 +98,17 @@ class EventHandler
         \QUI::getDataBase()->fetchSQL("
             ALTER TABLE `$table` ADD PRIMARY KEY (`url`(80));
         ");
+    }
+
+
+    /**
+     * Called as an event when the admin footer is loaded
+     *
+     * Injects JS code into it
+     */
+    public static function onAdminLoadFooter()
+    {
+        $jsFile = URL_OPT_DIR . 'quiqqer/redirect/bin/onAdminLoadFooter.js';
+        echo '<script src="' . $jsFile . '"></script>';
     }
 }

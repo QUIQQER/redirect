@@ -131,7 +131,6 @@ class Handler
                 ]
             );
         } catch (\QUI\Database\Exception $Exception) {
-            // TODO: some sort of error handling (maybe?)
             Log::writeException($Exception);
 
             return false;

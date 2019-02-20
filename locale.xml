@@ -10,4 +10,28 @@
             <en><![CDATA[Automatic redirect of moved/deleted sites]]></en>
         </locale>
     </groups>
+
+    <groups name="quiqqer/redirect" datatype="js">
+        <!-- region delete popup -->
+        <locale name="site.delete.popup.title">
+            <de><![CDATA[Add redirect for deleted site]]></de>
+            <en><![CDATA[Umleitung für gelöschte Seite hinzufügen]]></en>
+        </locale>
+        <locale name="site.delete.popup.button.ok.text">
+            <de><![CDATA[Hinzufügen]]></de>
+            <en><![CDATA[Add]]></en>
+        </locale>
+
+        <!-- region errors -->
+        <locale name="site.delete.popup.error.select.none">
+            <de><![CDATA[Es muss eine Seite ausgewählt werden.]]></de>
+            <en><![CDATA[You have to select a page.]]></en>
+        </locale>
+        <locale name="site.delete.popup.error.result">
+            <de><![CDATA[Die Umleitung konnte nicht hinzugefügt werden.]]></de>
+            <en><![CDATA[The redirect could not be added.]]></en>
+        </locale>
+        <!-- endregion -->
+        <!-- endregion -->
+    </groups>
 </locales>
