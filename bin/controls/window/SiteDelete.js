@@ -34,6 +34,15 @@ define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
             this.parent(options);
 
             this.addEvent('onSubmit', this.$onSubmit);
+
+            var information = "URL:<br>" + this.getAttribute('url');
+
+            if (this.getAttribute('showSkip')) {
+                // TODO: add locale variable
+                information += '<br><input type="checkbox" name="showSkip"/><label for="showSkip">Skip?</label>';
+            }
+
+            this.setAttribute('information', information);
         },
 
 
@@ -45,6 +54,7 @@ define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
          */
         $onSubmit: function (Win, value) {
             var self = this;
+
             QUI.getMessageHandler().then(function (MessageHandler) {
                 if (!value.project || !value.lang || !value.ids[0]) {
                     MessageHandler.addError(
@@ -53,12 +63,29 @@ define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
                     return;
                 }
 
-                RedirectHandler.addRedirect(
-                    self.getAttribute('url'),
-                    value.project,
-                    value.lang,
-                    value.ids[0]
-                ).then(function (result) {
+                var url           = self.getAttribute('url'),
+                    project       = value.project,
+                    lang          = value.lang,
+                    siteId        = value.ids[0],
+                    isSkipChecked = self.isSkipChecked();
+
+                if (self.getAttribute('showSkip')) {
+                    RedirectHandler.processChildren(url, project, lang, siteId, isSkipChecked).then(function () {
+                        RedirectHandler.addRedirect(url, project, lang, siteId).then(function (result) {
+                            if (!result) {
+                                MessageHandler.addError(
+                                    QUILocale.get(lg, 'site.delete.popup.error.result')
+                                );
+                                return;
+                            }
+
+                            self.close();
+                        }).catch(console.error);
+                    }).catch(console.error);
+                    return;
+                }
+
+                RedirectHandler.addRedirect(url, project, lang, siteId).then(function (result) {
                     if (!result) {
                         MessageHandler.addError(
                             QUILocale.get(lg, 'site.delete.popup.error.result')
@@ -69,6 +96,20 @@ define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
                     self.close();
                 }).catch(console.error);
             });
+        },
+
+
+        /**
+         * Returns if the skip checkbox is checked.
+         *
+         * @return {boolean}
+         */
+        isSkipChecked: function () {
+            if (!this.getAttribute('showSkip')) {
+                return false;
+            }
+
+            return this.getContent().querySelector('[name=showSkip]').checked
         }
     });
 });

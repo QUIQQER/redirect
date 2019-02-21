@@ -7,6 +7,7 @@
  * @param string $targetProjectName - Project of the redirect's target
  * @param string $targetProjectLanguage - Project language of the redirect's target
  * @param int $targetSiteId - Site ID of the redirect's target
+ * @param {boolean} skipChildren - Skip showing a dialog for each child
  *
  * @return boolean
  */
@@ -20,9 +21,10 @@
             return \QUI\Redirect\Handler::addRedirect($sourceUrl, $Site);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
+
             return false;
         }
     },
-    ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId'],
+    ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId', 'skipChildren'],
     'Permission::checkAdminUser'
 );

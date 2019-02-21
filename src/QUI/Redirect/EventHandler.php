@@ -40,14 +40,14 @@ class EventHandler
      */
     public static function onSiteDelete($siteId, Project $Project)
     {
-        // TODO: rekursives löschen behandeln (?)
         try {
             $Site = new Site($Project, $siteId);
             $url  = $Site->getUrlRewritten();
-            \QUI::getAjax()->triggerGlobalJavaScriptCallback(
-                'redirectOnSiteDelete',
-                $url
-            );
+
+            // TODO: show notification if store in session failed (?)
+            Helper::storeChildrenInSession($Site);
+
+            Helper::triggerJavaScriptDeleteCallback($url, true);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }

@@ -9,10 +9,9 @@ require([
      */
     QUIAjax.registerGlobalJavaScriptCallback(
         'redirectOnSiteDelete',
-        function (Response, url) {
-            console.log(url);
+        function (Response, data) {
             require(['package/quiqqer/redirect/bin/controls/window/SiteDelete'], function (SiteDeletePopup) {
-                new SiteDeletePopup({url: url}).open();
+                new SiteDeletePopup({url: data.url, showSkip: data.showSkip}).open();
             });
         }
     );
