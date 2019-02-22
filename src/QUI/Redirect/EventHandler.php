@@ -47,7 +47,7 @@ class EventHandler
             // TODO: show notification if store in session failed (?)
             SessionHelper::storeChildrenUrlsInSession($Site);
 
-            SessionHelper::triggerJavaScriptDeleteCallback($url, true);
+            FrontendHelper::triggerJavaScriptDeleteCallback($url, true);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }

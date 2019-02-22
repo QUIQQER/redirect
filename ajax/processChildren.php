@@ -32,7 +32,7 @@
         }
 
         foreach ($children as $childUrl) {
-            \QUI\Redirect\SessionHelper::triggerJavaScriptDeleteCallback($childUrl, false);
+            \QUI\Redirect\FrontendHelper::triggerJavaScriptDeleteCallback($childUrl, false);
         }
     },
     ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId', 'skipChildren'],

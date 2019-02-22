@@ -113,24 +113,6 @@ class SessionHelper
 
 
     /**
-     * Triggers the (frontend) JavaScript on site delete callback
-     *
-     * @param string $url - The url of the deleted site
-     * @param $showSkip - Should the skip checkbox be shown
-     */
-    public static function triggerJavaScriptDeleteCallback($url, $showSkip)
-    {
-        \QUI::getAjax()->triggerGlobalJavaScriptCallback(
-            'redirectOnSiteDelete',
-            [
-                'url'      => $url,
-                'showSkip' => $showSkip
-            ]
-        );
-    }
-
-
-    /**
      * Removes a site's children from the current user's session
      *
      * @param $url
