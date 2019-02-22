@@ -78,11 +78,11 @@ class Handler
      * If the last parameter is set to false, a redirect will only be added for the given site
      *
      * @param string $url - The url to add a redirect for
-     * @param Site $TargetSite - The target of the redirect site's project
+     * @param \QUI\Interfaces\Projects\Site $TargetSite - The target of the redirect site's project
      *
      * @return bool
      */
-    public static function addRedirect($url, Site $TargetSite)
+    public static function addRedirect($url, \QUI\Interfaces\Projects\Site $TargetSite)
     {
         try {
             \QUI::getDataBase()->replace(
