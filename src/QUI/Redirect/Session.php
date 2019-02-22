@@ -64,15 +64,10 @@ class Session
     {
         $successfull  = false;
         $childrenUrls = [];
-        try {
-            $Children = $Site->getChildren(['active' => '0&1', true]);
-        } catch (Exception $Exception) {
-            Log::writeException($Exception);
 
-            return false;
-        }
+        $children = \QUI\Redirect\Site::getChildrenRecursive($Site, ['active' => '0&1']);
 
-        foreach ($Children as $Child) {
+        foreach ($children as $Child) {
             try {
                 /** @var Site $Child */
                 $childrenUrls[] = $Child->getUrlRewritten();

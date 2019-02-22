@@ -70,7 +70,7 @@ class EventHandler
             $totalMoveSuccessful = false;
         }
 
-        foreach ($Site->getChildren([], true) as $ChildSite) {
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
             /** @var Site $ChildSite */
             // Use a separate try to continue on error
             try {
@@ -114,7 +114,7 @@ class EventHandler
             $oldUrl = Session::getOldUrlFromSession($Site->getId());
             Handler::addRedirect($oldUrl, $Site);
 
-            foreach ($Site->getChildren([], true) as $ChildSite) {
+            foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
                 /** @var Site $ChildSite */
                 // Use a separate try to continue on error
                 try {
