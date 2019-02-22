@@ -2,7 +2,7 @@
  * @module package/quiqqer/redirect/bin/controls/window/SiteDelete
  * @author www.pcsg.de (Jan Wennrich)
  */
-define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
+define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     'qui/QUI',
 
     'controls/projects/Popup',
@@ -17,7 +17,7 @@ define('package/quiqqer/redirect/bin/controls/window/SiteDelete', [
     return new Class({
 
         Extends: ProjectPopup,
-        Type   : 'package/quiqqer/redirect/bin/controls/window/SiteDelete',
+        Type   : 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
 
         options: {
             title    : QUILocale.get(lg, 'site.delete.popup.title'),
