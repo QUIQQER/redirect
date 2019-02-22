@@ -124,10 +124,14 @@ class Session
      *
      * @param int $pageId - The site's id
      * @param string $url - The site's old URL
+     * @param boolean $recursive - Also add URLs for children
      */
-    public static function addOldUrlToSession($pageId, $url)
+    public static function addUrl($pageId, $url, $recursive = false)
     {
-        \QUI::getSession()->set(static::getOldUrlSessionKey($pageId), $url);
+        \QUI::getSession()->set(
+            static::getOldUrlSessionKey($pageId),
+            $url
+        );
     }
 
 
