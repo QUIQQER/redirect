@@ -31,7 +31,13 @@ class Handler
             return false;
         }
 
-        return \QUI::getRewrite()->showErrorHeader(302, $redirectUrl);
+        // TODO: check/ask if 302 redirect in development is okay
+        $code = 301;
+        if (DEVELOPMENT) {
+            $code = 302;
+        }
+
+        return \QUI::getRewrite()->showErrorHeader($code, $redirectUrl);
     }
 
 
