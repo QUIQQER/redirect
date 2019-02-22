@@ -136,6 +136,49 @@ class Session
 
 
     /**
+     * Adds a site's old url to the session
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site - The site to store the URL for
+     */
+    public static function addUrlsRecursive(\QUI\Interfaces\Projects\Site $Site)
+    {
+        $isTotalAddUrlSuccessful = true;
+        try {
+            static::addUrl($Site->getId(), $Site->getUrlRewritten());
+        } catch (Exception $Exception) {
+            $isTotalAddUrlSuccessful = false;
+        }
+
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+            /** @var Site $ChildSite */
+            // Use a separate try to continue on error
+            try {
+                $isChildAddUrlSuccessful = true;
+                static::addUrl($ChildSite->getId(), $ChildSite->getUrlRewritten());
+            } catch (Exception $Exception) {
+                $isChildAddUrlSuccessful = false;
+            }
+
+            if (!$isChildAddUrlSuccessful) {
+                $isTotalAddUrlSuccessful = false;
+            }
+        }
+
+        // Store URLs in session completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
+
+        if (!$isTotalAddUrlSuccessful) {
+            // Something went wrong storing (at least) one URL
+            \QUI::getMessagesHandler()->addAttention(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            );
+        }
+    }
+
+
+    /**
      * Returns a site's old URL from the current user's session
      *
      * @param int $pageId - The site's ID
