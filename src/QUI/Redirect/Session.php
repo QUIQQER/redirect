@@ -56,11 +56,11 @@ class Session
     /**
      * Stores the children of a site in the current user's session.
      *
-     * @param Site $Site
+     * @param \QUI\Interfaces\Projects\Site $Site
      *
      * @return bool
      */
-    public static function storeChildrenUrlsInSession(Site $Site)
+    public static function storeChildrenUrlsInSession(\QUI\Interfaces\Projects\Site $Site)
     {
         $successfull  = false;
         $childrenUrls = [];
