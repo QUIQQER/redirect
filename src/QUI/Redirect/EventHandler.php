@@ -55,6 +55,26 @@ class EventHandler
 
 
     /**
+     * Called as an event when a site is deactivated
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site - The deactivated site
+     */
+    public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
+    {
+        try {
+            $url = $Site->getUrlRewritten();
+
+            // TODO: show notification if store in session failed (?)
+            Session::storeChildrenUrlsInSession($Site);
+
+            Frontend::showAddRedirectDialog($url, true);
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
+        }
+    }
+
+
+    /**
      * Called as an event when a site is moved to a new location.
      * Stores the sites' old URLs in the session
      *
