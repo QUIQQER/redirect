@@ -102,7 +102,7 @@ class EventHandler
      *
      * @param Package $Package - The package being installed
      *
-     * @throws \QUI\Database\Exception - redirects table couldn't be updated
+     * @throws \QUI\Database\Exception - redirects table couldn't be setup
      */
     public static function onInstall(Package $Package)
     {
@@ -110,10 +110,7 @@ class EventHandler
             return;
         }
 
-        $table = Handler::getTableName();
-        \QUI::getDataBase()->fetchSQL("
-            ALTER TABLE `$table` ADD PRIMARY KEY (`url`(80));
-        ");
+        DatabaseHelper::setupDatabase();
     }
 
 

@@ -2,14 +2,10 @@
 <database>
     <global>
         <table name="redirects">
-            <field type="VARCHAR( 2083 ) NOT NULL">url</field>
+            <field type="VARCHAR( 2083 ) NOT NULL">source_url</field>
+            <field type="VARCHAR( 2083 ) NOT NULL">target_url</field>
 
-            <field type="VARCHAR( 50 ) NOT NULL">project</field>
-            <field type="VARCHAR( 2 ) NOT NULL">language</field>
-            <field type="BIGINT( 20 ) UNSIGNED NOT NULL">site_id</field>
-
-            <!-- More indexes and primary keys are set via PHP (see EventHandler::onInstall) -->
-            <index>site_id</index>
+            <!-- Indexes and primary keys are set via PHP (see EventHandler::onInstall) -->
         </table>
     </global>
 </database>

@@ -18,7 +18,7 @@
   },
   "require": {
     "quiqqer/quiqqer": "^1.2.10|dev-master|dev-dev",
-    "quiqqer/utils": "^1.15.0|dev-master|dev-dev"
+    "quiqqer/utils": "^1.15.1|dev-master|dev-dev"
   },
   "autoload": {
     "psr-4": {

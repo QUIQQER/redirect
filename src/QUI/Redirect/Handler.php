@@ -17,17 +17,6 @@ use QUI\System\Log;
 class Handler
 {
     /**
-     * Returns the name of the redirect table
-     *
-     * @return string
-     */
-    public static function getTableName()
-    {
-        return \QUI::getDBTableName('redirects');
-    }
-
-
-    /**
      * Attempts to redirect a given URL to a stored location
      *
      * @param $url
@@ -58,9 +47,9 @@ class Handler
     {
         try {
             $redirectData = \QUI::getDataBase()->fetch([
-                'from'  => static::getTableName(),
+                'from'  => DatabaseHelper::getTableName(),
                 'where' => [
-                    'url' => $url
+                    DatabaseHelper::COLUMN_SOURCE_URL => $url
                 ],
                 'limit' => 1
             ]);
@@ -69,12 +58,9 @@ class Handler
                 return false;
             }
 
-            $redirectData = $redirectData[0];
+            $targetUrl = $redirectData[0][DatabaseHelper::COLUMN_TARGET_URL];
 
-            $Project = \QUI\Projects\Manager::getProject($redirectData['project'], $redirectData['language']);
-            $Site    = new Site($Project, $redirectData['site_id']);
-
-            return $Site->getUrlRewrittenWithHost();
+            return $targetUrl;
         } catch (Exception $Exception) {
             return false;
         }
@@ -92,45 +78,15 @@ class Handler
      */
     public static function addRedirect($url, Site $TargetSite)
     {
-        $Project = $TargetSite->getProject();
-
         try {
-            return static::insertRedirectDataIntoDatabase(
-                $url,
-                $Project->getName(),
-                $Project->getLang(),
-                $TargetSite->getId()
-            );
-        } catch (Exception $Exception) {
-            return false;
-        }
-    }
-
-
-    /**
-     * Inserts the given data into the database.
-     * Returns if the operation was successful.
-     *
-     * @param string $url
-     * @param string $projectName
-     * @param string $language
-     * @param int $siteId
-     *
-     * @return boolean
-     */
-    protected static function insertRedirectDataIntoDatabase($url, $projectName, $language, $siteId)
-    {
-        try {
-            \QUI::getDataBase()->insert(
-                static::getTableName(),
+            \QUI::getDataBase()->replace(
+                DatabaseHelper::getTableName(),
                 [
-                    'url'      => $url,
-                    'project'  => $projectName,
-                    'language' => $language,
-                    'site_id'  => $siteId,
+                    DatabaseHelper::COLUMN_SOURCE_URL => $url,
+                    DatabaseHelper::COLUMN_TARGET_URL => $TargetSite->getUrlRewritten(),
                 ]
             );
-        } catch (\QUI\Database\Exception $Exception) {
+        } catch (Exception $Exception) {
             Log::writeException($Exception);
 
             return false;
