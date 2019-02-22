@@ -100,4 +100,58 @@ class Handler
 
         return true;
     }
+
+
+    /**
+     * Add redirects to the system for a page (and it's children).
+     * Their URLs have to be stored in the session before.
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site - The site to add the redirects for
+     */
+    public static function addRedirectsFromSession(\QUI\Interfaces\Projects\Site $Site)
+    {
+        // TODO: clean up this mess (e.g. Notify the user in addRedirect())
+        $isTotalAddRedirectSuccessful = true;
+        try {
+            $oldUrl = Session::getOldUrlFromSession($Site->getId());
+            static::addRedirect($oldUrl, $Site);
+
+            foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+                /** @var Site $ChildSite */
+                // Use a separate try to continue on error
+                try {
+                    $childSiteId = $ChildSite->getId();
+                    $childOldUrl = Session::getOldUrlFromSession($childSiteId);
+
+                    if (!$childOldUrl) {
+                        // Escape this try
+                        throw new Exception();
+                    }
+
+                    $isChildAddRedirectSuccessful = Handler::addRedirect($childOldUrl, $ChildSite);
+                    Session::removeOldUrlFromSession($childSiteId);
+                } catch (Exception $Exception) {
+                    $isChildAddRedirectSuccessful = false;
+                }
+
+                if (!$isChildAddRedirectSuccessful) {
+                    $isTotalAddRedirectSuccessful = false;
+                }
+            }
+        } catch (Exception $Exception) {
+            $isTotalAddRedirectSuccessful = false;
+        }
+
+        // Redirect completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
+
+        if (!$isTotalAddRedirectSuccessful) {
+            // Something went wrong adding a redirect for (at least) one site
+            \QUI::getMessagesHandler()->addAttention(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            );
+        }
+    }
 }
