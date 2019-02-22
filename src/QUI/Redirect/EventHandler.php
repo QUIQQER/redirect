@@ -61,7 +61,7 @@ class EventHandler
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
      */
-    public static function onSiteMove(Site\Edit $Site, $parentId)
+    public static function onSiteMoveBefore(Site\Edit $Site, $parentId)
     {
         $totalMoveSuccessful = true;
         try {
@@ -83,6 +83,61 @@ class EventHandler
             if (!$childMoveSuccessful) {
                 $totalMoveSuccessful = false;
             }
+        }
+
+        // Move completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
+
+        if (!$totalMoveSuccessful) {
+            // Something went wrong moving (at least) one site
+            \QUI::getMessagesHandler()->addAttention(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            );
+        }
+    }
+
+
+    /**
+     * Called as an event when a site is moved to a new location.
+     * Adds redirects fire the sites' new URLs.
+     *
+     * @param Site\Edit $Site - The site moved
+     * @param int $parentId - The new parent id
+     */
+    public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
+    {
+        // TODO: clean up this mess (e.g. Notify the user in addRedirect())
+        $totalMoveSuccessful = true;
+        try {
+            $oldUrl = SessionHelper::getOldUrlFromSession($Site->getId());
+            Handler::addRedirect($oldUrl, $Site);
+
+            foreach ($Site->getChildren([], true) as $ChildSite) {
+                /** @var Site $ChildSite */
+                // Use a separate try to continue on error
+                try {
+                    $childSiteId = $ChildSite->getId();
+                    $childOldUrl = SessionHelper::getOldUrlFromSession($childSiteId);
+
+                    if (!$childOldUrl) {
+                        // Escape this try
+                        throw new Exception();
+                    }
+
+                    $childMoveSuccessful = Handler::addRedirect($childOldUrl, $ChildSite);
+                    SessionHelper::removeOldUrlFromSession($childSiteId);
+                } catch (Exception $Exception) {
+                    $childMoveSuccessful = false;
+                }
+
+                if (!$childMoveSuccessful) {
+                    $totalMoveSuccessful = false;
+                }
+            }
+        } catch (Exception $Exception) {
+            $totalMoveSuccessful = false;
         }
 
         // Move completed
