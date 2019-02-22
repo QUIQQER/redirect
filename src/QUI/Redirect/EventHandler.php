@@ -45,9 +45,9 @@ class EventHandler
             $url  = $Site->getUrlRewritten();
 
             // TODO: show notification if store in session failed (?)
-            SessionHelper::storeChildrenUrlsInSession($Site);
+            Session::storeChildrenUrlsInSession($Site);
 
-            FrontendHelper::triggerJavaScriptDeleteCallback($url, true);
+            Frontend::triggerJavaScriptDeleteCallback($url, true);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -65,7 +65,7 @@ class EventHandler
     {
         $totalMoveSuccessful = true;
         try {
-            SessionHelper::addOldUrlToSession($Site->getId(), $Site->getUrlRewritten());
+            Session::addOldUrlToSession($Site->getId(), $Site->getUrlRewritten());
         } catch (Exception $Exception) {
             $totalMoveSuccessful = false;
         }
@@ -75,7 +75,7 @@ class EventHandler
             // Use a separate try to continue on error
             try {
                 $childMoveSuccessful = true;
-                SessionHelper::addOldUrlToSession($ChildSite->getId(), $ChildSite->getUrlRewritten());
+                Session::addOldUrlToSession($ChildSite->getId(), $ChildSite->getUrlRewritten());
             } catch (Exception $Exception) {
                 $childMoveSuccessful = false;
             }
@@ -111,7 +111,7 @@ class EventHandler
         // TODO: clean up this mess (e.g. Notify the user in addRedirect())
         $totalMoveSuccessful = true;
         try {
-            $oldUrl = SessionHelper::getOldUrlFromSession($Site->getId());
+            $oldUrl = Session::getOldUrlFromSession($Site->getId());
             Handler::addRedirect($oldUrl, $Site);
 
             foreach ($Site->getChildren([], true) as $ChildSite) {
@@ -119,7 +119,7 @@ class EventHandler
                 // Use a separate try to continue on error
                 try {
                     $childSiteId = $ChildSite->getId();
-                    $childOldUrl = SessionHelper::getOldUrlFromSession($childSiteId);
+                    $childOldUrl = Session::getOldUrlFromSession($childSiteId);
 
                     if (!$childOldUrl) {
                         // Escape this try
@@ -127,7 +127,7 @@ class EventHandler
                     }
 
                     $childMoveSuccessful = Handler::addRedirect($childOldUrl, $ChildSite);
-                    SessionHelper::removeOldUrlFromSession($childSiteId);
+                    Session::removeOldUrlFromSession($childSiteId);
                 } catch (Exception $Exception) {
                     $childMoveSuccessful = false;
                 }
@@ -167,7 +167,7 @@ class EventHandler
             return;
         }
 
-        DatabaseHelper::setupDatabase();
+        Database::setupDatabase();
     }
 
 

@@ -15,7 +15,7 @@ namespace QUI\Redirect;
  *
  * @package redirect\src\QUI\Redirect
  */
-class DatabaseHelper
+class Database
 {
     /**
      * @var string - The name of the source url column (see database.xml)

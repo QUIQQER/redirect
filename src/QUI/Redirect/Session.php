@@ -18,7 +18,7 @@ use QUI\System\Log;
  *
  * @package redirect\src\QUI\Redirect
  */
-class SessionHelper
+class Session
 {
     /**
      * Prefix for the session key which stores the children of a site on delete.

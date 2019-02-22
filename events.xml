@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
     <event on="onErrorHeaderShowBefore" fire="QUI\Redirect\EventHandler::onErrorHeaderShow"/>
+
     <event on="onSiteDeleteBefore" fire="QUI\Redirect\EventHandler::onSiteDelete"/>
+
     <event on="onSiteMoveBefore" fire="QUI\Redirect\EventHandler::onSiteMoveBefore"/>
     <event on="onSiteMove" fire="QUI\Redirect\EventHandler::onSiteMoveAfter"/>
 

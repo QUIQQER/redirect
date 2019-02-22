@@ -15,7 +15,7 @@ namespace QUI\Redirect;
  *
  * @package redirect\src\QUI\Redirect
  */
-class FrontendHelper
+class Frontend
 {
     /**
      * Triggers the (frontend) JavaScript on site delete callback

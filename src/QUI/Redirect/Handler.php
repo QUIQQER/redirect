@@ -53,9 +53,9 @@ class Handler
     {
         try {
             $redirectData = \QUI::getDataBase()->fetch([
-                'from'  => DatabaseHelper::getTableName(),
+                'from'  => Database::getTableName(),
                 'where' => [
-                    DatabaseHelper::COLUMN_SOURCE_URL => $url
+                    Database::COLUMN_SOURCE_URL => $url
                 ],
                 'limit' => 1
             ]);
@@ -64,7 +64,7 @@ class Handler
                 return false;
             }
 
-            $targetUrl = $redirectData[0][DatabaseHelper::COLUMN_TARGET_URL];
+            $targetUrl = $redirectData[0][Database::COLUMN_TARGET_URL];
 
             return $targetUrl;
         } catch (Exception $Exception) {
@@ -86,10 +86,10 @@ class Handler
     {
         try {
             \QUI::getDataBase()->replace(
-                DatabaseHelper::getTableName(),
+                Database::getTableName(),
                 [
-                    DatabaseHelper::COLUMN_SOURCE_URL => $url,
-                    DatabaseHelper::COLUMN_TARGET_URL => $TargetSite->getUrlRewritten(),
+                    Database::COLUMN_SOURCE_URL => $url,
+                    Database::COLUMN_TARGET_URL => $TargetSite->getUrlRewritten(),
                 ]
             );
         } catch (Exception $Exception) {
