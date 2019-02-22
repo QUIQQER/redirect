@@ -83,39 +83,7 @@ class EventHandler
      */
     public static function onSiteMoveBefore(Site\Edit $Site, $parentId)
     {
-        $totalMoveSuccessful = true;
-        try {
-            Session::addOldUrlToSession($Site->getId(), $Site->getUrlRewritten());
-        } catch (Exception $Exception) {
-            $totalMoveSuccessful = false;
-        }
-
-        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-            /** @var Site $ChildSite */
-            // Use a separate try to continue on error
-            try {
-                $childMoveSuccessful = true;
-                Session::addOldUrlToSession($ChildSite->getId(), $ChildSite->getUrlRewritten());
-            } catch (Exception $Exception) {
-                $childMoveSuccessful = false;
-            }
-
-            if (!$childMoveSuccessful) {
-                $totalMoveSuccessful = false;
-            }
-        }
-
-        // Move completed
-        \QUI::getMessagesHandler()->addInformation(
-            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
-        );
-
-        if (!$totalMoveSuccessful) {
-            // Something went wrong moving (at least) one site
-            \QUI::getMessagesHandler()->addAttention(
-                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
-            );
-        }
+        Session::addUrlsRecursive($Site);
     }
 
 
@@ -128,49 +96,7 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
-        // TODO: clean up this mess (e.g. Notify the user in addRedirect())
-        $totalMoveSuccessful = true;
-        try {
-            $oldUrl = Session::getOldUrlFromSession($Site->getId());
-            Handler::addRedirect($oldUrl, $Site);
-
-            foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-                /** @var Site $ChildSite */
-                // Use a separate try to continue on error
-                try {
-                    $childSiteId = $ChildSite->getId();
-                    $childOldUrl = Session::getOldUrlFromSession($childSiteId);
-
-                    if (!$childOldUrl) {
-                        // Escape this try
-                        throw new Exception();
-                    }
-
-                    $childMoveSuccessful = Handler::addRedirect($childOldUrl, $ChildSite);
-                    Session::removeOldUrlFromSession($childSiteId);
-                } catch (Exception $Exception) {
-                    $childMoveSuccessful = false;
-                }
-
-                if (!$childMoveSuccessful) {
-                    $totalMoveSuccessful = false;
-                }
-            }
-        } catch (Exception $Exception) {
-            $totalMoveSuccessful = false;
-        }
-
-        // Move completed
-        \QUI::getMessagesHandler()->addInformation(
-            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
-        );
-
-        if (!$totalMoveSuccessful) {
-            // Something went wrong moving (at least) one site
-            \QUI::getMessagesHandler()->addAttention(
-                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
-            );
-        }
+        Handler::addRedirectsFromSession($Site);
     }
 
 
