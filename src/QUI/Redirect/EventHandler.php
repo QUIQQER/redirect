@@ -101,6 +101,38 @@ class EventHandler
 
 
     /**
+     * Called as an event before a site is saved.
+     * Stores the sites' old URLs in the session.
+     *
+     * @param Site\Edit $Site - The saved site
+     */
+    public static function onSiteSaveBefore(Site\Edit $Site)
+    {
+        Session::addUrlsRecursive($Site);
+    }
+
+
+    /**
+     * Called as an event when a site is saved.
+     * Adds redirects from URLs stored in the session.
+     *
+     * @param Site\Edit $Site - The saved site
+     */
+    public static function onSiteSave(Site\Edit $Site)
+    {
+        try {
+            if ($Site->getUrlRewritten() == Session::getOldUrlFromSession($Site->getId())) {
+                return;
+            }
+
+            Handler::addRedirectsFromSession($Site);
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
+        }
+    }
+
+
+    /**
      * Called as an event on package install
      *
      * @param Package $Package - The package being installed
