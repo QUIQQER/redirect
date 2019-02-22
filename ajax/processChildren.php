@@ -21,7 +21,7 @@
         $Project = QUI\Projects\Manager::getProject($targetProjectName, $targetProjectLanguage);
         $Site    = new \QUI\Projects\Site($Project, $targetSiteId);
 
-        $children = \QUI\Redirect\Helper::getChildrenFromSession($sourceUrl);
+        $children = \QUI\Redirect\SessionHelper::getChildrenUrlsFromSession($sourceUrl);
 
         if ($skipChildren) {
             foreach ($children as $childUrl) {
@@ -32,7 +32,7 @@
         }
 
         foreach ($children as $childUrl) {
-            \QUI\Redirect\Helper::triggerJavaScriptDeleteCallback($childUrl, false);
+            \QUI\Redirect\SessionHelper::triggerJavaScriptDeleteCallback($childUrl, false);
         }
     },
     ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId', 'skipChildren'],

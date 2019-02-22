@@ -18,13 +18,14 @@ use QUI\System\Log;
  *
  * @package redirect\src\QUI\Redirect
  */
-class Helper
+class SessionHelper
 {
     /**
      * Prefix for the session key which stores the children of a site on delete.
      * Should be appended with a md5 hash of the sites URL
      */
     const SESSION_KEY_CHILDREN_PREFIX = "redirect_delete_";
+
 
     /**
      * Returns a key to be used when storing a sites children URLs in the session
@@ -33,9 +34,22 @@ class Helper
      *
      * @return string
      */
-    public static function getChildrenUrlsSessionKey($url)
+    protected static function getChildrenUrlsSessionKey($url)
     {
-        return self::SESSION_KEY_CHILDREN_PREFIX . md5($url);
+        return static::SESSION_KEY_CHILDREN_PREFIX . md5($url);
+    }
+
+
+    /**
+     * Returns a key to be used when storing a site's old URL in the session.
+     *
+     * @param int $id - The site's id
+     *
+     * @return string
+     */
+    protected static function getOldUrlSessionKey($id)
+    {
+        return "redirect_delete_$id";
     }
 
 
@@ -46,7 +60,7 @@ class Helper
      *
      * @return bool
      */
-    public static function storeChildrenInSession(Site $Site)
+    public static function storeChildrenUrlsInSession(Site $Site)
     {
         $successfull  = false;
         $childrenUrls = [];
@@ -90,7 +104,7 @@ class Helper
      *
      * @return array|false
      */
-    public static function getChildrenFromSession($url)
+    public static function getChildrenUrlsFromSession($url)
     {
         $rawChildrenData = \QUI::getSession()->get(self::getChildrenUrlsSessionKey($url));
 
@@ -122,8 +136,45 @@ class Helper
      * @param $url
      *
      */
-    public static function removeChildrenFromSession($url)
+    public static function removeChildrenUrlsFromSession($url)
     {
         \QUI::getSession()->remove(self::getChildrenUrlsSessionKey($url));
+    }
+
+
+    /**
+     * Adds a site's old url to the session
+     *
+     * @param int $pageId - The site's id
+     * @param string $url - The site's old URL
+     */
+    public static function addOldUrlToSession($pageId, $url)
+    {
+        \QUI::getSession()->set(static::getOldUrlSessionKey($pageId), $url);
+    }
+
+
+    /**
+     * Returns a site's old URL from the current user's session
+     *
+     * @param int $pageId - The site's ID
+     *
+     * @return string|false
+     */
+    public static function getOldUrlFromSession($pageId)
+    {
+        return \QUI::getSession()->get(self::getOldUrlSessionKey($pageId));
+    }
+
+
+    /**
+     * Removes a site's old URL from the current user's session
+     *
+     * @param int $pageId
+     *
+     */
+    public static function removeOldUrlFromSession($pageId)
+    {
+        \QUI::getSession()->remove(self::getOldUrlSessionKey($pageId));
     }
 }

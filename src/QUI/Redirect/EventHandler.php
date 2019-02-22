@@ -45,9 +45,9 @@ class EventHandler
             $url  = $Site->getUrlRewritten();
 
             // TODO: show notification if store in session failed (?)
-            Helper::storeChildrenInSession($Site);
+            SessionHelper::storeChildrenUrlsInSession($Site);
 
-            Helper::triggerJavaScriptDeleteCallback($url, true);
+            SessionHelper::triggerJavaScriptDeleteCallback($url, true);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -55,7 +55,8 @@ class EventHandler
 
 
     /**
-     * Called as an event when a site is moved to a new location
+     * Called as an event when a site is moved to a new location.
+     * Stores the sites' old URLs in the session
      *
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
@@ -64,7 +65,7 @@ class EventHandler
     {
         $totalMoveSuccessful = true;
         try {
-            Handler::addRedirect($Site->getUrlRewritten(), $Site);
+            SessionHelper::addOldUrlToSession($Site->getId(), $Site->getUrlRewritten());
         } catch (Exception $Exception) {
             $totalMoveSuccessful = false;
         }
@@ -73,7 +74,8 @@ class EventHandler
             /** @var Site $ChildSite */
             // Use a separate try to continue on error
             try {
-                $childMoveSuccessful = Handler::addRedirect($ChildSite->getUrlRewritten(), $ChildSite);
+                $childMoveSuccessful = true;
+                SessionHelper::addOldUrlToSession($ChildSite->getId(), $ChildSite->getUrlRewritten());
             } catch (Exception $Exception) {
                 $childMoveSuccessful = false;
             }
