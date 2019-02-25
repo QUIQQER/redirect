@@ -145,6 +145,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 this.$SiteInput.$Input.value = this.getAttribute('targetUrl');
             }
 
+            new Element('span', {
+                html: QUILocale.get(lg, 'window.redirect.url.target.note')
+            }).inject(Content);
+
             if (this.$SkipChildren) {
                 var SkipChildrenContainer = new Element('div');
 
