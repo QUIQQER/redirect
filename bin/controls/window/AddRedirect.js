@@ -123,7 +123,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
             new Element('label', {
                 for : 'redirect-source',
-                html: QUILocale.get(lg, 'window.redirect.url.source')
+                html: '<b>' + QUILocale.get(lg, 'window.redirect.url.source') + '</b>'
             }).inject(Content);
 
             this.$SourceUrlInput = new Element('input', {
@@ -136,7 +136,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             this.$SourceUrlInput.inject(Content);
 
             new Element('span', {
-                html: QUILocale.get(lg, 'window.redirect.url.target') + ':'
+                html: '<b>' + QUILocale.get(lg, 'window.redirect.url.target') + '</b>'
             }).inject(Content);
 
             this.$SiteInput.inject(Content);
