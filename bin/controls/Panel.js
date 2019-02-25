@@ -9,13 +9,14 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
+    'qui/controls/buttons/Separator',
 
     'package/quiqqer/redirect/bin/Handler',
 
     'controls/grid/Grid',
     'Locale'
 
-], function (QUI, QUIPanel, RedirectHandler, Grid, QUILocale) {
+], function (QUI, QUIPanel, QUIButtonSeparator, RedirectHandler, Grid, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -32,7 +33,8 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             '$onCreate',
             '$onResize',
             'deleteRedirect',
-            'openAddRedirectDialog'
+            'openAddRedirectDialog',
+            'editRedirect'
         ],
 
         initialize: function (options) {
@@ -65,6 +67,18 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 textimage: 'fa fa-plus',
                 events   : {
                     onClick: this.openAddRedirectDialog
+                }
+            });
+
+            this.addButton(new QUIButtonSeparator());
+
+            this.addButton({
+                name     : 'redirect-edit',
+                text     : QUILocale.get(lg, 'panel.button.redirect.edit'),
+                textimage: 'fa fa-pencil',
+                disabled : true,
+                events   : {
+                    onClick: this.editRedirect
                 }
             });
 
@@ -105,10 +119,9 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             this.$Grid.addEvents({
                 onClick   : function () {
                     self.getButtons('redirect-delete').enable();
+                    self.getButtons('redirect-edit').enable();
                 },
-                onDblClick: function () {
-//                    self.openEditRedirectDialog
-                }.bind(this)
+                onDblClick: self.editRedirect
             });
         },
 
@@ -169,9 +182,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 new AddRedirectPopup({
                     showSkip: false,
                     events  : {
-                        onClose: function () {
-                            self.loadData();
-                        }
+                        onClose: self.loadData
                     }
                 }).open();
             });
@@ -181,9 +192,23 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
         deleteRedirect: function () {
             RedirectHandler.deleteRedirect(
                 this.$Grid.getSelectedData()[0].source_url
-            );
+            ).then(this.loadData);
+        },
 
-            this.loadData();
+
+        editRedirect: function () {
+            var self = this;
+            require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
+                new AddRedirectPopup({
+                    showSkip         : false,
+                    sourceUrlReadOnly: true,
+                    sourceUrl        : self.$Grid.getSelectedData()[0].source_url,
+                    targetUrl        : self.$Grid.getSelectedData()[0].target_url,
+                    events           : {
+                        onClose: self.loadData
+                    }
+                }).open();
+            });
         }
     });
 });

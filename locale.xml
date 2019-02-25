@@ -69,6 +69,11 @@
             <de><![CDATA[Umleitung löschen]]></de>
             <en><![CDATA[Delete Redirect]]></en>
         </locale>
+
+        <locale name="panel.button.redirect.edit">
+            <de><![CDATA[Umleitung bearbeiten]]></de>
+            <en><![CDATA[Edit Redirect]]></en>
+        </locale>
         <!-- endregion -->
 
 
