@@ -57,6 +57,21 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
                     skipChildren: skipChildren ? 1 : 0
                 });
             });
+        },
+
+
+        /**
+         * Returns all redirects from the database
+         *
+         * @return {Promise}
+         */
+        getRedirects: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_redirect_ajax_getRedirects', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

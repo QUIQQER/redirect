@@ -10,6 +10,11 @@
             <en><![CDATA[Automatic redirect of moved/deleted sites]]></en>
         </locale>
 
+        <locale name="menu.text">
+            <de><![CDATA[Umleitungen]]></de>
+            <en><![CDATA[Redirects]]></en>
+        </locale>
+
         <!-- region site move -->
         <locale name="site.move.info">
             <de><![CDATA[Umleitung für diese und alle Unterseiten hinzugefügt.]]></de>
@@ -48,6 +53,19 @@
             <de><![CDATA[Ziel-URL]]></de>
             <en><![CDATA[Target-URL]]></en>
         </locale>
+
+        <!-- region panel -->
+        <locale name="panel.title">
+            <de><![CDATA[Umleitungen]]></de>
+            <en><![CDATA[Redirects]]></en>
+        </locale>
+
+        <locale name="panel.button.redirect.add">
+            <de><![CDATA[Umleitung Hinzufügen]]></de>
+            <en><![CDATA[Add Redirect]]></en>
+        </locale>
+        <!-- endregion -->
+
 
         <!-- region errors -->
         <locale name="window.redirect.url.target.error">

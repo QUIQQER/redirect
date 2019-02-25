@@ -160,4 +160,25 @@ class Handler
             );
         }
     }
+
+
+    /**
+     * Returns an array of all redirects.
+     * The array keys are 'sourceUrl' and 'targetUrl'
+     *
+     * @return array
+     */
+    public static function getRedirects()
+    {
+        try {
+            return \QUI::getDataBase()->fetch([
+                'select' => Database::COLUMN_SOURCE_URL . ',' . Database::COLUMN_TARGET_URL,
+                'from'   => Database::getTableName()
+            ]);
+        } catch (\QUI\Database\Exception $Exception) {
+            Log::writeException($Exception);
+
+            return [];
+        }
+    }
 }
