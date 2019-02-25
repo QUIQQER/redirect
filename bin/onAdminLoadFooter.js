@@ -12,9 +12,10 @@ require([
         function (Response, data) {
             require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
                 new AddRedirectPopup({
-                    sourceUrl: data.sourceUrl,
-                    targetUrl: data.targetUrl,
-                    showSkip : data.showSkip
+                    sourceUrl        : data.sourceUrl,
+                    targetUrl        : data.targetUrl,
+                    showSkip         : data.showSkip,
+                    sourceUrlReadOnly: true
                 }).open();
             });
         }

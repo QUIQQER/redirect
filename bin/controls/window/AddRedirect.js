@@ -25,20 +25,21 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         Type   : 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
 
         options: {
-            title    : QUILocale.get(lg, 'site.delete.popup.title'),
-            autoclose: false,
-            texticon : false,
-            icon     : 'fa fa-link',
-            ok_button: {
+            title            : QUILocale.get(lg, 'site.delete.popup.title'),
+            autoclose        : false,
+            texticon         : false,
+            icon             : 'fa fa-link',
+            ok_button        : {
                 text     : QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
                 textimage: 'fa fa-link'
             },
-            sourceUrl: false,
-            value    : false
+            sourceUrl        : false,
+            sourceUrlReadOnly: false
         },
 
-        $SiteInput   : false,
-        $SkipChildren: false,
+        $SourceUrlInput: false,
+        $SiteInput     : false,
+        $SkipChildren  : false,
 
         initialize: function (options) {
             this.parent(options);
@@ -56,8 +57,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             if (this.getAttribute('showSkip')) {
                 this.$SkipChildren = new QUISwitch({name: 'skip-children'});
             }
-
-//            this.setAttribute('information', information);
         },
 
 
@@ -71,7 +70,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var self = this;
 
             QUI.getMessageHandler().then(function (MessageHandler) {
-                var sourceUrl     = self.getAttribute('sourceUrl'),
+                var sourceUrl     = self.getSourceUrl(),
                     targetUrl     = self.getTargetUrl(),
                     isSkipChecked = self.isSkipChecked();
 
@@ -122,9 +121,19 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 'justify-content': 'space-around'
             });
 
-            new Element('div', {
-                html: QUILocale.get(lg, 'window.redirect.url.source') + ':<br>' + this.getAttribute('sourceUrl')
+            new Element('label', {
+                for : 'redirect-source',
+                html: QUILocale.get(lg, 'window.redirect.url.source')
             }).inject(Content);
+
+            this.$SourceUrlInput = new Element('input', {
+                value: this.getAttribute('sourceUrl') ? this.getAttribute('sourceUrl') : "",
+                name : 'redirect-source'
+            });
+
+            this.$SourceUrlInput.readOnly = this.getAttribute('sourceUrlReadOnly');
+
+            this.$SourceUrlInput.inject(Content);
 
             new Element('span', {
                 html: QUILocale.get(lg, 'window.redirect.url.target') + ':'
@@ -162,6 +171,16 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
 
             return this.$SkipChildren.getStatus();
+        },
+
+
+        /**
+         * Returns the entered redirect's source URL
+         *
+         * @return {string}
+         */
+        getSourceUrl: function () {
+            return this.$SourceUrlInput.value;
         },
 
 
