@@ -30,7 +30,9 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             'openSearch',
             'openClear',
             '$onCreate',
-            '$onResize'
+            '$onResize',
+            'deleteRedirect',
+            'openAddRedirectDialog'
         ],
 
         initialize: function (options) {
@@ -54,12 +56,28 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
          * event : on create
          */
         $onCreate: function () {
+            var self = this;
+
             // Buttons
             this.addButton({
+                name     : 'redirect-add',
                 text     : QUILocale.get(lg, 'panel.button.redirect.add'),
                 textimage: 'fa fa-plus',
                 events   : {
                     onClick: this.openAddRedirectDialog
+                }
+            });
+
+            this.addButton({
+                name     : 'redirect-delete',
+                text     : QUILocale.get(lg, 'panel.button.redirect.delete'),
+                textimage: 'fa fa-trash',
+                disabled : true,
+                events   : {
+                    onClick: this.deleteRedirect
+                },
+                styles   : {
+                    float: 'right'
                 }
             });
 
@@ -85,9 +103,11 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             });
 
             this.$Grid.addEvents({
+                onClick   : function () {
+                    self.getButtons('redirect-delete').enable();
+                },
                 onDblClick: function () {
-//                    this.openEntry(this.$Grid.getSelectedIndices()[0]);
-                    // TODO: add onDblClick handler
+//                    self.openEditRedirectDialog
                 }.bind(this)
             });
         },
@@ -144,16 +164,26 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
          * Opens the add-redirect-dialog-popup
          */
         openAddRedirectDialog: function () {
+            var self = this;
             require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
                 new AddRedirectPopup({
-                    showSkip: false
+                    showSkip: false,
+                    events  : {
+                        onClose: function () {
+                            self.loadData();
+                        }
+                    }
                 }).open();
             });
         },
 
 
         deleteRedirect: function () {
+            RedirectHandler.deleteRedirect(
+                this.$Grid.getSelectedData()[0].source_url
+            );
 
+            this.loadData();
         }
     });
 });

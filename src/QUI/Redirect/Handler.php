@@ -181,4 +181,28 @@ class Handler
             return [];
         }
     }
+
+
+    /**
+     * Removes the redirect with the given source URL
+     *
+     * @param string $sourceUrl
+     *
+     * @return boolean - Removal successful?
+     */
+    public static function deleteRedirect($sourceUrl)
+    {
+        try {
+            \QUI::getDataBase()->delete(
+                Database::getTableName(),
+                [
+                    Database::COLUMN_SOURCE_URL => $sourceUrl
+                ]
+            );
+        } catch (\QUI\Database\Exception $Exception) {
+            Log::writeException($Exception);
+
+            return false;
+        }
+    }
 }
