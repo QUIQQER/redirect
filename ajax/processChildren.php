@@ -4,37 +4,37 @@
  * Processes the children of a site.
  * Adding redirects for each one or showing new dialogs to add custom redirects
  *
- * @param string $url - URL for the redirect
- * @param string $targetProjectName - Project of the redirect's target
- * @param string $targetProjectLanguage - Project language of the redirect's target
- * @param int $targetSiteId - Site ID of the redirect's target
+ * @param string $sourceUrl - URL for the redirect
+ * @param string $targetUrl - Project of the redirect's target
  * @param {boolean} skipChildren - Skip showing a dialog for each child
  *
  * @return boolean
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_processChildren',
-    function ($sourceUrl, $targetProjectName, $targetProjectLanguage, $targetSiteId, $skipChildren) {
+    function ($sourceUrl, $targetUrl, $skipChildren) {
 
         $skipChildren = QUI\Utils\BoolHelper::JSBool($skipChildren);
 
-        $Project = QUI\Projects\Manager::getProject($targetProjectName, $targetProjectLanguage);
-        $Site    = new \QUI\Projects\Site($Project, $targetSiteId);
-
-        $children = \QUI\Redirect\Session::getChildrenUrlsFromSession($sourceUrl);
+        $childrenUrls = \QUI\Redirect\Session::getChildrenUrlsFromSession($sourceUrl);
 
         if ($skipChildren) {
-            foreach ($children as $childUrl) {
-                \QUI\Redirect\Handler::addRedirect($childUrl, $Site);
+            foreach ($childrenUrls as $childUrl) {
+                try {
+                    \QUI\Redirect\Handler::addRedirect($childUrl, $targetUrl);
+                } catch (\QUI\Exception $Exception) {
+                    // TODO: show that something went wrong
+                    continue;
+                }
             }
 
             return;
         }
 
-        foreach ($children as $childUrl) {
-            \QUI\Redirect\Frontend::showAddRedirectDialog($childUrl, false);
+        foreach ($childrenUrls as $childUrl) {
+            \QUI\Redirect\Frontend::showAddRedirectDialog($childUrl, false, false);
         }
     },
-    ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId', 'skipChildren'],
+    ['sourceUrl', 'targetUrl', 'skipChildren'],
     'Permission::checkAdminUser'
 );

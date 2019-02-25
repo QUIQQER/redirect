@@ -4,27 +4,22 @@
  * Add a redirect to the system
  *
  * @param string $url - URL for the redirect
- * @param string $targetProjectName - Project of the redirect's target
- * @param string $targetProjectLanguage - Project language of the redirect's target
- * @param int $targetSiteId - Site ID of the redirect's target
+ * @param string $targetUrl - Target of the redirect
  * @param {boolean} skipChildren - Skip showing a dialog for each child
  *
  * @return boolean
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_addRedirect',
-    function ($sourceUrl, $targetProjectName, $targetProjectLanguage, $targetSiteId) {
+    function ($sourceUrl, $targetUrl) {
         try {
-            $Project = QUI\Projects\Manager::getProject($targetProjectName, $targetProjectLanguage);
-            $Site    = new \QUI\Projects\Site($Project, $targetSiteId);
-
-            return \QUI\Redirect\Handler::addRedirect($sourceUrl, $Site);
+            return \QUI\Redirect\Handler::addRedirect($sourceUrl, $targetUrl);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 
             return false;
         }
     },
-    ['sourceUrl', 'targetProjectName', 'targetProjectLanguage', 'targetSiteId', 'skipChildren'],
+    ['sourceUrl', 'targetUrl'],
     'Permission::checkAdminUser'
 );

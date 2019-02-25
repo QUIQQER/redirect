@@ -5,44 +5,59 @@
 define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     'qui/QUI',
 
-    'controls/projects/Popup',
+    'qui/controls/windows/Confirm',
+    'qui/controls/buttons/Switch',
+    'controls/projects/project/site/Input',
     'package/quiqqer/redirect/bin/Handler',
 
-    'Locale'
-], function (QUI, ProjectPopup, RedirectHandler, QUILocale) {
+    'Locale',
+
+    'css!package/quiqqer/redirect/bin/controls/window/AddRedirect.css'
+
+], function (QUI, QUIConfirm, QUISwitch, SiteInput, RedirectHandler, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
 
     return new Class({
 
-        Extends: ProjectPopup,
+        Extends: QUIConfirm,
         Type   : 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
 
         options: {
             title    : QUILocale.get(lg, 'site.delete.popup.title'),
             autoclose: false,
+            texticon : false,
             icon     : 'fa fa-link',
             ok_button: {
                 text     : QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
                 textimage: 'fa fa-link'
             },
-            url      : false
+            sourceUrl: false,
+            value    : false
         },
+
+        $SiteInput   : false,
+        $SkipChildren: false,
 
         initialize: function (options) {
             this.parent(options);
 
-            this.addEvent('onSubmit', this.$onSubmit);
+            this.addEvents({
+                'onSubmit': this.$onSubmit,
+                'onOpen'  : this.$onOpen
+            });
 
-            var information = "URL:<br>" + this.getAttribute('url');
+            this.$SiteInput = new SiteInput({
+                external: true,
+                name    : 'redirect-target'
+            });
 
             if (this.getAttribute('showSkip')) {
-                // TODO: add locale variable
-                information += '<br><input type="checkbox" name="showSkip"/><label for="showSkip">Skip?</label>';
+                this.$SkipChildren = new QUISwitch({name: 'skip-children'});
             }
 
-            this.setAttribute('information', information);
+//            this.setAttribute('information', information);
         },
 
 
@@ -56,22 +71,20 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var self = this;
 
             QUI.getMessageHandler().then(function (MessageHandler) {
-                if (!value.project || !value.lang || !value.ids[0]) {
+                var sourceUrl     = self.getAttribute('sourceUrl'),
+                    targetUrl     = self.getTargetUrl(),
+                    isSkipChecked = self.isSkipChecked();
+
+                if (!targetUrl) {
                     MessageHandler.addError(
-                        QUILocale.get(lg, 'site.delete.popup.error.select.none')
+                        QUILocale.get(lg, 'window.redirect.url.target.error')
                     );
                     return;
                 }
 
-                var url           = self.getAttribute('url'),
-                    project       = value.project,
-                    lang          = value.lang,
-                    siteId        = value.ids[0],
-                    isSkipChecked = self.isSkipChecked();
-
                 if (self.getAttribute('showSkip')) {
-                    RedirectHandler.processChildren(url, project, lang, siteId, isSkipChecked).then(function () {
-                        RedirectHandler.addRedirect(url, project, lang, siteId).then(function (result) {
+                    RedirectHandler.processChildren(sourceUrl, targetUrl, isSkipChecked).then(function () {
+                        RedirectHandler.addRedirect(sourceUrl, targetUrl).then(function (result) {
                             if (!result) {
                                 MessageHandler.addError(
                                     QUILocale.get(lg, 'site.delete.popup.error.result')
@@ -85,7 +98,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return;
                 }
 
-                RedirectHandler.addRedirect(url, project, lang, siteId).then(function (result) {
+                RedirectHandler.addRedirect(sourceUrl, targetUrl).then(function (result) {
                     if (!result) {
                         MessageHandler.addError(
                             QUILocale.get(lg, 'site.delete.popup.error.result')
@@ -99,17 +112,72 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         },
 
 
+        $onOpen: function () {
+            var Content = this.getContent();
+
+            Content.setStyles({
+                'display'        : 'flex',
+                'flex-direction' : 'column',
+                'align-items'    : 'center',
+                'justify-content': 'space-around'
+            });
+
+            new Element('div', {
+                html: QUILocale.get(lg, 'window.redirect.url.source') + ':<br>' + this.getAttribute('sourceUrl')
+            }).inject(Content);
+
+            new Element('span', {
+                html: QUILocale.get(lg, 'window.redirect.url.target') + ':'
+            }).inject(Content);
+
+            this.$SiteInput.inject(Content);
+
+            if (this.getAttribute('targetUrl')) {
+                this.$SiteInput.$Input.value = this.getAttribute('targetUrl');
+            }
+
+            if (this.$SkipChildren) {
+                var SkipChildrenContainer = new Element('div');
+
+                new Element('label', {
+                    for : "skip-children",
+                    html: QUILocale.get(lg, 'window.redirect.children.skip')
+                }).inject(SkipChildrenContainer);
+
+                this.$SkipChildren.inject(SkipChildrenContainer);
+
+                SkipChildrenContainer.inject(Content);
+            }
+        },
+
+
         /**
          * Returns if the skip checkbox is checked.
          *
          * @return {boolean}
          */
         isSkipChecked: function () {
-            if (!this.getAttribute('showSkip')) {
+            if (!this.$SkipChildren) {
                 return false;
             }
 
-            return this.getContent().querySelector('[name=showSkip]').checked
+            return this.$SkipChildren.getStatus();
+        },
+
+
+        /**
+         * Returns the URL currently in the text-input.
+         * This URL is used for the redirect's target.
+         * If the input is not yet present, false is returned.
+         *
+         * @return {string|boolean}
+         */
+        getTargetUrl: function () {
+            if (!this.$SiteInput) {
+                return false;
+            }
+
+            return this.$SiteInput.$Input.value;
         }
     });
 });

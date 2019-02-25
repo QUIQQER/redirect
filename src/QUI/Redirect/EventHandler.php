@@ -44,10 +44,16 @@ class EventHandler
             $Site = new Site($Project, $siteId);
             $url  = $Site->getUrlRewritten();
 
+            $ParentSite = $Site->getParent();
+
             // TODO: show notification if store in session failed (?)
             Session::storeChildrenUrlsInSession($Site);
 
-            Frontend::showAddRedirectDialog($url, true);
+            Frontend::showAddRedirectDialog(
+                $url,
+                $ParentSite->getUrlRewritten(),
+                true
+            );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -64,10 +70,16 @@ class EventHandler
         try {
             $url = $Site->getUrlRewritten();
 
+            $ParentSite = $Site->getParent();
+
             // TODO: show notification if store in session failed (?)
             Session::storeChildrenUrlsInSession($Site);
 
-            Frontend::showAddRedirectDialog($url, true);
+            Frontend::showAddRedirectDialog(
+                $url,
+                $ParentSite->getUrlRewritten(),
+                true
+            );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }

@@ -20,16 +20,17 @@ class Frontend
     /**
      * Triggers the (frontend) JavaScript on site delete callback
      *
-     * @param string $url - The url of the deleted site
+     * @param string $sourceUrl - The url of the deleted site
      * @param $showSkip - Should the skip checkbox be shown
      */
-    public static function showAddRedirectDialog($url, $showSkip)
+    public static function showAddRedirectDialog($sourceUrl, $targetUrl = false, $showSkip = false)
     {
         \QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'redirectShowAddRedirectDialog',
             [
-                'url'      => $url,
-                'showSkip' => $showSkip
+                'sourceUrl' => $sourceUrl,
+                'targetUrl' => $targetUrl,
+                'showSkip'  => $showSkip
             ]
         );
     }

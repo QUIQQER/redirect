@@ -10,8 +10,12 @@ require([
     QUIAjax.registerGlobalJavaScriptCallback(
         'redirectShowAddRedirectDialog',
         function (Response, data) {
-            require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (SiteDeletePopup) {
-                new SiteDeletePopup({url: data.url, showSkip: data.showSkip}).open();
+            require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
+                new AddRedirectPopup({
+                    sourceUrl: data.sourceUrl,
+                    targetUrl: data.targetUrl,
+                    showSkip : data.showSkip
+                }).open();
             });
         }
     );

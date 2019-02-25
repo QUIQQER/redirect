@@ -26,16 +26,31 @@
     <groups name="quiqqer/redirect" datatype="js">
         <!-- region delete popup -->
         <locale name="site.delete.popup.title">
-            <de><![CDATA[Add redirect for deleted site]]></de>
-            <en><![CDATA[Umleitung für gelöschte Seite hinzufügen]]></en>
+            <de><![CDATA[Umleitung für gelöschte Seite hinzufügen]]></de>
+            <en><![CDATA[Add redirect for deleted site]]></en>
         </locale>
         <locale name="site.delete.popup.button.ok.text">
             <de><![CDATA[Hinzufügen]]></de>
             <en><![CDATA[Add]]></en>
         </locale>
 
+        <locale name="window.redirect.children.skip">
+            <de><![CDATA[Kind-seiten überspringen]]></de>
+            <en><![CDATA[Skip child-sites]]></en>
+        </locale>
+
+        <locale name="window.redirect.url.source">
+            <de><![CDATA[Quell-URL]]></de>
+            <en><![CDATA[Source-URL]]></en>
+        </locale>
+
+        <locale name="window.redirect.url.target">
+            <de><![CDATA[Ziel-URL]]></de>
+            <en><![CDATA[Target-URL]]></en>
+        </locale>
+
         <!-- region errors -->
-        <locale name="site.delete.popup.error.select.none">
+        <locale name="window.redirect.url.target.error">
             <de><![CDATA[Es muss eine Seite ausgewählt werden.]]></de>
             <en><![CDATA[You have to select a page.]]></en>
         </locale>

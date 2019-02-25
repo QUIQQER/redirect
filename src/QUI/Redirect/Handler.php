@@ -77,19 +77,25 @@ class Handler
      * Adds a redirect for a given site and it's children.
      * If the last parameter is set to false, a redirect will only be added for the given site
      *
-     * @param string $url - The url to add a redirect for
-     * @param \QUI\Interfaces\Projects\Site $TargetSite - The target of the redirect site's project
+     * @param string $sourceUrl - The url to add a redirect for
+     * @param string $targetUrl - The target of the redirect site's project
      *
      * @return bool
      */
-    public static function addRedirect($url, \QUI\Interfaces\Projects\Site $TargetSite)
+    public static function addRedirect($sourceUrl, $targetUrl)
     {
         try {
+            // Internal URL?
+            if (strpos($targetUrl, 'index.php?id=') === 0) {
+                // Get the pretty-printed URL
+                $targetUrl = Site\Utils::getSiteByLink($targetUrl)->getUrlRewritten();
+            }
+
             \QUI::getDataBase()->replace(
                 Database::getTableName(),
                 [
-                    Database::COLUMN_SOURCE_URL => $url,
-                    Database::COLUMN_TARGET_URL => $TargetSite->getUrlRewritten(),
+                    Database::COLUMN_SOURCE_URL => $sourceUrl,
+                    Database::COLUMN_TARGET_URL => $targetUrl,
                 ]
             );
         } catch (Exception $Exception) {
@@ -114,7 +120,7 @@ class Handler
         $isTotalAddRedirectSuccessful = true;
         try {
             $oldUrl = Session::getOldUrlFromSession($Site->getId());
-            static::addRedirect($oldUrl, $Site);
+            static::addRedirect($oldUrl, $Site->getUrlRewritten());
 
             foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
                 /** @var Site $ChildSite */
@@ -128,7 +134,7 @@ class Handler
                         throw new Exception();
                     }
 
-                    $isChildAddRedirectSuccessful = Handler::addRedirect($childOldUrl, $ChildSite);
+                    $isChildAddRedirectSuccessful = Handler::addRedirect($childOldUrl, $ChildSite->getUrlRewritten());
                     Session::removeOldUrlFromSession($childSiteId);
                 } catch (Exception $Exception) {
                     $isChildAddRedirectSuccessful = false;
