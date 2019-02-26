@@ -8,7 +8,6 @@ namespace QUI\Redirect;
 
 use QUI\Exception;
 use QUI\Projects\Site;
-use QUI\System\Log;
 
 /**
  * Class with various helper-methods for the redirect module

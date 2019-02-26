@@ -2,10 +2,13 @@
 <database>
     <global>
         <table name="redirects">
+            <field type="VARCHAR( 32 ) NOT NULL">id</field>
             <field type="VARCHAR( 2083 ) NOT NULL">source_url</field>
             <field type="VARCHAR( 2083 ) NOT NULL">target_url</field>
 
             <!-- Indexes and primary keys are set via PHP (see EventHandler::onInstall) -->
         </table>
+
+        <primary>id</primary>
     </global>
 </database>
