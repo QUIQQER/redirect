@@ -85,6 +85,8 @@ class Handler
     public static function addRedirect($sourceUrl, $targetUrl)
     {
         try {
+            $sourceUrl = Url::prepareSourceUrl($sourceUrl);
+
             // Internal URL?
             if (strpos($targetUrl, 'index.php?id=') === 0) {
                 // Get the pretty-printed URL
