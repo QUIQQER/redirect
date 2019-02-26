@@ -29,10 +29,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             title            : QUILocale.get(lg, 'window.redirect.title'),
             autoclose        : false,
             texticon         : false,
-            icon             : 'fa fa-link',
+            icon             : 'fa fa-share',
             ok_button        : {
                 text     : QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
-                textimage: 'fa fa-link'
+                textimage: 'fa fa-plus'
             },
             sourceUrl        : false,
             sourceUrlReadOnly: false
