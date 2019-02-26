@@ -26,7 +26,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         options: {
             maxWidth         : 600,
             maxHeight        : 350,
-            title            : QUILocale.get(lg, 'site.delete.popup.title'),
+            title            : QUILocale.get(lg, 'window.redirect.title'),
             autoclose        : false,
             texticon         : false,
             icon             : 'fa fa-link',

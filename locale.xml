@@ -29,10 +29,10 @@
     </groups>
 
     <groups name="quiqqer/redirect" datatype="js">
-        <!-- region delete popup -->
-        <locale name="site.delete.popup.title">
-            <de><![CDATA[Umleitung für gelöschte Seite hinzufügen]]></de>
-            <en><![CDATA[Add redirect for deleted site]]></en>
+        <!-- region add redirect popup -->
+        <locale name="window.redirect.title">
+            <de><![CDATA[Umleitung hinzufügen]]></de>
+            <en><![CDATA[Add redirect]]></en>
         </locale>
         <locale name="site.delete.popup.button.ok.text">
             <de><![CDATA[Hinzufügen]]></de>
