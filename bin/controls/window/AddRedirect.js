@@ -6,7 +6,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     'qui/QUI',
 
     'qui/controls/windows/Confirm',
-    'qui/controls/buttons/Switch',
     'controls/projects/project/site/Input',
     'package/quiqqer/redirect/bin/Handler',
 
@@ -14,7 +13,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
     'css!package/quiqqer/redirect/bin/controls/window/AddRedirect.css'
 
-], function (QUI, QUIConfirm, QUISwitch, SiteInput, RedirectHandler, QUILocale) {
+], function (QUI, QUIConfirm, SiteInput, RedirectHandler, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -25,6 +24,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         Type   : 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
 
         options: {
+            maxWidth         : 600,
+            maxHeight        : 350,
             title            : QUILocale.get(lg, 'site.delete.popup.title'),
             autoclose        : false,
             texticon         : false,
@@ -39,7 +40,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         $SourceUrlInput: false,
         $SiteInput     : false,
-        $SkipChildren  : false,
+        $skipChildren  : false,
 
         initialize: function (options) {
             this.parent(options);
@@ -55,7 +56,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             });
 
             if (this.getAttribute('showSkip')) {
-                this.$SkipChildren = new QUISwitch({name: 'skip-children'});
+                this.$skipChildren = true;
             }
         },
 
@@ -114,12 +115,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         $onOpen: function () {
             var Content = this.getContent();
 
-            Content.setStyles({
-                'display'        : 'flex',
-                'flex-direction' : 'column',
-                'align-items'    : 'center',
-                'justify-content': 'space-around'
-            });
+            Content.addClass('add-redirect-popup');
 
             new Element('label', {
                 for : 'redirect-source',
@@ -127,6 +123,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }).inject(Content);
 
             this.$SourceUrlInput = new Element('input', {
+                type: 'text',
                 value: this.getAttribute('sourceUrl') ? this.getAttribute('sourceUrl') : "",
                 name : 'redirect-source'
             });
@@ -135,7 +132,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
             this.$SourceUrlInput.inject(Content);
 
-            new Element('span', {
+            new Element('label', {
                 html: '<b>' + QUILocale.get(lg, 'window.redirect.url.target') + '</b>'
             }).inject(Content);
 
@@ -146,18 +143,25 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
 
             new Element('span', {
+                'class' : 'redirect-note',
                 html: QUILocale.get(lg, 'window.redirect.url.target.note')
             }).inject(Content);
 
-            if (this.$SkipChildren) {
-                var SkipChildrenContainer = new Element('div');
+            if (this.$skipChildren) {
+                var SkipChildrenContainer = new Element('div', {
+                    'class' : 'redirect-children-container'
+                });
+
+                new Element('input', {
+                    type: 'checkbox',
+                    name: 'skip-children',
+                    id: 'skip-children',
+                }).inject(SkipChildrenContainer);
 
                 new Element('label', {
                     for : "skip-children",
                     html: QUILocale.get(lg, 'window.redirect.children.skip')
                 }).inject(SkipChildrenContainer);
-
-                this.$SkipChildren.inject(SkipChildrenContainer);
 
                 SkipChildrenContainer.inject(Content);
             }
@@ -170,11 +174,11 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
          * @return {boolean}
          */
         isSkipChecked: function () {
-            if (!this.$SkipChildren) {
+            if (!this.$skipChildren) {
                 return false;
             }
 
-            return this.$SkipChildren.getStatus();
+            return this.$Elm.getElement('[name="skip-children"').checked;
         },
 
 
