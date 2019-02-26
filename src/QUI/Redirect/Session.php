@@ -103,6 +103,10 @@ class Session
     {
         $rawChildrenData = \QUI::getSession()->get(self::getChildrenUrlsSessionKey($url));
 
+        if (!$rawChildrenData) {
+            return [];
+        }
+
         return json_decode($rawChildrenData, true);
     }
 
