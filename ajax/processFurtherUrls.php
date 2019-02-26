@@ -45,7 +45,7 @@ use \QUI\Redirect\Session;
 
         // More URLs to process?
         if (count($urlsToProcess) > 0) {
-            \QUI\Redirect\Frontend::showAddRedirectDialog($urlsToProcess[0], false, false);
+            \QUI\Redirect\Frontend::showAddRedirectDialog($urlsToProcess[0], false, true);
         }
     },
     ['sourceUrl', 'targetUrl', 'skipChildren'],
