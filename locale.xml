@@ -85,8 +85,8 @@
 
         <!-- region errors -->
         <locale name="window.redirect.url.target.error">
-            <de><![CDATA[Es muss eine Seite ausgewählt werden.]]></de>
-            <en><![CDATA[You have to select a page.]]></en>
+            <de><![CDATA[Es muss eine Ziel-URL ausgewählt werden.]]></de>
+            <en><![CDATA[You have to select a target-URL.]]></en>
         </locale>
 
         <locale name="window.redirect.url.target.note">
