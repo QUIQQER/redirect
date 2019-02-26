@@ -35,9 +35,15 @@
             <en><![CDATA[Add redirect]]></en>
         </locale>
         <locale name="site.delete.popup.button.ok.text">
-            <de><![CDATA[Hinzufügen]]></de>
-            <en><![CDATA[Add]]></en>
+            <de><![CDATA[Umleitung hinzufügen]]></de>
+            <en><![CDATA[Add redirect]]></en>
         </locale>
+        <locale name="site.delete.popup.button.cancel.text">
+            <de><![CDATA[Nicht hinzufügen]]></de>
+            <en><![CDATA[Don't add]]></en>
+        </locale>
+
+
 
         <locale name="window.redirect.children.skip">
             <de><![CDATA[Ziel-URL für alle Kindseiten übernehmen]]></de>

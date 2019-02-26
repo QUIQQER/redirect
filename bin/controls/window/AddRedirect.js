@@ -34,6 +34,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 text     : QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
                 textimage: 'fa fa-plus'
             },
+            cancel_button    : {
+                text     : QUILocale.get(lg, 'site.delete.popup.button.cancel.text'),
+                textimage: 'icon-remove fa fa-remove'
+            },
             sourceUrl        : false,
             sourceUrlReadOnly: false
         },
