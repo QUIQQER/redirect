@@ -55,4 +55,30 @@ class Site
 
         return array_merge($children, $grandChildren);
     }
+
+
+    /**
+     * Returns ALL (grand-)childrens' URLs of a site.
+     * This means that even URLs from children of children are returned.
+     *
+     * Be careful about performance when using this!
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site
+     * @param array $params - Parameters to query children
+     *                      $params['where']
+     *                      $params['limit']
+     *
+     * @return string[]
+     */
+    public static function getChildrenUrlsRecursive(\QUI\Interfaces\Projects\Site $Site, $params = [])
+    {
+        $children = static::getChildrenRecursive($Site, $params);
+
+        $result = [];
+        foreach ($children as $child) {
+            $result[] = $child->getUrlRewritten();
+        }
+
+        return $result;
+    }
 }
