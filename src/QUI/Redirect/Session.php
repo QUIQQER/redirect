@@ -92,8 +92,11 @@ class Session
         $urlKey = array_search($url, $urls);
         if ($urlKey !== false) {
             unset($urls[$urlKey]);
+
             // use array_values() to reset array indizes
-            static::storeUrlsToProcess(array_values($urls));
+            $urls = array_values($urls);
+
+            static::storeUrlsToProcess($urls);
         }
 
         return $urls;
