@@ -51,6 +51,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
             this.addEvents({
                 'onSubmit': this.$onSubmit,
+                'onCancel': this.$onCancel,
                 'onOpen'  : this.$onOpen
             });
 
@@ -116,6 +117,20 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         },
 
 
+        /**
+         * Called when the popup is canceled
+         *
+         * @param Win - The popup-window
+         * @param value - Information about the selected site
+         */
+        $onCancel: function (Win, value) {
+            var sourceUrl     = this.getSourceUrl(),
+                isSkipChecked = this.isSkipChecked();
+
+            RedirectHandler.processChildren(sourceUrl, null, isSkipChecked);
+        },
+
+
         $onOpen: function () {
             var Content = this.getContent();
 
@@ -127,7 +142,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }).inject(Content);
 
             this.$SourceUrlInput = new Element('input', {
-                type: 'text',
+                type : 'text',
                 value: this.getAttribute('sourceUrl') ? this.getAttribute('sourceUrl') : "",
                 name : 'redirect-source'
             });
@@ -147,19 +162,19 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
 
             new Element('span', {
-                'class' : 'redirect-note',
-                html: QUILocale.get(lg, 'window.redirect.url.target.note')
+                'class': 'redirect-note',
+                html   : QUILocale.get(lg, 'window.redirect.url.target.note')
             }).inject(Content);
 
             if (this.$skipChildren) {
                 var SkipChildrenContainer = new Element('div', {
-                    'class' : 'redirect-children-container'
+                    'class': 'redirect-children-container'
                 });
 
                 new Element('input', {
                     type: 'checkbox',
                     name: 'skip-children',
-                    id: 'skip-children',
+                    id  : 'skip-children',
                 }).inject(SkipChildrenContainer);
 
                 new Element('label', {

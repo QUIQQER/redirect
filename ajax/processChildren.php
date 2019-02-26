@@ -19,6 +19,10 @@
         $childrenUrls = \QUI\Redirect\Session::getChildrenUrlsFromSession($sourceUrl);
 
         if ($skipChildren) {
+            if (!$targetUrl) {
+                return;
+            }
+
             foreach ($childrenUrls as $childUrl) {
                 try {
                     \QUI\Redirect\Handler::addRedirect($childUrl, $targetUrl);
