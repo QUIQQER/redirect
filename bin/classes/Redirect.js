@@ -90,6 +90,24 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
                     sourceUrl: sourceUrl
                 });
             });
+        },
+
+
+        /**
+         * Deletes the redirects with the given source-URLs
+         *
+         * @param {string[]} sourceUrls
+         *
+         * @return {Promise}
+         */
+        deleteRedirects: function (sourceUrls) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_redirect_ajax_deleteRedirects', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    sourceUrls: JSON.encode(sourceUrls)
+                });
+            });
         }
     });
 });

@@ -112,14 +112,22 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                     dataType : 'string',
                     width    : 500
                 }],
-                onrefresh  : this.loadData,
-                pagination : true
+
+                onrefresh : this.loadData,
+                pagination: true,
+
+                multipleSelection: true
             });
 
             this.$Grid.addEvents({
                 onClick   : function () {
+                    self.getButtons('redirect-edit').disable();
+
+                    if (self.$Grid.getSelectedIndices().length === 1) {
+                        self.getButtons('redirect-edit').enable();
+                    }
+
                     self.getButtons('redirect-delete').enable();
-                    self.getButtons('redirect-edit').enable();
                 },
                 onDblClick: self.editRedirect
             });
@@ -189,10 +197,15 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
         },
 
 
+        /**
+         * Delete the (in the grid) selected redirects
+         */
         deleteRedirect: function () {
-            RedirectHandler.deleteRedirect(
-                this.$Grid.getSelectedData()[0].source_url
-            ).then(this.loadData);
+            var sourceUrls = this.$Grid.getSelectedData().map(function (data) {
+                return data.source_url;
+            });
+
+            RedirectHandler.deleteRedirects(sourceUrls).then(this.loadData);
         },
 
 
