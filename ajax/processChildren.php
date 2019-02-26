@@ -25,7 +25,7 @@
 
             foreach ($childrenUrls as $childUrl) {
                 try {
-                    \QUI\Redirect\Handler::addRedirect($childUrl, $targetUrl);
+                    \QUI\Redirect\Manager::addRedirect($childUrl, $targetUrl);
                 } catch (\QUI\Exception $Exception) {
                     // TODO: show that something went wrong
                     continue;

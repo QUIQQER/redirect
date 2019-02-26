@@ -11,7 +11,7 @@
     'package_quiqqer_redirect_ajax_deleteRedirect',
     function ($sourceUrl) {
         try {
-            return \QUI\Redirect\Handler::deleteRedirect($sourceUrl);
+            return \QUI\Redirect\Manager::deleteRedirect($sourceUrl);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 

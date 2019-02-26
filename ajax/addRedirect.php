@@ -13,7 +13,7 @@
     'package_quiqqer_redirect_ajax_addRedirect',
     function ($sourceUrl, $targetUrl) {
         try {
-            return \QUI\Redirect\Handler::addRedirect($sourceUrl, $targetUrl);
+            return \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 

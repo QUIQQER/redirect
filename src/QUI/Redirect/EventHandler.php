@@ -27,7 +27,7 @@ class EventHandler
     public static function onErrorHeaderShow($code, $url)
     {
         if ($code = 404) {
-            Handler::attemptRedirect(\QUI::getRequest()->getRequestUri());
+            Manager::attemptRedirect(\QUI::getRequest()->getRequestUri());
         }
     }
 
@@ -108,7 +108,7 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
-        Handler::addRedirectsFromSession($Site);
+        Manager::addRedirectsFromSession($Site);
     }
 
 
@@ -137,7 +137,7 @@ class EventHandler
                 return;
             }
 
-            Handler::addRedirectsFromSession($Site);
+            Manager::addRedirectsFromSession($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }

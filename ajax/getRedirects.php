@@ -13,7 +13,7 @@
     'package_quiqqer_redirect_ajax_getRedirects',
     function () {
         try {
-            return \QUI\Redirect\Handler::getRedirects();
+            return \QUI\Redirect\Manager::getRedirects();
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 

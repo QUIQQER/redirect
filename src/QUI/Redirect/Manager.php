@@ -11,10 +11,10 @@ use QUI\Projects\Site;
 use QUI\System\Log;
 
 /**
- * Class Handler
+ * Class Manager
  * @package QUI\Redirect
  */
-class Handler
+class Manager
 {
     /**
      * Attempts to redirect a given URL to a stored location
@@ -136,7 +136,7 @@ class Handler
                         throw new Exception();
                     }
 
-                    $isChildAddRedirectSuccessful = Handler::addRedirect($childOldUrl, $ChildSite->getUrlRewritten());
+                    $isChildAddRedirectSuccessful = static::addRedirect($childOldUrl, $ChildSite->getUrlRewritten());
                     Session::removeOldUrlFromSession($childSiteId);
                 } catch (Exception $Exception) {
                     $isChildAddRedirectSuccessful = false;
