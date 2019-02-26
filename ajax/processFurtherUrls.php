@@ -1,5 +1,7 @@
 <?php
 
+use \QUI\Redirect\Session;
+
 /**
  * Processes the children of a site.
  * Adding redirects for each one or showing new dialogs to add custom redirects
@@ -11,7 +13,7 @@
  * @return boolean
  */
 \QUI::$Ajax->registerFunction(
-    'package_quiqqer_redirect_ajax_processChildren',
+    'package_quiqqer_redirect_ajax_processFurtherUrls',
     function ($sourceUrl, $targetUrl, $skipChildren) {
 
         $skipChildren = QUI\Utils\BoolHelper::JSBool($skipChildren);
