@@ -10,13 +10,14 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
     'qui/QUI',
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Separator',
+    'qui/controls/windows/Confirm',
 
     'package/quiqqer/redirect/bin/Handler',
 
     'controls/grid/Grid',
     'Locale'
 
-], function (QUI, QUIPanel, QUIButtonSeparator, RedirectHandler, Grid, QUILocale) {
+], function (QUI, QUIPanel, QUIButtonSeparator, QUIConfirm, RedirectHandler, Grid, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -201,11 +202,35 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
          * Delete the (in the grid) selected redirects
          */
         deleteRedirect: function () {
+            var self = this;
+
             var sourceUrls = this.$Grid.getSelectedData().map(function (data) {
                 return data.source_url;
             });
 
-            RedirectHandler.deleteRedirects(sourceUrls).then(this.loadData);
+
+            new QUIConfirm({
+                icon     : 'fa fa-trash',
+                title    : QUILocale.get(lg, 'window.redirect.delete.title'),
+                maxHeight: 300,
+                maxWidth : 450,
+                ok_button    : {
+                    text     :QUILocale.get(lg, 'window.redirect.delete.button.ok.text'),
+                    textimage: 'fa fa-trash'
+                },
+                events   : {
+                    onOpen: function (Win) {
+                        Win.getContent().set('html', QUILocale.get(
+                            lg,
+                            'window.redirect.delete.text', {urls: sourceUrls.toString()})
+                        );
+                    },
+
+                    onSubmit: function () {
+                        RedirectHandler.deleteRedirects(sourceUrls).then(self.loadData);
+                    }
+                }
+            }).open();
         },
 
 

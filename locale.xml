@@ -100,5 +100,22 @@
         </locale>
         <!-- endregion -->
         <!-- endregion -->
+
+        <!-- region delete redirect -->
+        <locale name="window.redirect.delete.title">
+            <de><![CDATA[Umleitung löschen]]></de>
+            <en><![CDATA[Delete redirect]]></en>
+        </locale>
+
+        <locale name="window.redirect.delete.text">
+            <de><![CDATA[Möchten Sie die Umleitungen für die URLs "[urls]" wirklich löschen?]]></de>
+            <en><![CDATA[Do you really want to delete the redirects for the urls "[urls]"?]]></en>
+        </locale>
+
+        <locale name="window.redirect.delete.button.ok.text">
+            <de><![CDATA[Löschen]]></de>
+            <en><![CDATA[Delete]]></en>
+        </locale>
+        <!-- endregion -->
     </groups>
 </locales>
