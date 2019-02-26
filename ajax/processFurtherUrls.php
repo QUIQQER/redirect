@@ -18,27 +18,34 @@ use \QUI\Redirect\Session;
 
         $skipChildren = QUI\Utils\BoolHelper::JSBool($skipChildren);
 
-        $childrenUrls = \QUI\Redirect\Session::getChildrenUrlsFromSession($sourceUrl);
+        $urlsToProcess = Session::getUrlsToProcess();
 
         if ($skipChildren) {
             if (!$targetUrl) {
+                Session::removeAllUrlsToProcess();
+
                 return;
             }
 
-            foreach ($childrenUrls as $childUrl) {
+            foreach ($urlsToProcess as $url) {
                 try {
-                    \QUI\Redirect\Manager::addRedirect($childUrl, $targetUrl);
+                    \QUI\Redirect\Manager::addRedirect($url, $targetUrl);
                 } catch (\QUI\Exception $Exception) {
                     // TODO: show that something went wrong
                     continue;
                 }
             }
 
+            Session::removeAllUrlsToProcess();
+
             return;
         }
 
-        foreach ($childrenUrls as $childUrl) {
-            \QUI\Redirect\Frontend::showAddRedirectDialog($childUrl, false, false);
+        $urlsToProcess = Session::removeUrlToProcess($sourceUrl);
+
+        // More URLs to process?
+        if (count($urlsToProcess) > 0) {
+            \QUI\Redirect\Frontend::showAddRedirectDialog($urlsToProcess[0], false, false);
         }
     },
     ['sourceUrl', 'targetUrl', 'skipChildren'],

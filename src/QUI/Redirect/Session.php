@@ -21,23 +21,11 @@ use QUI\System\Log;
 class Session
 {
     /**
-     * Prefix for the session key which stores the children of a site on delete.
-     * Should be appended with a md5 hash of the sites URL
-     */
-    const SESSION_KEY_CHILDREN_PREFIX = "redirect_delete_";
-
-
-    /**
-     * Returns a key to be used when storing a sites children URLs in the session
+     * The key to be used when storing the URLs to be processed in the session
      *
-     * @param string $url
-     *
-     * @return string
+     * @var string
      */
-    protected static function getChildrenUrlsSessionKey($url)
-    {
-        return static::SESSION_KEY_CHILDREN_PREFIX . md5($url);
-    }
+    const KEY_URLS_TO_PROCESS = "redirect_urls_to_process";
 
 
     /**
@@ -54,54 +42,24 @@ class Session
 
 
     /**
-     * Stores the children of a site in the current user's session.
+     * Stores the URLs to process
      *
-     * @param \QUI\Interfaces\Projects\Site $Site
-     *
-     * @return bool
+     * @param string[] $urls - The URLs to store
      */
-    public static function storeChildrenUrlsInSession(\QUI\Interfaces\Projects\Site $Site)
+    public static function storeUrlsToProcess($urls)
     {
-        $successful  = false;
-        $childrenUrls = [];
-
-        $children = \QUI\Redirect\Site::getChildrenRecursive($Site, ['active' => '0&1']);
-
-        foreach ($children as $Child) {
-            try {
-                /** @var Site $Child */
-                $childrenUrls[] = $Child->getUrlRewritten();
-            } catch (Exception $Exception) {
-                $successful = false;
-                continue;
-            }
-        }
-
-        try {
-            \QUI::getSession()->set(
-                static::getChildrenUrlsSessionKey($Site->getUrlRewritten()),
-                json_encode($childrenUrls)
-            );
-        } catch (Exception $Exception) {
-            Log::writeException($Exception);
-
-            return false;
-        }
-
-        return $successful;
+        \QUI::getSession()->set(static::KEY_URLS_TO_PROCESS, json_encode($urls));
     }
 
 
     /**
      * Returns a site's children from the current user's session
      *
-     * @param $url
-     *
      * @return array|false
      */
-    public static function getChildrenUrlsFromSession($url)
+    public static function getUrlsToProcess()
     {
-        $rawChildrenData = \QUI::getSession()->get(self::getChildrenUrlsSessionKey($url));
+        $rawChildrenData = \QUI::getSession()->get(static::KEY_URLS_TO_PROCESS);
 
         if (!$rawChildrenData) {
             return [];
@@ -113,13 +71,32 @@ class Session
 
     /**
      * Removes a site's children from the current user's session
-     *
-     * @param $url
-     *
      */
-    public static function removeChildrenUrlsFromSession($url)
+    public static function removeAllUrlsToProcess()
     {
-        \QUI::getSession()->remove(self::getChildrenUrlsSessionKey($url));
+        \QUI::getSession()->remove(static::KEY_URLS_TO_PROCESS);
+    }
+
+
+    /**
+     * Removes an URL from the URLs to process
+     *
+     * @param string $url - The URL to remove
+     *
+     * @return string[] - The URLs without the removed URL
+     */
+    public static function removeUrlToProcess($url)
+    {
+        $urls = static::getUrlsToProcess();
+
+        $urlKey = array_search($url, $urls);
+        if ($urlKey !== false) {
+            unset($urls[$urlKey]);
+            // use array_values() to reset array indizes
+            static::storeUrlsToProcess(array_values($urls));
+        }
+
+        return $urls;
     }
 
 

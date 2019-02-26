@@ -47,7 +47,8 @@ class EventHandler
             $ParentSite = $Site->getParent();
 
             // TODO: show notification if store in session failed (?)
-            Session::storeChildrenUrlsInSession($Site);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -73,7 +74,8 @@ class EventHandler
             $ParentSite = $Site->getParent();
 
             // TODO: show notification if store in session failed (?)
-            Session::storeChildrenUrlsInSession($Site);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,

@@ -87,22 +87,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return;
                 }
 
-                if (self.getAttribute('showSkip')) {
-                    RedirectHandler.processChildren(sourceUrl, targetUrl, isSkipChecked).then(function () {
-                        RedirectHandler.addRedirect(sourceUrl, targetUrl).then(function (result) {
-                            if (!result) {
-                                MessageHandler.addError(
-                                    QUILocale.get(lg, 'site.delete.popup.error.result')
-                                );
-                                return;
-                            }
-
-                            self.close();
-                        }).catch(console.error);
-                    }).catch(console.error);
-                    return;
-                }
-
                 RedirectHandler.addRedirect(sourceUrl, targetUrl).then(function (result) {
                     if (!result) {
                         MessageHandler.addError(
@@ -111,8 +95,15 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                         return;
                     }
 
+                    RedirectHandler.processFurtherUrls(sourceUrl, targetUrl, isSkipChecked).catch(console.error);
+
                     self.close();
-                }).catch(console.error);
+                }).catch(function (error) {
+                    console.error(error);
+                    MessageHandler.addError(
+                        QUILocale.get(lg, 'site.delete.popup.error.result')
+                    );
+                });
             });
         },
 
@@ -127,7 +118,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var sourceUrl     = this.getSourceUrl(),
                 isSkipChecked = this.isSkipChecked();
 
-            RedirectHandler.processChildren(sourceUrl, null, isSkipChecked);
+            RedirectHandler.processFurtherUrls(sourceUrl, null, isSkipChecked);
         },
 
 

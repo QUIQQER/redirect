@@ -47,7 +47,7 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
          *
          * @return {Promise}
          */
-        processChildren: function (sourceUrl, targetUrl, skipChildren) {
+        processFurtherUrls: function (sourceUrl, targetUrl, skipChildren) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_redirect_ajax_processFurtherUrls', resolve, {
                     'package'   : pkg,
