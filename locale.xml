@@ -46,8 +46,8 @@
 
 
         <locale name="window.redirect.children.skip">
-            <de><![CDATA[Ziel-URL für alle Kindseiten übernehmen]]></de>
-            <en><![CDATA[Apply target-URL to all child sites]]></en>
+            <de><![CDATA[Ziel-URL für alle weiteren Seiten übernehmen]]></de>
+            <en><![CDATA[Apply target-URL to all further sites]]></en>
         </locale>
 
         <locale name="window.redirect.url.source">
