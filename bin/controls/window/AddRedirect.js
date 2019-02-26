@@ -164,8 +164,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
                 new Element('input', {
                     type: 'checkbox',
+                    checked: 1,
                     name: 'skip-children',
-                    id  : 'skip-children',
+                    id  : 'skip-children'
                 }).inject(SkipChildrenContainer);
 
                 new Element('label', {
