@@ -12,7 +12,5 @@
     <event on="onSiteSaveBefore" fire="QUI\Redirect\EventHandler::onSiteSaveBefore"/>
     <event on="onSiteSave" fire="QUI\Redirect\EventHandler::onSiteSave"/>
 
-    <event on="onPackageInstall" fire="QUI\Redirect\EventHandler::onInstall"/>
-
     <event on="onAdminLoadFooter" fire="QUI\Redirect\EventHandler::onAdminLoadFooter"/>
 </events>

@@ -18,6 +18,11 @@ namespace QUI\Redirect;
 class Database
 {
     /**
+     * @var string - The name of the id column (see database.xml)
+     */
+    const COLUMN_ID = "id";
+
+    /**
      * @var string - The name of the source url column (see database.xml)
      */
     const COLUMN_SOURCE_URL = "source_url";
@@ -35,19 +40,5 @@ class Database
     public static function getTableName()
     {
         return \QUI::getDBTableName('redirects');
-    }
-
-
-    /**
-     * Sets up the database (e.g. on install).
-     *
-     * @throws \QUI\Database\Exception
-     */
-    public static function setupDatabase()
-    {
-        $table = static::getTableName();
-        \QUI::getDataBase()->fetchSQL("
-            ALTER TABLE `$table` ADD PRIMARY KEY (`source_url`(80));
-        ");
     }
 }
