@@ -62,7 +62,7 @@ class Session
      */
     public static function storeChildrenUrlsInSession(\QUI\Interfaces\Projects\Site $Site)
     {
-        $successfull  = false;
+        $successful  = false;
         $childrenUrls = [];
 
         $children = \QUI\Redirect\Site::getChildrenRecursive($Site, ['active' => '0&1']);
@@ -72,7 +72,7 @@ class Session
                 /** @var Site $Child */
                 $childrenUrls[] = $Child->getUrlRewritten();
             } catch (Exception $Exception) {
-                $successfull = false;
+                $successful = false;
                 continue;
             }
         }
@@ -88,7 +88,7 @@ class Session
             return false;
         }
 
-        return $successfull;
+        return $successful;
     }
 
 
