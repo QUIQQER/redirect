@@ -2,7 +2,7 @@
   "name": "quiqqer/redirect",
   "type": "quiqqer-module",
   "description": "Automatically adds redirects for moved and deleted sites",
-  "version": "dev-dev",
+  "version": "dev-master",
   "license": "PCSG QL-1.0",
   "authors": [
     {
