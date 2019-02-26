@@ -40,8 +40,8 @@
         </locale>
 
         <locale name="window.redirect.children.skip">
-            <de><![CDATA[Keine Weiterleitung für Kindseiten anlegen]]></de>
-            <en><![CDATA[Do not create forwarding for children]]></en>
+            <de><![CDATA[Ziel-URL für alle Kindseiten übernehmen]]></de>
+            <en><![CDATA[Apply target-URL to all child sites]]></en>
         </locale>
 
         <locale name="window.redirect.url.source">
