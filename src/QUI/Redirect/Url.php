@@ -43,13 +43,7 @@ class Url
      */
     public static function prepareInternalTargetUrl($url)
     {
-        $urlPath = parse_url($url, PHP_URL_PATH);
-
-        if (strpos($urlPath, "/") !== 0) {
-            $urlPath = "/" . $urlPath;
-        }
-
-        return $urlPath;
+        return static::getPath($url);
     }
 
 
@@ -63,5 +57,30 @@ class Url
     public static function isInternal($url)
     {
         return strpos($url, 'index.php?id=') === 0;
+    }
+
+
+    /**
+     * Returns the path of an URL with a prepended slash.
+     * When the second parameter is set to false no slash will be prepended.
+     *
+     * @param $url - The URL which's path should be returned
+     * @param $prependSlash - Return the path with a prepended slash
+     *
+     * @return string
+     */
+    public static function getPath($url, $prependSlash = true)
+    {
+        $url = parse_url($url, PHP_URL_PATH);
+
+        if ($prependSlash && strpos($url, "/") !== 0) {
+            $url = "/" . $url;
+        }
+
+        if (!$prependSlash && strpos($url, "/") === 0) {
+            $url = substr_replace($url, '', 0, 1);
+        }
+
+        return $url;
     }
 }
