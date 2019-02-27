@@ -15,7 +15,10 @@ class Url
 {
     /**
      * Prepares an URL to be used as a source URL.
-     * This means only leaving the URLs' path behind and prepending a slash
+     * This means:
+     *   - only leaving the URLs' path behind
+     *   - prepending a slash
+     *   - removing languages from the path
      *
      * @param string $url - The URL to be prepared
      *
@@ -25,9 +28,16 @@ class Url
     {
         $urlPath = parse_url($url, PHP_URL_PATH);
 
-        if (strpos($urlPath, "/") !== 0) {
-            $urlPath = "/" . $urlPath;
+        // Remove all slashes from the beginning and end of the path
+        $urlPath = trim($urlPath, '/');
+
+        // Strip language parts from the URL (e.g. "/en/mysite" becomes "/mysite"
+        if (strpos($urlPath, '/') === 2) {
+            $urlPath = substr($urlPath, 3);
         }
+
+        // Append a slash
+        $urlPath = "/" . $urlPath;
 
         return $urlPath;
     }
