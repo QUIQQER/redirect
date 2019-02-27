@@ -83,4 +83,10 @@ class Url
 
         return $url;
     }
+
+
+    public static function getQueryString($url)
+    {
+        return parse_url($url, PHP_URL_QUERY);
+    }
 }
