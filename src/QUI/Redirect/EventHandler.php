@@ -45,6 +45,11 @@ class EventHandler
             $url  = $Site->getUrlRewritten();
 
             $ParentSite = $Site->getParent();
+            $parentUrl  = false;
+
+            if ($ParentSite) {
+                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+            }
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
@@ -52,7 +57,7 @@ class EventHandler
 
             Frontend::showAddRedirectDialog(
                 $url,
-                $ParentSite->getUrlRewritten(),
+                $parentUrl,
                 true
             );
         } catch (Exception $Exception) {
@@ -72,6 +77,11 @@ class EventHandler
             $url = $Site->getUrlRewritten();
 
             $ParentSite = $Site->getParent();
+            $parentUrl  = false;
+
+            if ($ParentSite) {
+                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+            }
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
@@ -79,7 +89,7 @@ class EventHandler
 
             Frontend::showAddRedirectDialog(
                 $url,
-                $ParentSite->getUrlRewritten(),
+                $parentUrl,
                 true
             );
         } catch (Exception $Exception) {
