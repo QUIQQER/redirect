@@ -7,13 +7,21 @@
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_deleteRedirects',
-    function ($sourceUrls) {
+    function ($sourceUrls, $projectName, $projectLanguage) {
         $sourceUrls = json_decode($sourceUrls);
 
-        foreach ($sourceUrls as $sourceUrl) {
-            \QUI\Redirect\Manager::deleteRedirect($sourceUrl);
+        try {
+            $Project = QUI::getProject($projectName, $projectLanguage);
+        } catch (\QUI\Exception $Exception) {
+            return false;
         }
+
+        foreach ($sourceUrls as $sourceUrl) {
+            \QUI\Redirect\Manager::deleteRedirect($sourceUrl, $Project);
+        }
+
+        return true;
     },
-    ['sourceUrls'],
+    ['sourceUrls', 'projectName', 'projectLanguage'],
     'Permission::checkAdminUser'
 );

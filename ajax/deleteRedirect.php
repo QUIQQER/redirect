@@ -9,15 +9,17 @@
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_deleteRedirect',
-    function ($sourceUrl) {
+    function ($sourceUrl, $projectName, $projectLanguage) {
         try {
-            return \QUI\Redirect\Manager::deleteRedirect($sourceUrl);
+            $Project = QUI::getProject($projectName, $projectLanguage);
+
+            return \QUI\Redirect\Manager::deleteRedirect($sourceUrl, $Project);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 
             return false;
         }
     },
-    ['sourceUrl'],
+    ['sourceUrl', 'projectName', 'projectLanguage'],
     'Permission::checkAdminUser'
 );

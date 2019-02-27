@@ -14,22 +14,28 @@ use \QUI\Redirect\Session;
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_processFurtherUrls',
-    function ($sourceUrl, $targetUrl, $skipChildren) {
+    function ($sourceUrl, $targetUrl, $skipChildren, $projectName = "", $projectLanguage = "") {
 
         $skipChildren = QUI\Utils\BoolHelper::JSBool($skipChildren);
 
         $urlsToProcess = Session::getUrlsToProcess();
 
         if ($skipChildren) {
-            if (!$targetUrl) {
+            if (!$targetUrl || !$projectName) {
                 Session::removeAllUrlsToProcess();
 
-                return;
+                return true;
+            }
+
+            $Project = \QUI\Redirect\Project::getFromParameters($projectName, $projectLanguage);
+
+            if (!$Project) {
+                return false;
             }
 
             foreach ($urlsToProcess as $url) {
                 try {
-                    \QUI\Redirect\Manager::addRedirect($url, $targetUrl);
+                    \QUI\Redirect\Manager::addRedirect($url, $targetUrl, $Project);
                 } catch (\QUI\Exception $Exception) {
                     // TODO: show that something went wrong
                     continue;
@@ -38,16 +44,24 @@ use \QUI\Redirect\Session;
 
             Session::removeAllUrlsToProcess();
 
-            return;
+            return true;
         }
 
         $urlsToProcess = Session::removeUrlToProcess($sourceUrl);
 
         // More URLs to process?
         if (count($urlsToProcess) > 0) {
-            \QUI\Redirect\Frontend::showAddRedirectDialog($urlsToProcess[0], false, true);
+            \QUI\Redirect\Frontend::showAddRedirectDialog(
+                $urlsToProcess[0],
+                false,
+                true,
+                $projectName,
+                $projectLanguage
+            );
         }
+
+        return true;
     },
-    ['sourceUrl', 'targetUrl', 'skipChildren'],
+    ['sourceUrl', 'targetUrl', 'skipChildren', 'projectName', 'projectLanguage'],
     'Permission::checkAdminUser'
 );

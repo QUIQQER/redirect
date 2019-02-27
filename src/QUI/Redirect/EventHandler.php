@@ -26,8 +26,18 @@ class EventHandler
      */
     public static function onErrorHeaderShow($code, $url)
     {
-        if ($code = 404) {
-            Manager::attemptRedirect(\QUI::getRequest()->getRequestUri());
+        if ($code != 404) {
+            return;
+        }
+
+        try {
+            $path = Url::prepareSourceUrl(\QUI::getRequest()->getRequestUri());
+            Manager::attemptRedirect(
+                $path,
+                \QUI::getRewrite()->getProject()
+            );
+        } catch (Exception $Exception) {
+            // TODO: Error Handling ?
         }
     }
 
@@ -44,6 +54,8 @@ class EventHandler
             $Site = new Site($Project, $siteId);
             $url  = $Site->getUrlRewritten();
 
+            $Project = $Site->getProject();
+
             $ParentSite = $Site->getParent();
             $parentUrl  = false;
 
@@ -58,7 +70,9 @@ class EventHandler
             Frontend::showAddRedirectDialog(
                 $url,
                 $parentUrl,
-                true
+                true,
+                $Project->getName(),
+                $Project->getLang()
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -76,6 +90,8 @@ class EventHandler
         try {
             $url = $Site->getUrlRewritten();
 
+            $Project = $Site->getProject();
+
             $ParentSite = $Site->getParent();
             $parentUrl  = false;
 
@@ -90,7 +106,9 @@ class EventHandler
             Frontend::showAddRedirectDialog(
                 $url,
                 $parentUrl,
-                true
+                true,
+                $Project->getName(),
+                $Project->getLang()
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -120,7 +138,7 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
-        Manager::addRedirectsFromSession($Site);
+        Manager::addRedirectsFromSession($Site, $Site->getProject());
     }
 
 

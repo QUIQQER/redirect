@@ -9,6 +9,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
+    'qui/controls/buttons/Select',
     'qui/controls/buttons/Separator',
     'qui/controls/windows/Confirm',
 
@@ -17,7 +18,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
     'controls/grid/Grid',
     'Locale'
 
-], function (QUI, QUIPanel, QUIButtonSeparator, QUIConfirm, RedirectHandler, Grid, QUILocale) {
+], function (QUI, QUIPanel, QUISelect, QUIButtonSeparator, QUIConfirm, RedirectHandler, Grid, QUILocale) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -32,11 +33,15 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             'openSearch',
             'openClear',
             '$onCreate',
+            '$onInject',
             '$onResize',
             'deleteRedirect',
             'openAddRedirectDialog',
-            'editRedirect'
+            'editRedirect',
+            'getSelectedProjectData'
         ],
+
+        $ProjectSelect: null,
 
         initialize: function (options) {
             this.setAttributes({
@@ -114,7 +119,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                     width    : 500
                 }],
 
-                onrefresh : this.loadData,
+                onrefresh : self.loadData,
                 pagination: true,
 
                 multipleSelection: true
@@ -139,7 +144,17 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
          * event : on inject
          */
         $onInject: function () {
-            this.loadData();
+            var self = this;
+            require(['controls/projects/Select'], function (ProjectSelect) {
+                self.$ProjectSelect = new ProjectSelect({
+                    emptyselect: false,
+                    events     : {
+                        onChange: self.loadData
+                    }
+                });
+
+                self.addButton(self.$ProjectSelect);
+            });
         },
 
 
@@ -165,7 +180,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
         },
 
         /**
-         * Load the grid data
+         * Load the grid data for the currently selected project-name and -language
          */
         loadData: function () {
             if (!this.$Grid) {
@@ -176,7 +191,11 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
 
             var self = this;
 
-            RedirectHandler.getRedirects().then(function (result) {
+            var selectedProjectData = self.getSelectedProjectData(),
+                projectName         = selectedProjectData[0],
+                projectLanguage     = selectedProjectData[1];
+
+            RedirectHandler.getRedirects(projectName, projectLanguage).then(function (result) {
                 self.$Grid.setData({data: result});
                 self.Loader.hide();
             });
@@ -188,9 +207,12 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
         openAddRedirectDialog: function () {
             var self = this;
             require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
+                var selectedProjectData = self.getSelectedProjectData();
                 new AddRedirectPopup({
-                    showSkip: false,
-                    events  : {
+                    showSkip       : false,
+                    projectName    : selectedProjectData[0],
+                    projectLanguage: selectedProjectData[1],
+                    events         : {
                         onClose: self.loadData
                     }
                 }).open();
@@ -214,8 +236,8 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 title    : QUILocale.get(lg, 'window.redirect.delete.title'),
                 maxHeight: 300,
                 maxWidth : 450,
-                ok_button    : {
-                    text     :QUILocale.get(lg, 'window.redirect.delete.button.ok.text'),
+                ok_button: {
+                    text     : QUILocale.get(lg, 'window.redirect.delete.button.ok.text'),
                     textimage: 'fa fa-trash'
                 },
                 events   : {
@@ -227,7 +249,12 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                     },
 
                     onSubmit: function () {
-                        RedirectHandler.deleteRedirects(sourceUrls).then(self.loadData);
+                        var selectedProjectData = self.getSelectedProjectData();
+                        RedirectHandler.deleteRedirects(
+                            sourceUrls,
+                            selectedProjectData[0],
+                            selectedProjectData[1]
+                        ).then(self.loadData);
                     }
                 }
             }).open();
@@ -237,16 +264,31 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
         editRedirect: function () {
             var self = this;
             require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
+                var selectedProjectData = self.getSelectedProjectData();
+
                 new AddRedirectPopup({
                     showSkip         : false,
                     sourceUrlReadOnly: true,
                     sourceUrl        : self.$Grid.getSelectedData()[0].source_url,
                     targetUrl        : self.$Grid.getSelectedData()[0].target_url,
+                    projectName      : selectedProjectData[0],
+                    projectLanguage  : selectedProjectData[1],
                     events           : {
                         onClose: self.loadData
                     }
                 }).open();
             });
+        },
+
+
+        /**
+         * Returns an array ofdata about the selected project.
+         * First entry in the array is the project's name, the second entry is the project's language
+         *
+         * @return {string[]}
+         */
+        getSelectedProjectData: function () {
+            return this.$ProjectSelect.getValue().split(',');
         }
     });
 });

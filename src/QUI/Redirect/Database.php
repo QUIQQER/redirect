@@ -7,6 +7,8 @@
 namespace QUI\Redirect;
 
 
+use QUI\Projects\Project;
+
 /**
  * Class with various helper-methods for the redirect module
  *
@@ -33,12 +35,14 @@ class Database
     const COLUMN_TARGET_URL = "target_url";
 
     /**
-     * Returns the name of the redirect table
+     * Returns the name of the redirect table for a given Project
+     *
+     * @param Project $Project
      *
      * @return string
      */
-    public static function getTableName()
+    public static function getTableName(Project $Project)
     {
-        return \QUI::getDBTableName('redirects');
+        return \QUI::getDBProjectTableName('redirects', $Project);
     }
 }

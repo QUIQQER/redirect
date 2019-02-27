@@ -23,15 +23,24 @@ class Frontend
      * @param string $sourceUrl - The url of the deleted site
      * @param string $targetUrl - The redirect's target URL
      * @param boolean $showSkip - Should the skip checkbox be shown
+     * @param string $projectName - The project's name
+     * @param string $projectLanguage - The project's language
      */
-    public static function showAddRedirectDialog($sourceUrl, $targetUrl = "", $showSkip = false)
-    {
+    public static function showAddRedirectDialog(
+        $sourceUrl,
+        $targetUrl = "",
+        $showSkip = false,
+        $projectName = "",
+        $projectLanguage = ""
+    ) {
         \QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'redirectShowAddRedirectDialog',
             [
-                'sourceUrl' => $sourceUrl,
-                'targetUrl' => $targetUrl,
-                'showSkip'  => $showSkip
+                'sourceUrl'       => $sourceUrl,
+                'targetUrl'       => $targetUrl,
+                'showSkip'        => $showSkip,
+                'projectName'     => $projectName,
+                'projectLanguage' => $projectLanguage
             ]
         );
     }

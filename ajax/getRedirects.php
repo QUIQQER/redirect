@@ -11,15 +11,17 @@
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_getRedirects',
-    function () {
+    function ($projectName, $projectLanguage) {
         try {
-            return \QUI\Redirect\Manager::getRedirects();
+            $Project = QUI::getProject($projectName, $projectLanguage);
+
+            return \QUI\Redirect\Manager::getRedirects($Project);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 
             return [];
         }
     },
-    [],
+    ['projectName', 'projectLanguage'],
     'Permission::checkAdminUser'
 );
