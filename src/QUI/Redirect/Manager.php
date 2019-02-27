@@ -88,9 +88,10 @@ class Manager
             $sourceUrl = Url::prepareSourceUrl($sourceUrl);
 
             // Internal URL?
-            if (strpos($targetUrl, 'index.php?id=') === 0) {
+            if (Url::isInternal($targetUrl)) {
                 // Get the pretty-printed URL
                 $targetUrl = Site\Utils::getSiteByLink($targetUrl)->getUrlRewritten();
+                $targetUrl = Url::prepareInternalTargetUrl($targetUrl);
             }
 
             \QUI::getDataBase()->replace(
