@@ -157,23 +157,6 @@ class EventHandler
 
 
     /**
-     * Called as an event on package install
-     *
-     * @param Package $Package - The package being installed
-     *
-     * @throws \QUI\Database\Exception - redirects table couldn't be setup
-     */
-    public static function onInstall(Package $Package)
-    {
-        if ($Package->getName() != "quiqqer/redirect") {
-            return;
-        }
-
-        Database::setupDatabase();
-    }
-
-
-    /**
      * Called as an event when the admin footer is loaded
      *
      * Injects JS code into it
