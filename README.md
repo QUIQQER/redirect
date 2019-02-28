@@ -10,7 +10,9 @@ Paketname:
 
 Features (Funktionen)
 --------
-Automatically redirect moved/deleted sites
+- Automatically redirect moved, deleted, renamed and deactivated sites
+- Redirects with HTTP 301 headers by default
+- Redirects with HTTP 302 headers if QUIQQER is in development mode 
 
 Installation
 ------------

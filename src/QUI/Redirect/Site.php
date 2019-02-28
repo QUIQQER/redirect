@@ -8,6 +8,7 @@ namespace QUI\Redirect;
 
 
 use QUI\Exception;
+use QUI\System\Log;
 
 /**
  * Class with various helper-methods for the redirect module
@@ -76,6 +77,15 @@ class Site
         $params = [],
         $stripLanguage = false
     ) {
+        // A basic Site-object (not SiteEdit) can be used to retrieve URLs
+        if (!is_subclass_of($Site, \QUI\Projects\Site::class)) {
+            try {
+                $Site = new \QUI\Projects\Site($Site->getProject(), $Site->getId());
+            } catch (Exception $Exception) {
+                Log::writeException($Exception);
+            }
+        }
+
         $children = static::getChildrenRecursive($Site, $params);
 
         $result = [];
