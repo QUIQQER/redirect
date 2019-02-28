@@ -150,7 +150,15 @@ class EventHandler
      */
     public static function onSiteSaveBefore(Site\Edit $Site)
     {
-        Session::addUrlsRecursive($Site);
+        try {
+            if ($Site->getId() == 1) {
+                return;
+            }
+
+            $Site->setAttribute('redirectOldUrl', $Site->getUrlRewritten());
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
+        }
     }
 
 
@@ -163,13 +171,28 @@ class EventHandler
     public static function onSiteSave(Site\Edit $Site)
     {
         try {
-            $newUrl = $Site->getUrlRewritten();
-            $oldUrl = Session::getOldUrlFromSession($Site->getId());
-            if (Url::prepareSourceUrl($newUrl) == $oldUrl) {
+            if ($Site->getId() == 1) {
                 return;
             }
 
-            Manager::addRedirectsFromSession($Site);
+            $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
+            $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
+
+            if ($newUrl == $oldUrl) {
+                return;
+            }
+
+            $Project = $Site->getProject();
+
+            Manager::addRedirect($oldUrl, $newUrl, $Project);
+
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
+            foreach ($childrenUrls as $childUrl) {
+                // Replace the parent's new URL with the parent's old URL so we can reproduce the child's old URL
+                $childOldUrl = str_replace($newUrl, $oldUrl, $childUrl);
+                $childUrl    = Url::prepareInternalTargetUrl($childUrl);
+                Manager::addRedirect($childOldUrl, $childUrl, $Project);
+            }
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
