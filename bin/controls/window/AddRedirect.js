@@ -39,7 +39,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 textimage: 'icon-remove fa fa-remove'
             },
             sourceUrl        : false,
-            sourceUrlReadOnly: false
+            sourceUrlReadOnly: false,
+            projectName      : false,
+            projectLanguage  : false
         },
 
         $SourceUrlInput: false,
@@ -76,9 +78,11 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var self = this;
 
             QUI.getMessageHandler().then(function (MessageHandler) {
-                var sourceUrl     = self.getSourceUrl(),
-                    targetUrl     = self.getTargetUrl(),
-                    isSkipChecked = self.isSkipChecked();
+                var sourceUrl       = self.getSourceUrl(),
+                    targetUrl       = self.getTargetUrl(),
+                    projectName     = self.getAttribute('projectName'),
+                    projectLanguage = self.getAttribute('projectLanguage'),
+                    isSkipChecked   = self.isSkipChecked();
 
                 if (!targetUrl) {
                     MessageHandler.addError(
@@ -87,7 +91,12 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return;
                 }
 
-                RedirectHandler.addRedirect(sourceUrl, targetUrl).then(function (result) {
+                RedirectHandler.addRedirect(
+                    sourceUrl,
+                    targetUrl,
+                    projectName,
+                    projectLanguage
+                ).then(function (result) {
                     if (!result) {
                         MessageHandler.addError(
                             QUILocale.get(lg, 'site.delete.popup.error.result')
@@ -95,7 +104,13 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                         return;
                     }
 
-                    RedirectHandler.processFurtherUrls(sourceUrl, targetUrl, isSkipChecked).catch(console.error);
+                    RedirectHandler.processFurtherUrls(
+                        sourceUrl,
+                        targetUrl,
+                        isSkipChecked,
+                        projectName,
+                        projectLanguage
+                    ).catch(console.error);
 
                     self.close();
                 }).catch(function (error) {
@@ -118,7 +133,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var sourceUrl     = this.getSourceUrl(),
                 isSkipChecked = this.isSkipChecked();
 
-            RedirectHandler.processFurtherUrls(sourceUrl, null, isSkipChecked);
+            RedirectHandler.processFurtherUrls(sourceUrl, null, isSkipChecked, null, null);
         },
 
 
@@ -163,10 +178,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 });
 
                 new Element('input', {
-                    type: 'checkbox',
+                    type   : 'checkbox',
                     checked: 1,
-                    name: 'skip-children',
-                    id  : 'skip-children'
+                    name   : 'skip-children',
+                    id     : 'skip-children'
                 }).inject(SkipChildrenContainer);
 
                 new Element('label', {

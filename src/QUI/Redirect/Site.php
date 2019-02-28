@@ -67,16 +67,26 @@ class Site
      * @param array $params - Parameters to query children
      *                      $params['where']
      *                      $params['limit']
+     * @param boolean $stripLanguage - Strip the language from the URL
      *
      * @return string[]
      */
-    public static function getChildrenUrlsRecursive(\QUI\Interfaces\Projects\Site $Site, $params = [])
-    {
+    public static function getChildrenUrlsRecursive(
+        \QUI\Interfaces\Projects\Site $Site,
+        $params = [],
+        $stripLanguage = false
+    ) {
         $children = static::getChildrenRecursive($Site, $params);
 
         $result = [];
         foreach ($children as $child) {
-            $result[] = $child->getUrlRewritten();
+            $urlRewritten = $child->getUrlRewritten();
+
+            if ($stripLanguage) {
+                $urlRewritten = Url::stripLanguageFromPath($urlRewritten);
+            }
+
+            $result[] = $urlRewritten;
         }
 
         return $result;

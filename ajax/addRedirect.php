@@ -11,15 +11,21 @@
  */
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_addRedirect',
-    function ($sourceUrl, $targetUrl) {
+    function ($sourceUrl, $targetUrl, $projectName = "", $projectLanguage = "") {
         try {
-            return \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl);
+            $Project = \QUI\Redirect\Project::getFromParameters($projectName, $projectLanguage);
+
+            if (!$Project) {
+                return false;
+            }
+
+            return \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl, $Project);
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 
             return false;
         }
     },
-    ['sourceUrl', 'targetUrl'],
+    ['sourceUrl', 'targetUrl', 'projectName', 'projectLanguage'],
     'Permission::checkAdminUser'
 );

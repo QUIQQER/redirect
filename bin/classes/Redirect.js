@@ -22,16 +22,20 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
          *
          * @param {string} sourceUrl - Source URL for the redirect
          * @param {string} targetUrl - Target of the redirect
+         * @param {string} projectName
+         * @param {string} projectLanguage
          *
          * @return {Promise} - Resolves with the result on success, rejects on error
          */
-        addRedirect: function (sourceUrl, targetUrl) {
+        addRedirect: function (sourceUrl, targetUrl, projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_redirect_ajax_addRedirect', resolve, {
-                    'package': pkg,
-                    onError  : reject,
-                    sourceUrl: sourceUrl,
-                    targetUrl: targetUrl
+                    'package'      : pkg,
+                    onError        : reject,
+                    sourceUrl      : sourceUrl,
+                    targetUrl      : targetUrl,
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
                 });
             });
         },
@@ -44,68 +48,85 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
          * @param {string} sourceUrl - URL for the redirect
          * @param {string} targetUrl - Target of the redirect
          * @param {boolean} skipChildren - Skip showing a dialog for each child
+         * @param {string} projectName
+         * @param {string} projectLanguage
          *
          * @return {Promise}
          */
-        processFurtherUrls: function (sourceUrl, targetUrl, skipChildren) {
+        processFurtherUrls: function (sourceUrl, targetUrl, skipChildren, projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_redirect_ajax_processFurtherUrls', resolve, {
-                    'package'   : pkg,
-                    onError     : reject,
-                    sourceUrl   : sourceUrl,
-                    targetUrl   : targetUrl,
-                    skipChildren: skipChildren ? 1 : 0
+                    'package'      : pkg,
+                    onError        : reject,
+                    sourceUrl      : sourceUrl,
+                    targetUrl      : targetUrl,
+                    skipChildren   : skipChildren ? 1 : 0,
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
                 });
             });
         },
 
 
         /**
-         * Returns all redirects from the database
+         * Returns all redirects for a given project and language
+         *
+         * @param {string} projectName
+         * @param {string} projectLanguage
          *
          * @return {Promise}
          */
-        getRedirects: function () {
+        getRedirects: function (projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_redirect_ajax_getRedirects', resolve, {
-                    'package': pkg,
-                    onError  : reject
+                    'package'      : pkg,
+                    onError        : reject,
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
                 });
             });
         },
 
 
         /**
-         * Deletes the redirect with the given source URL
+         * Deletes the redirect with the given source URL from the given project with the given language
          *
          * @param sourceUrl
+         * @param {string} projectName
+         * @param {string} projectLanguage
          *
          * @return {Promise}
          */
-        deleteRedirect: function (sourceUrl) {
+        deleteRedirect: function (sourceUrl, projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_redirect_ajax_deleteRedirect', resolve, {
-                    'package': pkg,
-                    onError  : reject,
-                    sourceUrl: sourceUrl
+                    'package'      : pkg,
+                    onError        : reject,
+                    sourceUrl      : sourceUrl,
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
                 });
             });
         },
 
 
         /**
-         * Deletes the redirects with the given source-URLs
+         * Deletes the redirects with the given source-URLs from the given project with the given language
          *
          * @param {string[]} sourceUrls
+         * @param {string} projectName
+         * @param {string} projectLanguage
          *
          * @return {Promise}
          */
-        deleteRedirects: function (sourceUrls) {
+        deleteRedirects: function (sourceUrls, projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_quiqqer_redirect_ajax_deleteRedirects', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    sourceUrls: JSON.encode(sourceUrls)
+                    'package'      : pkg,
+                    onError        : reject,
+                    sourceUrls     : JSON.encode(sourceUrls),
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
                 });
             });
         }

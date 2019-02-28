@@ -26,8 +26,18 @@ class EventHandler
      */
     public static function onErrorHeaderShow($code, $url)
     {
-        if ($code = 404) {
-            Manager::attemptRedirect(\QUI::getRequest()->getRequestUri());
+        if ($code != 404) {
+            return;
+        }
+
+        try {
+            $path = Url::prepareSourceUrl(\QUI::getRequest()->getRequestUri());
+            Manager::attemptRedirect(
+                $path,
+                \QUI::getRewrite()->getProject()
+            );
+        } catch (Exception $Exception) {
+            // TODO: Error Handling ?
         }
     }
 
@@ -42,18 +52,27 @@ class EventHandler
     {
         try {
             $Site = new Site($Project, $siteId);
-            $url  = $Site->getUrlRewritten();
+            $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
+
+            $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
+            $parentUrl  = false;
+
+            if ($ParentSite) {
+                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+            }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
             Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
-                $ParentSite->getUrlRewritten(),
-                true
+                $parentUrl,
+                true,
+                $Project->getName(),
+                $Project->getLang()
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -69,18 +88,27 @@ class EventHandler
     public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
     {
         try {
-            $url = $Site->getUrlRewritten();
+            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
+
+            $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
+            $parentUrl  = false;
+
+            if ($ParentSite) {
+                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+            }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
             Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
-                $ParentSite->getUrlRewritten(),
-                true
+                $parentUrl,
+                true,
+                $Project->getName(),
+                $Project->getLang()
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -135,7 +163,9 @@ class EventHandler
     public static function onSiteSave(Site\Edit $Site)
     {
         try {
-            if ($Site->getUrlRewritten() == Session::getOldUrlFromSession($Site->getId())) {
+            $newUrl = $Site->getUrlRewritten();
+            $oldUrl = Session::getOldUrlFromSession($Site->getId());
+            if (Url::prepareSourceUrl($newUrl) == $oldUrl) {
                 return;
             }
 
@@ -143,23 +173,6 @@ class EventHandler
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
-    }
-
-
-    /**
-     * Called as an event on package install
-     *
-     * @param Package $Package - The package being installed
-     *
-     * @throws \QUI\Database\Exception - redirects table couldn't be setup
-     */
-    public static function onInstall(Package $Package)
-    {
-        if ($Package->getName() != "quiqqer/redirect") {
-            return;
-        }
-
-        Database::setupDatabase();
     }
 
 

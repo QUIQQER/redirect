@@ -7,6 +7,7 @@
 namespace QUI\Redirect;
 
 use QUI\Exception;
+use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
 
@@ -17,18 +18,31 @@ use QUI\System\Log;
 class Manager
 {
     /**
-     * Attempts to redirect a given URL to a stored location
+     * Attempts to redirect a given URL from the given project to a stored location
      *
      * @param $url
+     * @param Project $Project
      *
      * @return boolean
      */
-    public static function attemptRedirect($url)
+    public static function attemptRedirect($url, Project $Project)
     {
-        $redirectUrl = static::getRedirectForUrl($url);
+        $redirectUrl = static::getRedirectForUrl($url, $Project);
 
         if (!$redirectUrl) {
             return false;
+        }
+
+        // Append the query string
+        $requestUri = \QUI::getRequest()->getRequestUri();
+        $query      = Url::getQueryString($requestUri);
+
+        if (!empty($query)) {
+            $redirectUrl .= '?' . $query;
+        }
+
+        if (!$Project->hasVHost()) {
+            $redirectUrl = '/' . $Project->getLang() . $redirectUrl;
         }
 
         // TODO: check/ask if 302 redirect in development is okay
@@ -42,18 +56,19 @@ class Manager
 
 
     /**
-     * Returns the redirect path for an URL from the database.
+     * Returns the redirect path for an URL and project from the database.
      * If no entry is found false is returned.
      *
      * @param string $url
+     * @param Project $Project
      *
      * @return bool|string URL on success, false on missing entry
      */
-    public static function getRedirectForUrl($url)
+    public static function getRedirectForUrl($url, Project $Project)
     {
         try {
             $redirectData = \QUI::getDataBase()->fetch([
-                'from'  => Database::getTableName(),
+                'from'  => Database::getTableName($Project),
                 'where' => [
                     Database::COLUMN_ID => md5($url)
                 ],
@@ -74,29 +89,30 @@ class Manager
 
 
     /**
-     * Adds a redirect for a given site and it's children.
-     * If the last parameter is set to false, a redirect will only be added for the given site
+     * Adds a redirect with the given source- and target-URL to the given project
      *
      * @param string $sourceUrl - The url to add a redirect for
      * @param string $targetUrl - The target of the redirect site's project
+     * @param Project $Project - The project
      *
      * @return bool
      */
-    public static function addRedirect($sourceUrl, $targetUrl)
+    public static function addRedirect($sourceUrl, $targetUrl, Project $Project)
     {
         try {
             $sourceUrl = Url::prepareSourceUrl($sourceUrl);
 
             // Internal URL?
-            if (strpos($targetUrl, 'index.php?id=') === 0) {
+            if (Url::isInternal($targetUrl)) {
                 // Get the pretty-printed URL
                 $targetUrl = Site\Utils::getSiteByLink($targetUrl)->getUrlRewritten();
+                $targetUrl = Url::prepareInternalTargetUrl($targetUrl);
             }
 
             \QUI::getDataBase()->replace(
-                Database::getTableName(),
+                Database::getTableName($Project),
                 [
-                    Database::COLUMN_ID => md5($sourceUrl),
+                    Database::COLUMN_ID         => md5($sourceUrl),
                     Database::COLUMN_SOURCE_URL => $sourceUrl,
                     Database::COLUMN_TARGET_URL => $targetUrl,
                 ]
@@ -122,22 +138,29 @@ class Manager
         // TODO: clean up this mess (e.g. Notify the user in addRedirect())
         $isTotalAddRedirectSuccessful = true;
         try {
-            $oldUrl = Session::getOldUrlFromSession($Site->getId());
-            static::addRedirect($oldUrl, $Site->getUrlRewritten());
+            $oldUrl  = Url::prepareSourceUrl(Session::getOldUrlFromSession($Site->getId()));
+            $Project = $Site->getProject();
+
+            static::addRedirect($oldUrl, Url::prepareInternalTargetUrl($Site->getUrlRewritten()), $Project);
 
             foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
                 /** @var Site $ChildSite */
                 // Use a separate try to continue on error
                 try {
                     $childSiteId = $ChildSite->getId();
-                    $childOldUrl = Session::getOldUrlFromSession($childSiteId);
+                    $childOldUrl = Url::prepareSourceUrl(Session::getOldUrlFromSession($childSiteId));
 
                     if (!$childOldUrl) {
                         // Escape this try
                         throw new Exception();
                     }
 
-                    $isChildAddRedirectSuccessful = static::addRedirect($childOldUrl, $ChildSite->getUrlRewritten());
+                    $isChildAddRedirectSuccessful = static::addRedirect(
+                        $childOldUrl,
+                        Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten()),
+                        $Project
+                    );
+
                     Session::removeOldUrlFromSession($childSiteId);
                 } catch (Exception $Exception) {
                     $isChildAddRedirectSuccessful = false;
@@ -166,17 +189,19 @@ class Manager
 
 
     /**
-     * Returns an array of all redirects.
-     * The array keys are 'sourceUrl' and 'targetUrl'
+     * Returns an array of all redirects for a given project.
+     * The array keys are 'source_url' and 'target_url'
+     *
+     * @param Project $Project
      *
      * @return array
      */
-    public static function getRedirects()
+    public static function getRedirects(Project $Project)
     {
         try {
             return \QUI::getDataBase()->fetch([
                 'select' => Database::COLUMN_SOURCE_URL . ',' . Database::COLUMN_TARGET_URL,
-                'from'   => Database::getTableName()
+                'from'   => Database::getTableName($Project)
             ]);
         } catch (\QUI\Database\Exception $Exception) {
             Log::writeException($Exception);
@@ -187,17 +212,18 @@ class Manager
 
 
     /**
-     * Removes the redirect with the given source URL
+     * Removes the redirect with the given source URL from the given project
      *
      * @param string $sourceUrl
+     * @param Project $Project
      *
      * @return boolean - Removal successful?
      */
-    public static function deleteRedirect($sourceUrl)
+    public static function deleteRedirect($sourceUrl, Project $Project)
     {
         try {
             \QUI::getDataBase()->delete(
-                Database::getTableName(),
+                Database::getTableName($Project),
                 [
                     Database::COLUMN_ID => md5($sourceUrl)
                 ]

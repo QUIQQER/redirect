@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-    <global>
-        <table name="redirects">
+    <projects>
+        <table name="redirects" no-auto-update="1" no-site-reference="1">
             <field type="VARCHAR( 32 ) NOT NULL">id</field>
             <field type="VARCHAR( 2083 ) NOT NULL">source_url</field>
             <field type="VARCHAR( 2083 ) NOT NULL">target_url</field>
 
-            <!-- Indexes and primary keys are set via PHP (see EventHandler::onInstall) -->
             <primary>id</primary>
         </table>
-    </global>
+    </projects>
 </database>
