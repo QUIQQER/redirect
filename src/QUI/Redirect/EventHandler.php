@@ -52,7 +52,7 @@ class EventHandler
     {
         try {
             $Site = new Site($Project, $siteId);
-            $url  = $Site->getUrlRewritten();
+            $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
@@ -64,7 +64,7 @@ class EventHandler
             }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
             Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
@@ -88,7 +88,7 @@ class EventHandler
     public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
     {
         try {
-            $url = $Site->getUrlRewritten();
+            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
@@ -100,7 +100,7 @@ class EventHandler
             }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1']);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
             Session::storeUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
@@ -138,7 +138,7 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
-        Manager::addRedirectsFromSession($Site, $Site->getProject());
+        Manager::addRedirectsFromSession($Site);
     }
 
 
@@ -163,7 +163,9 @@ class EventHandler
     public static function onSiteSave(Site\Edit $Site)
     {
         try {
-            if ($Site->getUrlRewritten() == Session::getOldUrlFromSession($Site->getId())) {
+            $newUrl = $Site->getUrlRewritten();
+            $oldUrl = Session::getOldUrlFromSession($Site->getId());
+            if (Url::prepareSourceUrl($newUrl) == $oldUrl) {
                 return;
             }
 

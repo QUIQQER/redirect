@@ -138,17 +138,17 @@ class Manager
         // TODO: clean up this mess (e.g. Notify the user in addRedirect())
         $isTotalAddRedirectSuccessful = true;
         try {
-            $oldUrl  = Session::getOldUrlFromSession($Site->getId());
+            $oldUrl  = Url::prepareSourceUrl(Session::getOldUrlFromSession($Site->getId()));
             $Project = $Site->getProject();
 
-            static::addRedirect($oldUrl, $Site->getUrlRewritten(), $Project);
+            static::addRedirect($oldUrl, Url::prepareInternalTargetUrl($Site->getUrlRewritten()), $Project);
 
             foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
                 /** @var Site $ChildSite */
                 // Use a separate try to continue on error
                 try {
                     $childSiteId = $ChildSite->getId();
-                    $childOldUrl = Session::getOldUrlFromSession($childSiteId);
+                    $childOldUrl = Url::prepareSourceUrl(Session::getOldUrlFromSession($childSiteId));
 
                     if (!$childOldUrl) {
                         // Escape this try
@@ -157,7 +157,7 @@ class Manager
 
                     $isChildAddRedirectSuccessful = static::addRedirect(
                         $childOldUrl,
-                        $ChildSite->getUrlRewritten(),
+                        Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten()),
                         $Project
                     );
 

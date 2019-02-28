@@ -127,7 +127,7 @@ class Session
     {
         $isTotalAddUrlSuccessful = true;
         try {
-            static::addUrl($Site->getId(), $Site->getUrlRewritten());
+            static::addUrl($Site->getId(), Url::prepareSourceUrl($Site->getUrlRewritten()));
         } catch (Exception $Exception) {
             $isTotalAddUrlSuccessful = false;
         }
@@ -137,7 +137,7 @@ class Session
             // Use a separate try to continue on error
             try {
                 $isChildAddUrlSuccessful = true;
-                static::addUrl($ChildSite->getId(), $ChildSite->getUrlRewritten());
+                static::addUrl($ChildSite->getId(), Url::prepareSourceUrl($ChildSite->getUrlRewritten()));
             } catch (Exception $Exception) {
                 $isChildAddUrlSuccessful = false;
             }
