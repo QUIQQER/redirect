@@ -28,18 +28,28 @@ class Url
     {
         $urlPath = parse_url($url, PHP_URL_PATH);
 
+        $urlPath = static::stripLanguageFromPath($urlPath);
+
+        return $urlPath;
+    }
+
+
+    public static function stripLanguageFromPath($url)
+    {
         // Remove all slashes from the beginning and end of the path
-        $urlPath = trim($urlPath, '/');
+        $url = trim($url, '/');
 
         // Strip language parts from the URL (e.g. "/en/mysite" becomes "/mysite"
-        if (strpos($urlPath, '/') === 2) {
-            $urlPath = substr($urlPath, 3);
+        // Check strlen = 2 if we have a root URL (e.g. "/en/" becomes just "en" on this check)
+        // Since site-names can't be two characters long, it's definitely a language
+        if (strpos($url, '/') === 2 || strlen($url) === 2) {
+            $url = substr($url, 3);
         }
 
         // Append a slash
-        $urlPath = "/" . $urlPath;
+        $url = "/" . $url;
 
-        return $urlPath;
+        return $url;
     }
 
 
@@ -53,6 +63,8 @@ class Url
      */
     public static function prepareInternalTargetUrl($url)
     {
+        $url = self::stripLanguageFromPath($url);
+
         return static::getPath($url);
     }
 
