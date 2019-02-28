@@ -105,8 +105,15 @@ class Manager
             // Internal URL?
             if (Url::isInternal($targetUrl)) {
                 // Get the pretty-printed URL
-                $targetUrl = Site\Utils::getSiteByLink($targetUrl)->getUrlRewritten();
-                $targetUrl = Url::prepareInternalTargetUrl($targetUrl);
+                $TargetSite = Site\Utils::getSiteByLink($targetUrl);
+
+                // URL of another project?
+                if ($TargetSite->getProject() === $Project) {
+                    $targetUrl = $TargetSite->getUrlRewritten();
+                    $targetUrl = Url::prepareInternalTargetUrl($targetUrl);
+                } else {
+                    $targetUrl = $TargetSite->getUrlRewrittenWithHost();
+                }
             }
 
             \QUI::getDataBase()->replace(
