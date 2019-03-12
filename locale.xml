@@ -6,8 +6,8 @@
             <en><![CDATA[Redirect]]></en>
         </locale>
         <locale name="package.description">
-            <de><![CDATA[Automatische Weiterleitung gelöschter/verschobener Seiten]]></de>
-            <en><![CDATA[Automatic redirect of moved/deleted sites]]></en>
+            <de><![CDATA[Automatische Weiterleitung verschobener, gelöschter, umbenannter und deaktivierter Seiten]]></de>
+            <en><![CDATA[Automatically redirect moved, deleted, renamed and deactivated sites]]></en>
         </locale>
 
         <locale name="menu.text">
