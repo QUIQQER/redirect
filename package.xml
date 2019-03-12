@@ -24,15 +24,11 @@
             <wiki><![CDATA[https://dev.quiqqer.com/quiqqer/redirect/wikis/home]]></wiki>
         </support>
 
-        <!-- More preview images
        <preview>
-           <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/1.png"/>
-           <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/2.png"/>
-           <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/3.png"/>
-           <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/4.png"/>
-           <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/5.png"/>
+           <image src="URL_OPT_DIR/quiqqer/redirect/bin/images/preview/redirects_table.jpg"/>
+           <image src="URL_OPT_DIR/quiqqer/redirect/bin/images/preview/add_redirect.jpg"/>
+           <image src="URL_OPT_DIR/quiqqer/redirect/bin/images/preview/target_selection.jpg"/>
        </preview>
-       -->
 
     </package>
 </quiqqer>
