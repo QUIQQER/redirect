@@ -39,6 +39,7 @@ senden Sie bitte eine E-Mail an support@pcsg.de.
 
 Lizenz
 -------
+PCSG QPL-1.0
 
 
 Entwickler

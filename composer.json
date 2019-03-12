@@ -3,7 +3,7 @@
   "type": "quiqqer-module",
   "description": "Automatically adds redirects for moved and deleted sites",
   "version": "dev-dev",
-  "license": "PCSG QL-1.0",
+  "license": "PCSG QPL-1.0",
   "authors": [
     {
       "name": "Jan Wennrich",

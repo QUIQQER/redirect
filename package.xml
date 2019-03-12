@@ -11,6 +11,11 @@
         <!-- Hauptbild -->
         <image src='URL_OPT_DIR/quiqqer/redirect/bin/images/Logo.jpg'/>
 
+        <copyright>
+            <name><![CDATA[PCSG - Computer & Internet Service OHG]]></name>
+            <license><![CDATA[PCSG QPL-1.0]]></license>
+        </copyright>
+
         <!-- More preview images
        <preview>
            <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/1.png"/>
