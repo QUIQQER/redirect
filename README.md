@@ -1,4 +1,7 @@
-redirect
+![QUIQQER Redirect](bin/images/Readme.jpg)
+
+
+Redirect
 ========
 
 Automatically adds redirects for moved and deleted sites
