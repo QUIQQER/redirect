@@ -3,44 +3,40 @@
 
 Redirect
 ========
-
 Automatically redirect moved, deleted, renamed and deactivated sites
 
-Paketname:
+Package name:
 
     quiqqer/redirect
 
 
-Features (Funktionen)
+Features
 --------
 - Automatically redirect moved, deleted, renamed and deactivated sites
 - Redirects with HTTP 301 headers by default
 - Redirects with HTTP 302 headers if QUIQQER is in development mode 
 
-Installation
+
+Setup
 ------------
+The package name is: `quiqqer/redirect`
 
-Der Paketname ist: quiqqer/redirect
 
-
-Mitwirken
+Contribute
 ----------
-
-- Issue Tracker: 
-- Source Code: 
+- Issue Tracker: https://dev.quiqqer.com/quiqqer/redirect/issues
+- Source Code: https://dev.quiqqer.com/quiqqer/redirect
+- Wiki: https://dev.quiqqer.com/quiqqer/redirect/wikis/home
+- Forum: https://community.quiqqer.com
 
 
 Support
 -------
-
-Falls Sie einen Fehler gefunden haben oder Verbesserungen wünschen,
-senden Sie bitte eine E-Mail an support@pcsg.de.
+If you found any flaws, have any wishes or suggestions you can send an email
+to [support@pcsg.de](mailto:support@pcsg.de) to inform us about your concerns. 
+We will try to respond to your request and forward it to the responsible developer.
 
 
 Lizenz
 -------
 PCSG QPL-1.0
-
-
-Entwickler
---------
