@@ -4,7 +4,7 @@
 Redirect
 ========
 
-Automatically adds redirects for moved and deleted sites
+Automatically redirect moved, deleted, renamed and deactivated sites
 
 Paketname:
 
