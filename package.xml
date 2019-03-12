@@ -16,6 +16,14 @@
             <license><![CDATA[PCSG QPL-1.0]]></license>
         </copyright>
 
+        <support>
+            <email><![CDATA[support@pcsg.de]]></email>
+            <forum><![CDATA[https://community.quiqqer.com]]></forum>
+            <source><![CDATA[https://dev.quiqqer.com/quiqqer/redirect]]></source>
+            <issues><![CDATA[https://dev.quiqqer.com/quiqqer/redirect/issues]]></issues>
+            <wiki><![CDATA[https://dev.quiqqer.com/quiqqer/redirect/wikis/home]]></wiki>
+        </support>
+
         <!-- More preview images
        <preview>
            <image src="URL_OPT_DIR/quiqqer/quiqqer/bin/preview/1.png"/>
