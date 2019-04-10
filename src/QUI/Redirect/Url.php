@@ -63,9 +63,10 @@ class Url
      */
     public static function prepareInternalTargetUrl($url)
     {
-        $url = self::stripLanguageFromPath($url);
+        $path = static::getPath($url);
+        $path = self::stripLanguageFromPath($path);
 
-        return static::getPath($url);
+        return $path;
     }
 
 
