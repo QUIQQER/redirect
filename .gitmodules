@@ -1,0 +1,3 @@
+[submodule "docs"]
+  path = docs
+  url = https://dev.quiqqer.com:quiqqer/redirect.wiki.git
