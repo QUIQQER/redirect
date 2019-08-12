@@ -204,7 +204,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 return false;
             }
 
-            return this.$Elm.getElement('[name="skip-children"').checked;
+            return this.$Elm.getElement('[name="skip-children"]').checked;
         },
 
 
