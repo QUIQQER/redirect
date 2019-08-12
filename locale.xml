@@ -80,6 +80,11 @@
             <de><![CDATA[Umleitung bearbeiten]]></de>
             <en><![CDATA[Edit Redirect]]></en>
         </locale>
+
+        <locale name="panel.error.projectData.missing.message">
+            <de><![CDATA[Es muss ein Projekt ausgewählt werden →]]></de>
+            <en><![CDATA[A project must be selected →]]></en>
+        </locale>
         <!-- endregion -->
 
 
