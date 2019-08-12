@@ -208,6 +208,17 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             var self = this;
             require(['package/quiqqer/redirect/bin/controls/window/AddRedirect'], function (AddRedirectPopup) {
                 var selectedProjectData = self.getSelectedProjectData();
+
+                if (!selectedProjectData) {
+                    QUI.getMessageHandler().then(function (MessageHandler) {
+                        MessageHandler.addAttention(
+                            QUILocale.get(lg, 'panel.error.projectData.missing.message'),
+                            self.$ProjectSelect.getElm()
+                        );
+                    });
+                    return;
+                }
+
                 new AddRedirectPopup({
                     showSkip       : false,
                     projectName    : selectedProjectData[0],
@@ -288,7 +299,13 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
          * @return {string[]}
          */
         getSelectedProjectData: function () {
-            return this.$ProjectSelect.getValue().split(',');
+            var value = this.$ProjectSelect.getValue();
+
+            if (!value) {
+                return null;
+            }
+
+            return value.split(',');
         }
     });
 });
