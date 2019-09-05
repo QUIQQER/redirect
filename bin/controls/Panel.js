@@ -122,6 +122,8 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 onrefresh : self.loadData,
                 pagination: true,
 
+                perPage: 25,
+
                 multipleSelection: true
             });
 
@@ -195,8 +197,17 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 projectName         = selectedProjectData[0],
                 projectLanguage     = selectedProjectData[1];
 
-            RedirectHandler.getRedirects(projectName, projectLanguage).then(function (result) {
-                self.$Grid.setData({data: result});
+            RedirectHandler.getRedirectsForGrid(
+                projectName,
+                projectLanguage,
+                self.$Grid.getAttribute('page'),
+                self.$Grid.getAttribute('perPage')
+            ).then(function (result) {
+                self.$Grid.setData({
+                    data : result.data,
+                    page : result.page,
+                    total: result.total
+                });
                 self.Loader.hide();
             });
         },
