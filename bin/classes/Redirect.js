@@ -89,6 +89,36 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
 
 
         /**
+         * Returns a given amount of redirects, with a given sorting and offset, for a given project and language.
+         * The result is formatted/intended to be used with the Grid-control.
+         *
+         * @param {string} projectName
+         * @param {string} projectLanguage
+         * @param {number} page
+         * @param {number} perPage
+         *
+         * @return {Promise}
+         */
+        getRedirectsForGrid: function (
+            projectName,
+            projectLanguage,
+            page,
+            perPage
+        ) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_redirect_ajax_getRedirectsForGrid', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage,
+                    page           : page,
+                    perPage        : perPage
+                });
+            });
+        },
+
+
+        /**
          * Deletes the redirect with the given source URL from the given project with the given language
          *
          * @param sourceUrl
