@@ -59,8 +59,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
             this.$SiteInput = new SiteInput({
                 external: true,
-                name    : 'redirect-target'
-            });
+                name    : 'redirect-target',
+                project : this.getAttribute('projectName'),
+                lang    : this.getAttribute('projectLanguage')
+        });
 
             if (this.getAttribute('showSkip')) {
                 this.$skipChildren = true;
