@@ -17,6 +17,12 @@ Features
 - Redirects with HTTP 302 headers if QUIQQER is in development mode 
 
 
+License
+-------
+This package allows up **50 redirects** (across all projects). If your project(s) require more redirects, please purchase a package license at:
+
+https://store.quiqqer.com/Modules/Redirect
+
 Setup
 ------------
 The package name is: `quiqqer/redirect`
