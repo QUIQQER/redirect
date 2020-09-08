@@ -27,6 +27,13 @@
         </locale>
         <!-- endregion -->
     </groups>
+    
+    <groups name="quiqqer/redirect" datatype="php">
+        <locale name="PackageNotLicensedException.message" html="true">
+            <de><![CDATA[Die freie Nutzung des QUIQQER Weiterleitungen Pakets beschränkt sich auf <b>[freeRedirects]</b> Weiterleitungen. Bitte erwerben Sie eine Lizenz, um mehr Weiterleitungen zu Ihren Projekten hinzuzufügen.]]></de>
+            <en><![CDATA[Free use of the QUIQQER redirects package is limited to <b>[freeRedirects]</b> redirects. Please purchase a license to add more redirects to your projects.]]></en>
+        </locale>
+    </groups>
 
     <groups name="quiqqer/redirect" datatype="js">
         <!-- region add redirect popup -->
