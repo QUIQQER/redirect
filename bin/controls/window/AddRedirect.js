@@ -116,6 +116,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
                     self.close();
                 }).catch(function (error) {
+                    if (error.getCode() === QUIQQER_EXCEPTION_CODE_PACKAGE_NOT_LICENSED) {
+                        return;
+                    }
+
                     console.error(error);
                     MessageHandler.addError(
                         QUILocale.get(lg, 'site.delete.popup.error.result')

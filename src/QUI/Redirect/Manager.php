@@ -6,6 +6,7 @@
 
 namespace QUI\Redirect;
 
+use QUI;
 use QUI\Exception;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
@@ -17,6 +18,13 @@ use QUI\System\Log;
  */
 class Manager
 {
+    /**
+     * Number of redirects that can created without requiring a license
+     *
+     * @var int
+     */
+    const FREE_REDIRECTS = 50;
+
     /**
      * Attempts to redirect a given URL from the given project to a stored location
      *
@@ -38,11 +46,11 @@ class Manager
         $query      = Url::getQueryString($requestUri);
 
         if (!empty($query)) {
-            $redirectUrl .= '?' . $query;
+            $redirectUrl .= '?'.$query;
         }
 
         if (!$Project->hasVHost()) {
-            $redirectUrl = '/' . $Project->getLang() . $redirectUrl;
+            $redirectUrl = '/'.$Project->getLang().$redirectUrl;
         }
 
         // TODO: check/ask if 302 redirect in development is okay
@@ -96,9 +104,14 @@ class Manager
      * @param Project $Project - The project
      *
      * @return bool
+     *
+     * @throws QUI\Package\PackageNotLicensedException
      */
     public static function addRedirect($sourceUrl, $targetUrl, Project $Project)
     {
+        // Check license requirements
+        self::checkLicense();
+
         try {
             $sourceUrl = Url::prepareSourceUrl($sourceUrl);
 
@@ -133,6 +146,47 @@ class Manager
         return true;
     }
 
+    /**
+     * Check license requirements for quiqqer/redirect usage.
+     *
+     * @return void
+     * @throws QUI\Package\PackageNotLicensedException
+     */
+    protected static function checkLicense()
+    {
+        try {
+            if (self::getRedirectCount() < self::FREE_REDIRECTS) {
+                return;
+            }
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            return;
+        }
+
+        if (QUI::getPackageManager()->hasLicense('quiqqer/redirect')) {
+            return;
+        }
+
+        $urls = QUI::getPackageManager()->getPackageStoreUrls('quiqqer/redirect');
+        $lang = QUI::getLocale()->getCurrent();
+        $url  = null;
+
+        if (!empty($urls[$lang])) {
+            $url = $urls[$lang];
+        }
+
+        throw new QUI\Package\PackageNotLicensedException(
+            'quiqqer/redirect',
+            [
+                'quiqqer/redirect',
+                'PackageNotLicensedException.message',
+                [
+                    'freeRedirects' => self::FREE_REDIRECTS
+                ]
+            ],
+            $url
+        );
+    }
 
     /**
      * Add redirects to the system for a page (and it's children).
@@ -207,7 +261,7 @@ class Manager
     {
         try {
             return \QUI::getDataBase()->fetch([
-                'select' => Database::COLUMN_SOURCE_URL . ',' . Database::COLUMN_TARGET_URL,
+                'select' => Database::COLUMN_SOURCE_URL.','.Database::COLUMN_TARGET_URL,
                 'from'   => Database::getTableName($Project)
             ]);
         } catch (\QUI\Database\Exception $Exception) {
@@ -217,6 +271,36 @@ class Manager
         }
     }
 
+    /**
+     * Get number of redirects in the system
+     *
+     * @param Project $Project (optional) - Get number of redirects of a specific project [default: cross-project redirect count]
+     * @return int
+     *
+     * @throws QUI\Exception
+     */
+    public static function getRedirectCount(Project $Project = null)
+    {
+        if (!empty($Project)) {
+            $projects = [$Project];
+        } else {
+            $projects = QUI::getProjectManager()->getProjects(true);
+        }
+
+        $redirectCount = 0;
+
+        /** @var Project $Project */
+        foreach ($projects as $Project) {
+            $result = \QUI::getDataBase()->fetch([
+                'count' => 1,
+                'from'  => Database::getTableName($Project)
+            ]);
+
+            $redirectCount += (int)\current(\current($result));
+        }
+
+        return $redirectCount;
+    }
 
     /**
      * Removes the redirect with the given source URL from the given project

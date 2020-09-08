@@ -1,5 +1,7 @@
 <?php
 
+use QUI\Package\PackageNotLicensedException;
+
 /**
  * Add a redirect to the system
  *
@@ -20,6 +22,8 @@
             }
 
             return \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl, $Project);
+        } catch (PackageNotLicensedException $Exception) {
+            throw $Exception;
         } catch (\QUI\Exception $Exception) {
             \QUI\System\Log::writeException($Exception);
 
