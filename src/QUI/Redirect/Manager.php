@@ -11,6 +11,7 @@ use QUI\Exception;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
+use QUI\Package\PackageNotLicensedException;
 
 /**
  * Class Manager
@@ -231,7 +232,13 @@ class Manager
                     $isTotalAddRedirectSuccessful = false;
                 }
             }
-        } catch (Exception $Exception) {
+        } catch (PackageNotLicensedException $Exception) {
+            \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get('quiqqer/redirect', 'site.move.error_license', [
+                'error' => $Exception->getMessage()
+            ]));
+
+            return;
+        } catch (\Exception $Exception) {
             $isTotalAddRedirectSuccessful = false;
         }
 

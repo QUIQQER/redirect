@@ -148,16 +148,16 @@ class Session
         }
 
         // Store URLs in session completed
-        \QUI::getMessagesHandler()->addInformation(
-            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
-        );
-
-        if (!$isTotalAddUrlSuccessful) {
-            // Something went wrong storing (at least) one URL
-            \QUI::getMessagesHandler()->addAttention(
-                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
-            );
-        }
+//        \QUI::getMessagesHandler()->addInformation(
+//            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+//        );
+//
+//        if (!$isTotalAddUrlSuccessful) {
+//            // Something went wrong storing (at least) one URL
+//            \QUI::getMessagesHandler()->addAttention(
+//                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+//            );
+//        }
     }
 
 
