@@ -146,7 +146,6 @@ class Session
                 $isTotalAddUrlSuccessful = false;
             }
         }
-
         // Store URLs in session completed
 //        \QUI::getMessagesHandler()->addInformation(
 //            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
