@@ -25,6 +25,11 @@
             <de><![CDATA[Umleitung anlegen für eine Seite nicht möglich.]]></de>
             <en><![CDATA[Failed adding redirect for a site.]]></en>
         </locale>
+
+        <locale name="site.move.error_license" html="true">
+            <de><![CDATA[Es konnte keine oder nicht alle Umleitungen für die Seite(n) angelegt werden:<br/><br/>[error]]]></de>
+            <en><![CDATA[Redirect(s) could not be created (completely) for the site(s):<br/><br/>[error]]]></en>
+        </locale>
         <!-- endregion -->
     </groups>
     
