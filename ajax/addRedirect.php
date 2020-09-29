@@ -21,7 +21,7 @@ use QUI\Package\PackageNotLicensedException;
                 return false;
             }
 
-            return \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl, $Project);
+            $success = \QUI\Redirect\Manager::addRedirect($sourceUrl, $targetUrl, $Project);
         } catch (PackageNotLicensedException $Exception) {
             throw $Exception;
         } catch (\QUI\Exception $Exception) {
@@ -29,6 +29,18 @@ use QUI\Package\PackageNotLicensedException;
 
             return false;
         }
+
+        if ($success) {
+            \QUI::getMessagesHandler()->addInformation(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+            );
+        } else {
+            \QUI::getMessagesHandler()->addInformation(
+                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            );
+        }
+
+        return $success;
     },
     ['sourceUrl', 'targetUrl', 'projectName', 'projectLanguage'],
     'Permission::checkAdminUser'

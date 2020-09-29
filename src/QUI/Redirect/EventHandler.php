@@ -182,17 +182,17 @@ class EventHandler
                 return;
             }
 
-            $Project = $Site->getProject();
+            $Project      = $Site->getProject();
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
+            Session::storeUrlsToProcess($childrenUrls);
 
-            Manager::addRedirect($oldUrl, $newUrl, $Project);
-
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
-            foreach ($childrenUrls as $childUrl) {
-                // Replace the parent's new URL with the parent's old URL so we can reproduce the child's old URL
-                $childOldUrl = str_replace($newUrl, $oldUrl, $childUrl);
-                $childUrl    = Url::prepareInternalTargetUrl($childUrl);
-                Manager::addRedirect($childOldUrl, $childUrl, $Project);
-            }
+            Frontend::showAddRedirectDialog(
+                $oldUrl,
+                $newUrl,
+                true,
+                $Project->getName(),
+                $Project->getLang()
+            );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -206,7 +206,7 @@ class EventHandler
      */
     public static function onAdminLoadFooter()
     {
-        $jsFile = URL_OPT_DIR . 'quiqqer/redirect/bin/onAdminLoadFooter.js';
-        echo '<script src="' . $jsFile . '"></script>';
+        $jsFile = URL_OPT_DIR.'quiqqer/redirect/bin/onAdminLoadFooter.js';
+        echo '<script src="'.$jsFile.'"></script>';
     }
 }
