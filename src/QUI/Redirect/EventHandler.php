@@ -52,6 +52,11 @@ class EventHandler
     {
         try {
             $Site = new Site($Project, $siteId);
+
+            if (!\QUI\Redirect\Site::isActive($Site)) {
+                return;
+            }
+
             $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
@@ -125,6 +130,10 @@ class EventHandler
      */
     public static function onSiteMoveBefore(Site\Edit $Site, $parentId)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         Session::addUrlsRecursive($Site);
     }
 
@@ -138,6 +147,10 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         Manager::addRedirectsFromSession($Site);
     }
 
@@ -150,6 +163,10 @@ class EventHandler
      */
     public static function onSiteSaveBefore(Site\Edit $Site)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             if ($Site->getId() == 1) {
                 return;
@@ -170,6 +187,10 @@ class EventHandler
      */
     public static function onSiteSave(Site\Edit $Site)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             if ($Site->getId() == 1) {
                 return;

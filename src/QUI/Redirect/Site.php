@@ -6,7 +6,6 @@
 
 namespace QUI\Redirect;
 
-
 use QUI\Exception;
 use QUI\System\Log;
 
@@ -100,5 +99,17 @@ class Site
         }
 
         return $result;
+    }
+
+    /**
+     * Returns true if the given site is activated.
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return bool
+     */
+    public static function isActive(\QUI\Interfaces\Projects\Site $Site): bool
+    {
+        return $Site->getAttribute('active') == 1;
     }
 }
