@@ -53,9 +53,10 @@ class EventHandler
         try {
             $Site = new Site($Project, $siteId);
 
-            if (!\QUI\Redirect\Site::isActive($Site)) {
-                return;
-            }
+//            TODO: using the if below causes no redirect to be created when deleting active sites (their attributes are empty)
+//            if (!\QUI\Redirect\Site::isActive($Site)) {
+//                return;
+//            }
 
             $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
 
