@@ -4,7 +4,8 @@
 
     <event on="onSiteDeleteBefore" fire="QUI\Redirect\EventHandler::onSiteDelete"/>
 
-    <event on="onSiteDeactivate" fire="QUI\Redirect\EventHandler::onSiteDeactivate"/>
+    <!-- We use this earlier deactivate event to get the site's status before being deactivated (status set to 0) -->
+    <event on="onSiteCheckDeactivate" fire="QUI\Redirect\EventHandler::onSiteDeactivate"/>
 
     <event on="onSiteMoveBefore" fire="QUI\Redirect\EventHandler::onSiteMoveBefore"/>
     <event on="onSiteMove" fire="QUI\Redirect\EventHandler::onSiteMoveAfter"/>

@@ -93,6 +93,14 @@ class EventHandler
      */
     public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
     {
+        // Sites restored from trash are moved and then deactivated.
+        // Their status (before deactivation) is "-1".
+        // Therefore checking if the site is active, prevents adding redirects for sites moved from trash.
+        // related: quiqqer/redirect#11
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
