@@ -51,12 +51,11 @@ class EventHandler
     public static function onSiteDelete($siteId, Project $Project)
     {
         try {
-            $Site = new Site($Project, $siteId);
+            $Site = $Project->get($siteId);
 
-//            TODO: using the if below causes no redirect to be created when deleting active sites (their attributes are empty)
-//            if (!\QUI\Redirect\Site::isActive($Site)) {
-//                return;
-//            }
+            if (!\QUI\Redirect\Site::isActive($Site)) {
+                return;
+            }
 
             $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
 
