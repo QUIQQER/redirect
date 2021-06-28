@@ -51,7 +51,12 @@ class EventHandler
     public static function onSiteDelete($siteId, Project $Project)
     {
         try {
-            $Site = new Site($Project, $siteId);
+            $Site = $Project->get($siteId);
+
+            if (!\QUI\Redirect\Site::isActive($Site)) {
+                return;
+            }
+
             $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
@@ -87,6 +92,14 @@ class EventHandler
      */
     public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
     {
+        // Sites restored from trash are moved and then deactivated.
+        // Their status (before deactivation) is "-1".
+        // Therefore checking if the site is active, prevents adding redirects for sites moved from trash.
+        // related: quiqqer/redirect#11
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
@@ -125,6 +138,10 @@ class EventHandler
      */
     public static function onSiteMoveBefore(Site\Edit $Site, $parentId)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         Session::addUrlsRecursive($Site);
     }
 
@@ -138,6 +155,10 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         Manager::addRedirectsFromSession($Site);
     }
 
@@ -150,6 +171,10 @@ class EventHandler
      */
     public static function onSiteSaveBefore(Site\Edit $Site)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             if ($Site->getId() == 1) {
                 return;
@@ -170,12 +195,23 @@ class EventHandler
      */
     public static function onSiteSave(Site\Edit $Site)
     {
+        if (!\QUI\Redirect\Site::isActive($Site)) {
+            return;
+        }
+
         try {
             if ($Site->getId() == 1) {
                 return;
             }
 
             $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
+
+            // Bug in quiqqer/quiqqer:
+            // The rewritten URL cache is not emptied when a site's URL changes.
+            // Therefore we have to do it manually.
+            // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
+            \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
+
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
