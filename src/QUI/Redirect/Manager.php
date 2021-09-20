@@ -78,8 +78,8 @@ class Manager
         try {
             $redirectData = \QUI::getDataBase()->fetch([
                 'from'  => Database::getTableName($Project),
-                'where' => [
-                    Database::COLUMN_ID => md5($url)
+                'whereOr' => [
+                    Database::COLUMN_ID => md5(urldecode($url))
                 ],
                 'limit' => 1
             ]);
@@ -133,7 +133,7 @@ class Manager
             \QUI::getDataBase()->replace(
                 Database::getTableName($Project),
                 [
-                    Database::COLUMN_ID         => md5($sourceUrl),
+                    Database::COLUMN_ID         => md5(urldecode($sourceUrl)),
                     Database::COLUMN_SOURCE_URL => $sourceUrl,
                     Database::COLUMN_TARGET_URL => $targetUrl,
                 ]
@@ -323,7 +323,7 @@ class Manager
             \QUI::getDataBase()->delete(
                 Database::getTableName($Project),
                 [
-                    Database::COLUMN_ID => md5($sourceUrl)
+                    Database::COLUMN_ID => md5(urldecode($sourceUrl))
                 ]
             );
         } catch (\QUI\Database\Exception $Exception) {
