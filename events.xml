@@ -10,8 +10,8 @@
     <event on="onSiteMoveBefore" fire="QUI\Redirect\EventHandler::onSiteMoveBefore"/>
     <event on="onSiteMove" fire="QUI\Redirect\EventHandler::onSiteMoveAfter"/>
 
-    <event on="onSiteSaveBefore" fire="QUI\Redirect\EventHandler::onSiteSaveBefore"/>
-    <event on="onSiteSave" fire="QUI\Redirect\EventHandler::onSiteSave"/>
+    <event on="onSiteSaveAjaxBegin" fire="QUI\Redirect\EventHandler::onSiteSaveAjaxBegin"/>
+    <event on="onSiteSaveAjaxEnd" fire="QUI\Redirect\EventHandler::onSiteSaveAjaxEnd"/>
 
     <event on="onAdminLoadFooter" fire="QUI\Redirect\EventHandler::onAdminLoadFooter"/>
 </events>

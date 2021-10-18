@@ -78,7 +78,7 @@ class Manager
         try {
             $redirectData = \QUI::getDataBase()->fetch([
                 'from'  => Database::getTableName($Project),
-                'whereOr' => [
+                'where' => [
                     Database::COLUMN_ID => md5(urldecode($url))
                 ],
                 'limit' => 1
