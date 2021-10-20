@@ -6,7 +6,6 @@
 
 namespace QUI\Redirect;
 
-
 /**
  * Class Url
  * @package redirect\src\QUI\Redirect
@@ -26,11 +25,39 @@ class Url
      */
     public static function prepareSourceUrl($url)
     {
-        $urlPath = parse_url($url, PHP_URL_PATH);
+        $url = static::getRelevantPartsFromUrl($url);
+        $url = static::stripLanguageFromPath($url);
 
-        $urlPath = static::stripLanguageFromPath($urlPath);
+        return $url;
+    }
 
-        return $urlPath;
+    /**
+     * Returns the parts from a given url that are relevant for a redirect.
+     * This may include the path, the query and the fragment.
+     *
+     * @param $url
+     *
+     * @return string
+     */
+    public static function getRelevantPartsFromUrl($url): string
+    {
+        $urlParts = parse_url($url);
+
+        if (!isset($urlParts['path'])) {
+            return '';
+        }
+
+        $result = '/' . trim($urlParts['path'], '/');
+
+        if (isset($urlParts['query'])) {
+            $result .= '?' . $urlParts['query'];
+        }
+
+        if (isset($urlParts['fragment'])) {
+            $result .= '#' . $urlParts['fragment'];
+        }
+
+        return $result;
     }
 
 
