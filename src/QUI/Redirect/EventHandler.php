@@ -57,7 +57,7 @@ class EventHandler
                 return;
             }
 
-            $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
+            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
@@ -70,7 +70,7 @@ class EventHandler
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -114,7 +114,7 @@ class EventHandler
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -142,7 +142,13 @@ class EventHandler
             return;
         }
 
-        Session::addUrlsRecursive($Site);
+        // Bug in quiqqer/quiqqer:
+        // The rewritten URL cache is not emptied when a site's URL changes.
+        // Therefore we have to do it manually.
+        // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
+        \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
+
+        TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
     }
 
 
@@ -158,6 +164,12 @@ class EventHandler
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
+
+        // Bug in quiqqer/quiqqer:
+        // The rewritten URL cache is not emptied when a site's URL changes.
+        // Therefore we have to do it manually.
+        // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
+        \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
 
         Manager::addRedirectsFromSession($Site);
     }
@@ -220,7 +232,7 @@ class EventHandler
 
             $Project      = $Site->getProject();
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $oldUrl,

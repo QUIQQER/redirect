@@ -1,6 +1,7 @@
 <?php
 
 use \QUI\Redirect\Session;
+use \QUI\Redirect\TemporaryStorage;
 
 /**
  * Processes the children of a site.
@@ -18,11 +19,11 @@ use \QUI\Redirect\Session;
 
         $skipChildren = QUI\Utils\BoolHelper::JSBool($skipChildren);
 
-        $urlsToProcess = Session::getUrlsToProcess();
+        $urlsToProcess = TemporaryStorage::getUrlsToProcess();
 
         if ($skipChildren) {
             if (!$targetUrl || !$projectName) {
-                Session::removeAllUrlsToProcess();
+                TemporaryStorage::removeAllUrlsToProcess();
 
                 return true;
             }
@@ -42,12 +43,12 @@ use \QUI\Redirect\Session;
                 }
             }
 
-            Session::removeAllUrlsToProcess();
+            TemporaryStorage::removeAllUrlsToProcess();
 
             return true;
         }
 
-        $urlsToProcess = Session::removeUrlToProcess($sourceUrl);
+        $urlsToProcess = TemporaryStorage::removeUrlToProcess($sourceUrl);
 
         // More URLs to process?
         if (count($urlsToProcess) > 0) {
