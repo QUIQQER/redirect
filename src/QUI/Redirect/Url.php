@@ -6,7 +6,6 @@
 
 namespace QUI\Redirect;
 
-
 /**
  * Class Url
  * @package redirect\src\QUI\Redirect
@@ -44,7 +43,7 @@ class Url
     {
         $urlParts = parse_url($url);
 
-        if(!isset($urlParts['path'])) {
+        if (!isset($urlParts['path'])) {
             return '';
         }
 
