@@ -152,7 +152,9 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                     emptyselect: false,
                     events     : {
                         onChange: self.loadData
-                    }
+                    },
+                    project: QUIQQER_PROJECT.name,
+                    lang: QUIQQER_PROJECT.lang,
                 });
 
                 self.addButton(self.$ProjectSelect);
