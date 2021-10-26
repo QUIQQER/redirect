@@ -11,6 +11,7 @@ use QUI\Package\Package;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
+use \Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class EventHandler
@@ -26,7 +27,8 @@ class EventHandler
      */
     public static function onErrorHeaderShow($code, $url)
     {
-        if ($code != 404) {
+        // We only care about 404 and 303 codes
+        if ($code != Response::HTTP_NOT_FOUND && $code != Response::HTTP_SEE_OTHER) {
             return;
         }
 
