@@ -139,5 +139,20 @@
             <en><![CDATA[Delete]]></en>
         </locale>
         <!-- endregion -->
+
+        <locale name="permission.quiqqer.redirect._header">
+            <de><![CDATA[Umleitungen]]></de>
+            <en><![CDATA[Redirects]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.redirect.view">
+            <de><![CDATA[Umleitungen ansehen (Panel öffnen)]]></de>
+            <en><![CDATA[View Redirects (open panel)]]></en>
+        </locale>
+
+        <locale name="permission.quiqqer.redirect.delete">
+            <de><![CDATA[Umleitungen löschen]]></de>
+            <en><![CDATA[Delete Redirects]]></en>
+        </locale>
     </groups>
 </locales>
