@@ -322,7 +322,7 @@ class Manager
      */
     public static function deleteRedirect($sourceUrl, Project $Project)
     {
-        QUI\Permissions\Permission::checkPermission('quiqqer.redirect.delete');
+        QUI\Permissions\Permission::checkPermission(\QUI\Redirect\Permission::REDIRECT_DELETE);
 
         try {
             \QUI::getDataBase()->delete(

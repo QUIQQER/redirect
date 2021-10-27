@@ -23,5 +23,5 @@
         return true;
     },
     ['sourceUrls', 'projectName', 'projectLanguage'],
-    'quiqqer.redirect.delete'
+    \QUI\Redirect\Permission::REDIRECT_DELETE
 );
