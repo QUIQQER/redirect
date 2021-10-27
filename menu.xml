@@ -4,6 +4,7 @@
           name="redirect"
           icon="fa fa-share"
           require="package/quiqqer/redirect/bin/controls/Panel"
+          permission="quiqqer.redirect.view"
     >
         <locale group="quiqqer/redirect" var="menu.text"/>
     </item>
