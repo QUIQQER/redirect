@@ -97,6 +97,11 @@
             <de><![CDATA[Es muss ein Projekt ausgewählt werden →]]></de>
             <en><![CDATA[A project must be selected →]]></en>
         </locale>
+
+        <locale name="panel.input.search.placeholder">
+            <de><![CDATA[Suchen…]]></de>
+            <en><![CDATA[Search…]]></en>
+        </locale>
         <!-- endregion -->
 
 

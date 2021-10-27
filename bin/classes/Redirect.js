@@ -90,12 +90,15 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
 
         /**
          * Returns a given amount of redirects, with a given sorting and offset, for a given project and language.
+         * The searchString parameter can be used to filter the results by a given string.
+         *
          * The result is formatted/intended to be used with the Grid-control.
          *
          * @param {string} projectName
          * @param {string} projectLanguage
          * @param {number} page
          * @param {number} perPage
+         * @param {string} searchString
          *
          * @return {Promise}
          */
@@ -103,7 +106,8 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
             projectName,
             projectLanguage,
             page,
-            perPage
+            perPage,
+            searchString
         ) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_quiqqer_redirect_ajax_getRedirectsForGrid', resolve, {
@@ -112,7 +116,8 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
                     projectName    : projectName,
                     projectLanguage: projectLanguage,
                     page           : page,
-                    perPage        : perPage
+                    perPage        : perPage,
+                    searchString   : searchString
                 });
             });
         },
