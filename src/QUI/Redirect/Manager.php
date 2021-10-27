@@ -310,15 +310,20 @@ class Manager
     }
 
     /**
-     * Removes the redirect with the given source URL from the given project
+     * Removes the redirect with the given source URL from the given project.
+     * Throws a Permission Exception if the current user has insufficient permission.
      *
      * @param string $sourceUrl
      * @param Project $Project
      *
      * @return boolean - Removal successful?
+     *
+     * @throws QUI\Permissions\Exception
      */
     public static function deleteRedirect($sourceUrl, Project $Project)
     {
+        QUI\Permissions\Permission::checkPermission('quiqqer.redirect.delete');
+
         try {
             \QUI::getDataBase()->delete(
                 Database::getTableName($Project),

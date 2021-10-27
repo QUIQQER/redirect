@@ -23,5 +23,5 @@
         return true;
     },
     ['sourceUrls', 'projectName', 'projectLanguage'],
-    'Permission::checkAdminUser'
+    'quiqqer.redirect.delete'
 );
