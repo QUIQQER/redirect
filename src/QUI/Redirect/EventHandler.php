@@ -11,6 +11,7 @@ use QUI\Package\Package;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
+use \Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class EventHandler
@@ -26,7 +27,8 @@ class EventHandler
      */
     public static function onErrorHeaderShow($code, $url)
     {
-        if ($code != 404) {
+        // We only care about 404 and 303 codes
+        if ($code != Response::HTTP_NOT_FOUND && $code != Response::HTTP_SEE_OTHER) {
             return;
         }
 
@@ -181,7 +183,7 @@ class EventHandler
      *
      * @param Site\Edit $Site - The saved site
      */
-    public static function onSiteSaveAjaxBegin(Site\Edit $Site)
+    public static function onSiteSaveBefore(Site\Edit $Site)
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -205,7 +207,7 @@ class EventHandler
      *
      * @param Site\Edit $Site - The saved site
      */
-    public static function onSiteSaveAjaxEnd(Site\Edit $Site)
+    public static function onSiteSave(Site\Edit $Site)
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -217,13 +219,6 @@ class EventHandler
             }
 
             $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
-
-            // Bug in quiqqer/quiqqer:
-            // The rewritten URL cache is not emptied when a site's URL changes.
-            // Therefore we have to do it manually.
-            // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
-            \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
-
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {

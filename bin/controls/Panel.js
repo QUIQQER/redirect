@@ -38,7 +38,8 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             'deleteRedirect',
             'openAddRedirectDialog',
             'editRedirect',
-            'getSelectedProjectData'
+            'getSelectedProjectData',
+            'startSearch'
         ],
 
         $ProjectSelect: null,
@@ -52,6 +53,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             this.parent(options);
 
             this.$Grid = null;
+            this.$SearchInput = null;
 
             this.addEvents({
                 onCreate: this.$onCreate,
@@ -101,6 +103,26 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 }
             });
 
+            this.$SearchInput = new Element('input', {
+                placeholder: QUILocale.get(lg, 'panel.input.search.placeholder'),
+                styles     : {
+                    'float': 'right',
+                    margin : 10,
+                    width  : 200
+                },
+                events     : {
+                    keyup: (e) => {
+                        e.stop();
+
+                        if (e.key === 'enter') {
+                            this.startSearch();
+                        }
+                    }
+                }
+            });
+
+            this.getButtonBar().appendChild(this.$SearchInput);
+
             // Grid
             var Container = new Element('div').inject(
                 this.getContent()
@@ -121,6 +143,7 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
 
                 onrefresh : self.loadData,
                 pagination: true,
+                filterInput: false,
 
                 perPage: 25,
 
@@ -152,7 +175,9 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                     emptyselect: false,
                     events     : {
                         onChange: self.loadData
-                    }
+                    },
+                    project: QUIQQER_PROJECT.name,
+                    lang: QUIQQER_PROJECT.lang,
                 });
 
                 self.addButton(self.$ProjectSelect);
@@ -201,7 +226,8 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 projectName,
                 projectLanguage,
                 self.$Grid.getAttribute('page'),
-                self.$Grid.getAttribute('perPage')
+                self.$Grid.getAttribute('perPage'),
+                self.$SearchInput.value
             ).then(function (result) {
                 self.$Grid.setData({
                     data : result.data,
@@ -317,6 +343,11 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
             }
 
             return value.split(',');
+        },
+
+        startSearch: function () {
+            // loadData uses value from search input to query redirects containing the search term
+            this.loadData();
         }
     });
 });

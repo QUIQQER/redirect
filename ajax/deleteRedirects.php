@@ -23,5 +23,5 @@
         return true;
     },
     ['sourceUrls', 'projectName', 'projectLanguage'],
-    'Permission::checkAdminUser'
+    \QUI\Redirect\Permission::REDIRECT_DELETE
 );
