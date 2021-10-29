@@ -182,7 +182,7 @@ class EventHandler
                 return;
             }
 
-            $Site->setAttribute('redirectOldUrl', $Site->getUrlRewritten());
+            TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -206,7 +206,7 @@ class EventHandler
                 return;
             }
 
-            $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
+            $oldUrl = TemporaryStorage::getOldUrlForSiteId($Site->getId());
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
