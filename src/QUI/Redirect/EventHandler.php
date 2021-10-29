@@ -207,13 +207,6 @@ class EventHandler
             }
 
             $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
-
-            // Bug in quiqqer/quiqqer:
-            // The rewritten URL cache is not emptied when a site's URL changes.
-            // Therefore we have to do it manually.
-            // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
-            \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
-
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
