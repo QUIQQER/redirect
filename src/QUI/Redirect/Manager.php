@@ -200,7 +200,7 @@ class Manager
         // TODO: clean up this mess (e.g. Notify the user in addRedirect())
         $isTotalAddRedirectSuccessful = true;
         try {
-            $oldUrl  = Url::prepareSourceUrl(Session::getOldUrlFromSession($Site->getId()));
+            $oldUrl  = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($Site->getId()));
             $Project = $Site->getProject();
 
             static::addRedirect($oldUrl, Url::prepareInternalTargetUrl($Site->getUrlRewritten()), $Project);
@@ -210,7 +210,7 @@ class Manager
                 // Use a separate try to continue on error
                 try {
                     $childSiteId = $ChildSite->getId();
-                    $childOldUrl = Url::prepareSourceUrl(Session::getOldUrlFromSession($childSiteId));
+                    $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($childSiteId));
 
                     if (!$childOldUrl) {
                         // Escape this try
@@ -223,7 +223,7 @@ class Manager
                         $Project
                     );
 
-                    Session::removeOldUrlFromSession($childSiteId);
+                    TemporaryStorage::removeOldUrlForSiteId($childSiteId);
                 } catch (Exception $Exception) {
                     $isChildAddRedirectSuccessful = false;
                 }
