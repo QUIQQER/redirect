@@ -59,7 +59,7 @@ class EventHandler
                 return;
             }
 
-            $url  = Url::prepareSourceUrl($Site->getUrlRewritten());
+            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
@@ -72,7 +72,7 @@ class EventHandler
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -116,7 +116,7 @@ class EventHandler
 
             // TODO: show notification if store in session failed (?)
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -144,7 +144,7 @@ class EventHandler
             return;
         }
 
-        Session::addUrlsRecursive($Site);
+        TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
     }
 
 
@@ -182,7 +182,7 @@ class EventHandler
                 return;
             }
 
-            $Site->setAttribute('redirectOldUrl', $Site->getUrlRewritten());
+            TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -206,7 +206,7 @@ class EventHandler
                 return;
             }
 
-            $oldUrl = Url::prepareSourceUrl($Site->getAttribute('redirectOldUrl'));
+            $oldUrl = TemporaryStorage::getOldUrlForSiteId($Site->getId());
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
@@ -215,7 +215,7 @@ class EventHandler
 
             $Project      = $Site->getProject();
             $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            Session::storeUrlsToProcess($childrenUrls);
+            TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
                 $oldUrl,
