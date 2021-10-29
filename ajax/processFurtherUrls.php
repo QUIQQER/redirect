@@ -54,7 +54,7 @@ use \QUI\Redirect\TemporaryStorage;
         if (count($urlsToProcess) > 0) {
             \QUI\Redirect\Frontend::showAddRedirectDialog(
                 $urlsToProcess[0],
-                false,
+                $targetUrl,
                 true,
                 $projectName,
                 $projectLanguage
