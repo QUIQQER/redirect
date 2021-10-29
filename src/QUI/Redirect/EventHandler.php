@@ -171,7 +171,7 @@ class EventHandler
      *
      * @param Site\Edit $Site - The saved site
      */
-    public static function onSiteSaveAjaxBegin(Site\Edit $Site)
+    public static function onSiteSaveBefore(Site\Edit $Site)
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -195,7 +195,7 @@ class EventHandler
      *
      * @param Site\Edit $Site - The saved site
      */
-    public static function onSiteSaveAjaxEnd(Site\Edit $Site)
+    public static function onSiteSave(Site\Edit $Site)
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
