@@ -14,8 +14,10 @@ class TemporaryStorage
 {
     /**
      * Returns the path to the directory where the data is temporarily stored.
+     * There is a separate folder for each user/session.
      *
      * @return string
+     *
      * @throws Exception
      */
     protected static function getDirectory(): string
@@ -29,20 +31,39 @@ class TemporaryStorage
         return $directory;
     }
 
+
+    /**
+     * Returns the path to the file that stores the queue (URLs to process).
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
     protected static function getQueueFile(): string
     {
         return static::getDirectory() . 'queue.json';
     }
 
+
+    /**
+     * Returns the path to the file that stores old URLs.
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
     protected static function getOldUrlsFile(): string
     {
         return static::getDirectory() . 'old_urls.json';
     }
 
+
     /**
-     * Stores the URLs to process
+     * Stores the URLs to process later (in the queue file).
      *
-     * @param string[] $urls - The URLs to store
+     * @param string[] $urls
+     *
+     * @throws Exception
      */
     public static function setUrlsToProcess(array $urls): void
     {
@@ -51,9 +72,11 @@ class TemporaryStorage
 
 
     /**
-     * Returns a site's children from the current user's session
+     * Returns all URL that are left to process (in the queue).
      *
      * @return array
+     *
+     * @throws Exception
      */
     public static function getUrlsToProcess(): array
     {
@@ -68,7 +91,9 @@ class TemporaryStorage
 
 
     /**
-     * Removes a site's children from the current user's session
+     * Clears the list of URLs to process.
+     *
+     * @throws Exception
      */
     public static function removeAllUrlsToProcess(): void
     {
@@ -77,11 +102,13 @@ class TemporaryStorage
 
 
     /**
-     * Removes an URL from the URLs to process
+     * Removes the given URL from the list of URLs to process.
      *
-     * @param string $url - The URL to remove
+     * @param string $url
      *
-     * @return string[] - The URLs without the removed URL
+     * @return string[]
+     *
+     * @throws Exception
      */
     public static function removeUrlToProcess(string $url): array
     {
@@ -101,6 +128,13 @@ class TemporaryStorage
     }
 
 
+    /**
+     * Sets the list of URLs to process.
+     *
+     * @param array $urls
+     *
+     * @throws Exception
+     */
     public static function setOldUrls(array $urls): void
     {
         file_put_contents(static::getOldUrlsFile(), json_encode($urls));
@@ -108,9 +142,13 @@ class TemporaryStorage
 
 
     /**
-     * Adds a site's old url to the session
+     * Sets the list of old URLs from a given site and it's children.
      *
-     * @param \QUI\Interfaces\Projects\Site $Site - The site to store the URL for
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return bool
+     *
+     * @throws Exception
      */
     public static function setOldUrlsRecursivelyFromSite(\QUI\Interfaces\Projects\Site $Site): bool
     {
@@ -144,6 +182,15 @@ class TemporaryStorage
         return $isTotalAddUrlSuccessful;
     }
 
+
+    /**
+     * Returns the list/array of old URLs.
+     * The site id is the array's index and the old URL is the corresponding value.
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
     public static function getOldUrls(): array
     {
         $oldUrls = json_decode(File::getFileContent(static::getOldUrlsFile()), true);
@@ -155,12 +202,16 @@ class TemporaryStorage
         return $oldUrls;
     }
 
+
     /**
-     * Returns a site's old URL from the current user's session
+     * Returns the old URL for a given site id.
+     * If the old URL is not found, false is returned.
      *
-     * @param int $siteId - The site's ID
+     * @param int $siteId
      *
-     * @return string|false
+     * @return string
+     *
+     * @throws Exception
      */
     public static function getOldUrlForSiteId(int $siteId): string
     {
@@ -175,10 +226,11 @@ class TemporaryStorage
 
 
     /**
-     * Removes a site's old URL from the current user's session
+     * Removes the old URL of a given site ID from the list of old URLs.
      *
      * @param int $siteId
      *
+     * @throws Exception
      */
     public static function removeOldUrlForSiteId(int $siteId): void
     {
