@@ -144,12 +144,6 @@ class EventHandler
             return;
         }
 
-        // Bug in quiqqer/quiqqer:
-        // The rewritten URL cache is not emptied when a site's URL changes.
-        // Therefore we have to do it manually.
-        // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
-        \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
-
         TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
     }
 
@@ -166,12 +160,6 @@ class EventHandler
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
-
-        // Bug in quiqqer/quiqqer:
-        // The rewritten URL cache is not emptied when a site's URL changes.
-        // Therefore we have to do it manually.
-        // TODO: Remove this when quiqqer/quiqqer#1099 is resolved
-        \QUI::getRewrite()->getOutput()->removeRewrittenUrlCache($Site);
 
         Manager::addRedirectsFromSession($Site);
     }
