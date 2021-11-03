@@ -1,3 +1,21 @@
+#add-redirect-apply-to-all-children {
+    float: none;
+}
+
+#add-redirect-redirect-note {
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+#add-redirect-children-table {
+    display: block;
+}
+
+#add-redirect-children {
+    display: block;
+}
+
+/*
 .add-redirect-popup {
     align-items: stretch;
     display: flex;
@@ -47,4 +65,4 @@
 .redirect-children-note label {
     cursor: pointer;
     margin-left: 10px;
-}
+}*/

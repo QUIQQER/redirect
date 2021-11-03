@@ -1,0 +1,63 @@
+<form>
+    <table class="data-table data-table-flexbox">
+        <tbody>
+        <tr>
+            <td>
+                <div>
+                    <label class="field-container">
+                        <span class="field-container-item">Source:</span>
+                        <input type="text"
+                               class="field-container-field"
+                               id="add-redirect-parent-source"
+                               readonly="{{sourceUrlReadOnly}}"
+                               value="{{sourceUrl}}"
+                        />
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <label class="field-container" id="add-redirect-target-label">
+                        <span class="field-container-item">Target:</span>
+                        <!-- Input is injected via JS -->
+                    </label>
+                    <span id="add-redirect-note">{{note}}</span>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {{#showChildren}}
+    <div>
+        <div>
+            <label>
+                <input type="checkbox" checked id="add-redirect-enable-all-children"/>
+                Add redirects for all children
+            </label>
+            <button id="add-redirect-apply-to-all-children"
+                    class="qui-button qui-button-cancel btn-light qui-utils-noselect">
+                <span class="qui-button-text">Apply parent target to all children</span>
+            </button>
+        </div>
+        <div>
+            <details>
+                <summary>Children</summary>
+                <table id="add-redirect-children-table">
+                    <thead>
+                    <tr>
+                        <th>Add</th>
+                        <th>Source</th>
+                        <th>Target</th>
+                    </tr>
+                    </thead>
+                    <tbody id="add-redirect-children">
+                        <!-- Filled dynamically via JS (Hyper List) -->
+                    </tbody>
+                </table>
+            </details>
+        </div>
+    </div>
+    {{/showChildren}}
+</form>

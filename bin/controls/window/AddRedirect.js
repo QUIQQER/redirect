@@ -10,10 +10,15 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     'package/quiqqer/redirect/bin/Handler',
 
     'Locale',
+    'Mustache',
+
+    'https://unpkg.com/hyperlist@1.0.0',
+
+    'text!package/quiqqer/redirect/bin/controls/window/AddRedirect.html',
 
     'css!package/quiqqer/redirect/bin/controls/window/AddRedirect.css'
 
-], function (QUI, QUIConfirm, SiteInput, RedirectHandler, QUILocale) {
+], function (QUI, QUIConfirm, SiteInput, RedirectHandler, QUILocale, Mustache, HyperList, template) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -21,52 +26,73 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     return new Class({
 
         Extends: QUIConfirm,
-        Type   : 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
+        Type: 'package/quiqqer/redirect/bin/controls/window/AddRedirect',
+
+        Binds: [
+            'initialize',
+            '$onOpen',
+            '$onSubmit',
+            'generateHyperlistRowForChild',
+            'getChildren',
+            'getSourceUrl',
+            'getTargetUrl',
+            'setChildren'
+        ],
 
         options: {
-            maxWidth         : 600,
-            maxHeight        : 350,
-            title            : QUILocale.get(lg, 'window.redirect.title'),
-            autoclose        : false,
-            texticon         : false,
-            icon             : 'fa fa-share',
-            ok_button        : {
-                text     : QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
+            maxWidth: 600,
+            maxHeight: 700,
+            title: QUILocale.get(lg, 'window.redirect.title'),
+            autoclose: false,
+            texticon: false,
+            icon: 'fa fa-share',
+            ok_button: {
+                text: QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
                 textimage: 'fa fa-plus'
             },
-            cancel_button    : {
-                text     : QUILocale.get(lg, 'site.delete.popup.button.cancel.text'),
+            cancel_button: {
+                text: QUILocale.get(lg, 'site.delete.popup.button.cancel.text'),
                 textimage: 'icon-remove fa fa-remove'
             },
-            sourceUrl        : false,
+            sourceUrl: false,
             sourceUrlReadOnly: false,
-            projectName      : false,
-            projectLanguage  : false
+            projectName: false,
+            projectLanguage: false,
+            content: '',
+            children: []
         },
 
         $SourceUrlInput: false,
-        $SiteInput     : false,
-        $skipChildren  : false,
+        $TargetSiteInput: false,
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
                 'onSubmit': this.$onSubmit,
-                'onCancel': this.$onCancel,
-                'onOpen'  : this.$onOpen
+                'onOpen': this.$onOpen
             });
 
-            this.$SiteInput = new SiteInput({
+            this.$TargetSiteInput = new SiteInput({
                 external: true,
-                name    : 'redirect-target',
-                project : this.getAttribute('projectName'),
-                lang    : this.getAttribute('projectLanguage')
-        });
+                name: 'add-redirect-target',
+                project: this.getAttribute('projectName'),
+                lang: this.getAttribute('projectLanguage')
+            });
 
-            if (this.getAttribute('showSkip')) {
-                this.$skipChildren = true;
+            let tmpChildren = [];
+            for (let i = 0; i < 10000; i++) {
+                tmpChildren.push({
+                    source: '/test/hallo/' + i,
+                    target: ''
+                });
             }
+            this.setChildren(tmpChildren);
+
+            this.setChildren(this.getChildren().map(child => {
+                child.enabled = true;
+                return child;
+            }));
         },
 
 
@@ -80,11 +106,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             var self = this;
 
             QUI.getMessageHandler().then(function (MessageHandler) {
-                var sourceUrl       = self.getSourceUrl(),
-                    targetUrl       = self.getTargetUrl(),
-                    projectName     = self.getAttribute('projectName'),
-                    projectLanguage = self.getAttribute('projectLanguage'),
-                    isSkipChecked   = self.isSkipChecked();
+                var sourceUrl = self.getSourceUrl(),
+                    targetUrl = self.getTargetUrl(),
+                    projectName = self.getAttribute('projectName'),
+                    projectLanguage = self.getAttribute('projectLanguage');
 
                 if (!targetUrl) {
                     MessageHandler.addError(
@@ -106,14 +131,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                         return;
                     }
 
-                    RedirectHandler.processFurtherUrls(
-                        sourceUrl,
-                        targetUrl,
-                        isSkipChecked,
-                        projectName,
-                        projectLanguage
-                    ).catch(console.error);
-
                     self.close();
                 }).catch(function (error) {
                     if (error.getCode() === QUIQQER_EXCEPTION_CODE_PACKAGE_NOT_LICENSED) {
@@ -129,88 +146,90 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         },
 
 
-        /**
-         * Called when the popup is canceled
-         *
-         * @param Win - The popup-window
-         * @param value - Information about the selected site
-         */
-        $onCancel: function (Win, value) {
-            var sourceUrl     = this.getSourceUrl(),
-                isSkipChecked = this.isSkipChecked();
-
-            RedirectHandler.processFurtherUrls(sourceUrl, null, isSkipChecked, null, null);
-        },
-
-
         $onOpen: function () {
-            var Content = this.getContent();
+            let Content = this.getContent(),
+                children = this.getChildren();
 
-            Content.addClass('add-redirect-popup');
-
-            new Element('label', {
-                for : 'redirect-source',
-                html: '<b>' + QUILocale.get(lg, 'window.redirect.url.source') + '</b>'
-            }).inject(Content);
-
-            this.$SourceUrlInput = new Element('input', {
-                type : 'text',
-                value: this.getAttribute('sourceUrl') ? this.getAttribute('sourceUrl') : "",
-                name : 'redirect-source'
+            Content.innerHTML = Mustache.render(template, {
+                sourceUrl: this.getAttribute('sourceUrl') || '',
+                sourceUrlReadOnly: this.getAttribute('sourceUrlReadOnly'),
+                note: QUILocale.get(lg, 'window.redirect.url.target.note'),
+                showChildren: children.length
             });
 
-            this.$SourceUrlInput.readOnly = this.getAttribute('sourceUrlReadOnly');
+            // Inject site input into the corresponding location (see template for exact location)
+            this.$TargetSiteInput.inject(Content.getElementById('add-redirect-target-label'));
+            this.$TargetSiteInput.$Input.value = this.getAttribute('targetUrl') || '';
 
-            this.$SourceUrlInput.inject(Content);
-
-            new Element('label', {
-                html: '<b>' + QUILocale.get(lg, 'window.redirect.url.target') + '</b>'
-            }).inject(Content);
-
-            this.$SiteInput.inject(Content);
-
-            if (this.getAttribute('targetUrl')) {
-                this.$SiteInput.$Input.value = this.getAttribute('targetUrl');
+            if (!children.length) {
+                return;
             }
 
-            new Element('span', {
-                'class': 'redirect-note',
-                html   : QUILocale.get(lg, 'window.redirect.url.target.note')
-            }).inject(Content);
+            const ChildrenContainer = Content.getElementById('add-redirect-children');
+            // ChildrenContainer.classList.add("container");
 
-            if (this.$skipChildren) {
-                var SkipChildrenContainer = new Element('div', {
-                    'class': 'redirect-children-container'
-                });
+            const config = {
+                height: 350,
+                itemHeight: 50,
+                total: children.length,
 
-                new Element('input', {
-                    type   : 'checkbox',
-                    checked: 1,
-                    name   : 'skip-children',
-                    id     : 'skip-children'
-                }).inject(SkipChildrenContainer);
+                generate: this.generateHyperlistRowForChild
+            };
 
-                new Element('label', {
-                    for : "skip-children",
-                    html: QUILocale.get(lg, 'window.redirect.children.skip')
-                }).inject(SkipChildrenContainer);
+            const List = HyperList.create(ChildrenContainer, config);
 
-                SkipChildrenContainer.inject(Content);
-            }
+            // window.onresize = event => {
+            //     config.height = window.innerHeight;
+            //     List.refresh(ChildrenContainer, config);
+            // };
+
+
         },
 
+        generateHyperlistRowForChild: function (rowNumber) {
+            const Wrapper = document.createElement("tr");
 
-        /**
-         * Returns if the skip checkbox is checked.
-         *
-         * @return {boolean}
-         */
-        isSkipChecked: function () {
-            if (!this.$skipChildren) {
-                return false;
-            }
+            let child = this.getChildren()[rowNumber];
 
-            return this.$Elm.getElement('[name="skip-children"]').checked;
+            const EnabledInputRow = document.createElement('td');
+            const EnabledInput = document.createElement('input');
+            EnabledInput.type = 'checkbox';
+            EnabledInput.checked = child.enabled;
+            EnabledInput.oninput = (event) => {
+                // Immediately update the information in data.children
+                // This has to be done, since the input may unload from the Hyperlist when scrolling
+                child.enabled = event.target.checked;
+            };
+            EnabledInputRow.appendChild(EnabledInput);
+            Wrapper.appendChild(EnabledInputRow);
+
+            // Source URL text input
+            const SourceInputRow = document.createElement('td');
+            const SourceInput = document.createElement('input');
+            SourceInput.readOnly = false;
+            SourceInput.value = child.source;
+            SourceInput.oninput = (event) => {
+                // Immediately update the information in data.children
+                // This has to be done, since the input may unload from the Hyperlist when scrolling
+                child.source = event.target.value;
+            };
+            SourceInputRow.appendChild(SourceInput);
+            Wrapper.appendChild(SourceInputRow);
+
+            // Target URL text input
+            const TargetInputRow = document.createElement('td');
+            const TargetInput = document.createElement('input');
+            TargetInput.readOnly = false;
+            TargetInput.value = child.target;
+            TargetInput.oninput = (event) => {
+                // Immediately update the information in data.children
+                // This has to be done, since the input may unload from the Hyperlist when scrolling
+                child.target = event.target.value;
+            };
+            TargetInputRow.appendChild(TargetInput);
+            Wrapper.appendChild(TargetInputRow);
+
+            return Wrapper;
         },
 
 
@@ -232,11 +251,19 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
          * @return {string|boolean}
          */
         getTargetUrl: function () {
-            if (!this.$SiteInput) {
+            if (!this.$TargetSiteInput) {
                 return false;
             }
 
-            return this.$SiteInput.$Input.value;
+            return this.$TargetSiteInput.$Input.value;
+        },
+
+        getChildren: function () {
+            return this.getAttribute('children');
+        },
+
+        setChildren: function (children) {
+            this.setAttribute('children', children);
         }
     });
 });
