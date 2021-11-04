@@ -36,7 +36,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             'getChildren',
             'getSourceUrl',
             'getTargetUrl',
-            'setChildren'
+            'setChildren',
+            'getEnabledChildren'
         ],
 
         options: {
@@ -64,6 +65,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         $SourceUrlInput: false,
         $TargetSiteInput: false,
+        $ApplyToAllChildrenButton: false,
+        $AddRedirectsForAllChildrenInput: false,
+
 
         initialize: function (options) {
             this.parent(options);
@@ -89,10 +93,14 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
             this.setChildren(tmpChildren);
 
+            // Add the enabled property to all children.
+            // Enabled means that a redirect for the child should be added on submit.
             this.setChildren(this.getChildren().map(child => {
                 child.enabled = true;
                 return child;
             }));
+
+            window.RDIALOG = this;
         },
 
 
@@ -105,7 +113,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         $onSubmit: function (Win, value) {
             var self = this;
 
-            QUI.getMessageHandler().then(function (MessageHandler) {
+            QUI.getMessageHandler().then(MessageHandler => {
                 var sourceUrl = self.getSourceUrl(),
                     targetUrl = self.getTargetUrl(),
                     projectName = self.getAttribute('projectName'),
@@ -118,12 +126,16 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return;
                 }
 
-                RedirectHandler.addRedirect(
-                    sourceUrl,
-                    targetUrl,
+                let redirectsToAdd = [{source: sourceUrl, target: targetUrl}].concat(this.getEnabledChildren());
+
+                // Remove (now) unnecessary enabled attribute to save bandwidth
+                redirectsToAdd.forEach(redirect => delete redirect.enabled);
+
+                RedirectHandler.addRedirects(
+                    redirectsToAdd,
                     projectName,
                     projectLanguage
-                ).then(function (result) {
+                ).then(result => {
                     if (!result) {
                         MessageHandler.addError(
                             QUILocale.get(lg, 'site.delete.popup.error.result')
@@ -132,7 +144,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     }
 
                     self.close();
-                }).catch(function (error) {
+                }).catch(error => {
                     if (error.getCode() === QUIQQER_EXCEPTION_CODE_PACKAGE_NOT_LICENSED) {
                         return;
                     }
@@ -156,6 +168,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 note: QUILocale.get(lg, 'window.redirect.url.target.note'),
                 showChildren: children.length
             });
+
+            this.$SourceUrlInput = Content.getElementById('add-redirect-parent-source');
 
             // Inject site input into the corresponding location (see template for exact location)
             this.$TargetSiteInput.inject(Content.getElementById('add-redirect-target-label'));
@@ -183,6 +197,37 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             //     List.refresh(ChildrenContainer, config);
             // };
 
+
+            this.$AddRedirectsForAllChildrenInput = Content.getElementById('add-redirect-enable-all-children');
+            this.$AddRedirectsForAllChildrenInput.onchange = (event) => {
+                let isEnabled = event.target.checked;
+
+                // Enable or disable all children redirects based on the global checkbox
+                this.setChildren(this.getChildren().map((child) => {
+                    child.enabled = isEnabled;
+                    return child;
+                }));
+
+                List.refresh(ChildrenContainer, config);
+            };
+
+            this.$ApplyToAllChildrenButton = Content.getElementById('add-redirect-apply-to-all-children');
+            this.$ApplyToAllChildrenButton.onclick = (event) => {
+                event.preventDefault();
+
+                this.setChildren(this.getChildren().map((child) => {
+                    // The child URL contains the parent URL (e.g. parent: '/FOO', child: '/FOO/bar')
+                    // This replaces the parent URL part with the new parent target in the child URL.
+                    // E.g.:
+                    // Parent source: /FOO, parent target: /abc
+                    // Child source: '/FOO/bar' becomes the new target '/abc/bar'
+                    child.target = child.source.replace(this.getSourceUrl(), this.getTargetUrl());
+
+                    return child;
+                }));
+
+                List.refresh(ChildrenContainer, config);
+            };
 
         },
 
@@ -260,6 +305,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         getChildren: function () {
             return this.getAttribute('children');
+        },
+
+        getEnabledChildren: function () {
+            return this.getChildren().filter(child => child.enabled);
         },
 
         setChildren: function (children) {

@@ -42,6 +42,28 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
 
 
         /**
+         * Adds the given redirects to the system.
+         *
+         * @param {Array<Object>} redirects - Array of objects with a "source" and "target" properties.
+         * @param {string} projectName
+         * @param {string} projectLanguage
+         *
+         * @returns {Promise}
+         */
+        addRedirects: function (redirects, projectName, projectLanguage) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_quiqqer_redirect_ajax_addRedirects', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    redirects      : JSON.stringify(redirects),
+                    projectName    : projectName,
+                    projectLanguage: projectLanguage
+                });
+            });
+        },
+
+
+        /**
          * Processes the children of a site.
          * Adding redirects for each one or showing new dialogs to add custom redirects
          *
