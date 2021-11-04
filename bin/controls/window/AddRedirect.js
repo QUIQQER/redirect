@@ -12,7 +12,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     'Locale',
     'Mustache',
 
-    'https://unpkg.com/hyperlist@1.0.0',
+    URL_OPT_DIR + 'bin/quiqqer-asset/hyperlist/hyperlist/dist/hyperlist.js',
 
     'text!package/quiqqer/redirect/bin/controls/window/AddRedirect.html',
 
