@@ -16,6 +16,8 @@
         "url": "https:\/\/www.pcsg.de"
     },
     "require": {
+        "php": ">=7.4",
+
         "quiqqer\/quiqqer": "^1.5.3|dev-master|dev-dev",
         "quiqqer\/utils": "^1.15.1|dev-master|dev-dev",
         "quiqqer-asset/hyperlist":  "1.0.*"
