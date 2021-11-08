@@ -77,7 +77,6 @@ class EventHandler
             Frontend::showAddRedirectDialog(
                 $url,
                 $parentUrl,
-                true,
                 $Project->getName(),
                 $Project->getLang()
             );
@@ -121,7 +120,6 @@ class EventHandler
             Frontend::showAddRedirectDialog(
                 $url,
                 $parentUrl,
-                true,
                 $Project->getName(),
                 $Project->getLang()
             );
@@ -220,7 +218,6 @@ class EventHandler
             Frontend::showAddRedirectDialog(
                 $oldUrl,
                 $newUrl,
-                true,
                 $Project->getName(),
                 $Project->getLang()
             );

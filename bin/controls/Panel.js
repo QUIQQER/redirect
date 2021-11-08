@@ -257,7 +257,6 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 }
 
                 new AddRedirectPopup({
-                    showSkip       : false,
                     projectName    : selectedProjectData[0],
                     projectLanguage: selectedProjectData[1],
                     events         : {
@@ -315,7 +314,6 @@ define('package/quiqqer/redirect/bin/controls/Panel', [
                 var selectedProjectData = self.getSelectedProjectData();
 
                 new AddRedirectPopup({
-                    showSkip         : false,
                     sourceUrlReadOnly: true,
                     sourceUrl        : self.$Grid.getSelectedData()[0].source_url,
                     targetUrl        : self.$Grid.getSelectedData()[0].target_url,
