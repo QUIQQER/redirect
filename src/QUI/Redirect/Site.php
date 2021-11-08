@@ -64,18 +64,11 @@ class Site
      * Be careful about performance when using this!
      *
      * @param \QUI\Interfaces\Projects\Site $Site
-     * @param array $params - Parameters to query children
-     *                      $params['where']
-     *                      $params['limit']
-     * @param boolean $stripLanguage - Strip the language from the URL
      *
      * @return string[]
      */
-    public static function getChildrenUrlsRecursive(
-        \QUI\Interfaces\Projects\Site $Site,
-        $params = [],
-        $stripLanguage = false
-    ) {
+    public static function getChildrenUrlsRecursive(\QUI\Interfaces\Projects\Site $Site): array
+    {
         // A basic Site-object (not SiteEdit) can be used to retrieve URLs
         if (!is_subclass_of($Site, \QUI\Projects\Site::class)) {
             try {
@@ -85,15 +78,13 @@ class Site
             }
         }
 
-        $children = static::getChildrenRecursive($Site, $params);
+        $children = static::getChildrenRecursive($Site, ['active' => '0&1']);
 
         $result = [];
         foreach ($children as $child) {
             $urlRewritten = $child->getUrlRewritten();
 
-            if ($stripLanguage) {
-                $urlRewritten = Url::stripLanguageFromPath($urlRewritten);
-            }
+            $urlRewritten = Url::stripLanguageFromPath($urlRewritten);
 
             $result[] = $urlRewritten;
         }

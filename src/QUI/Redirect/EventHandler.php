@@ -71,7 +71,7 @@ class EventHandler
             }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
             TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
@@ -114,8 +114,7 @@ class EventHandler
             }
 
             // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
-            TemporaryStorage::setUrlsToProcess($childrenUrls);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
 
             Frontend::showAddRedirectDialog(
                 $url,
@@ -212,7 +211,7 @@ class EventHandler
             }
 
             $Project      = $Site->getProject();
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site, ['active' => '0&1'], true);
+            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
             TemporaryStorage::setUrlsToProcess($childrenUrls);
 
             Frontend::showAddRedirectDialog(
