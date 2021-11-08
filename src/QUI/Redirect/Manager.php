@@ -217,6 +217,11 @@ class Manager
                         throw new Exception();
                     }
 
+                    // When moving a site the cache is cleared only for the parent and not it's children.
+                    // This causes child-URLs to return the old URL instead of the new one.
+                    // So we have to manually delete the cache.
+                    $ChildSite->deleteCache();
+
                     $isChildAddRedirectSuccessful = static::addRedirect(
                         $childOldUrl,
                         Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten()),
