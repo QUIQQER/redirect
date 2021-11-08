@@ -59,26 +59,29 @@ class EventHandler
                 return;
             }
 
-            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
+            $sourceUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
-            $parentUrl  = false;
+            $targetUrl  = '';
 
             if ($ParentSite) {
-                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+                $targetUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
             }
 
-            // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
-            TemporaryStorage::setUrlsToProcess($childrenUrls);
+            $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
+                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
+                $sourceUrl,
+                $targetUrl
+            );
 
             Frontend::showAddRedirectDialog(
-                $url,
-                $parentUrl,
+                $sourceUrl,
+                $targetUrl,
                 $Project->getName(),
-                $Project->getLang()
+                $Project->getLang(),
+                $childrenUrls
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -102,25 +105,29 @@ class EventHandler
         }
 
         try {
-            $url = Url::prepareSourceUrl($Site->getUrlRewritten());
+            $sourceUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
-            $parentUrl  = false;
+            $targetUrl  = '';
 
             if ($ParentSite) {
-                $parentUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
+                $targetUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
             }
 
-            // TODO: show notification if store in session failed (?)
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
+            $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
+                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
+                $sourceUrl,
+                $targetUrl
+            );
 
             Frontend::showAddRedirectDialog(
-                $url,
-                $parentUrl,
+                $sourceUrl,
+                $targetUrl,
                 $Project->getName(),
-                $Project->getLang()
+                $Project->getLang(),
+                $childrenUrls
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -210,15 +217,20 @@ class EventHandler
                 return;
             }
 
-            $Project      = $Site->getProject();
-            $childrenUrls = \QUI\Redirect\Site::getChildrenUrlsRecursive($Site);
-            TemporaryStorage::setUrlsToProcess($childrenUrls);
+            $Project = $Site->getProject();
+
+            $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
+                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
+                $oldUrl,
+                $newUrl
+            );
 
             Frontend::showAddRedirectDialog(
                 $oldUrl,
                 $newUrl,
                 $Project->getName(),
-                $Project->getLang()
+                $Project->getLang(),
+                $childrenUrls
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
