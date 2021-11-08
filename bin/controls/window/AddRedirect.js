@@ -84,6 +84,17 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 lang: this.getAttribute('projectLanguage')
             });
 
+            // Turn the parameterized URL from the select into it's SEO/rewritten URL
+            this.$TargetSiteInput.addEvent('select', (paramUrl) => {
+                RedirectHandler.getRewrittenUrl(paramUrl).then((seoUrl) => {
+                    if (!seoUrl) {
+                        return;
+                    }
+
+                    this.$TargetSiteInput.$Input.value = seoUrl;
+                });
+            });
+
             let tmpChildren = [];
             for (let i = 0; i < 10000; i++) {
                 tmpChildren.push({

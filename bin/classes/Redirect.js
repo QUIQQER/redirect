@@ -186,6 +186,28 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
                     projectLanguage: projectLanguage
                 });
             });
+        },
+
+        /**
+         * Converts a given param URL to a SEO URL.
+         * Returns a promise which resolves with the SEO url or false on error.
+         *
+         * (Calling this function makes an Ajax request to the server)
+         *
+         * @example Turns 'index.php?id=7&project=Mainproject&lang=de' into '/example'
+         *
+         * @param {string} paramUrl
+         *
+         * @returns {Promise}
+         */
+        getRewrittenUrl: function (paramUrl) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_redirect_ajax_getRewrittenUrl', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    paramUrl : paramUrl
+                });
+            });
         }
     });
 });
