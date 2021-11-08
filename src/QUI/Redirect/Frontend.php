@@ -25,10 +25,11 @@ class Frontend
      * @param string $projectLanguage - The project's language
      */
     public static function showAddRedirectDialog(
-        $sourceUrl,
-        $targetUrl = "",
-        $projectName = "",
-        $projectLanguage = ""
+        string $sourceUrl,
+        string $targetUrl = "",
+        string $projectName = "",
+        string $projectLanguage = "",
+        array $children = []
     ) {
         \QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'redirectShowAddRedirectDialog',
@@ -36,7 +37,8 @@ class Frontend
                 'sourceUrl'       => $sourceUrl,
                 'targetUrl'       => $targetUrl,
                 'projectName'     => $projectName,
-                'projectLanguage' => $projectLanguage
+                'projectLanguage' => $projectLanguage,
+                'children'        => $children
             ]
         );
     }
