@@ -32,18 +32,6 @@ class TemporaryStorage
     }
 
 
-    /**
-     * Returns the path to the file that stores the queue (URLs to process).
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    protected static function getQueueFile(): string
-    {
-        return static::getDirectory() . 'queue.json';
-    }
-
 
     /**
      * Returns the path to the file that stores old URLs.
@@ -55,76 +43,6 @@ class TemporaryStorage
     protected static function getOldUrlsFile(): string
     {
         return static::getDirectory() . 'old_urls.json';
-    }
-
-
-    /**
-     * Stores the URLs to process later (in the queue file).
-     *
-     * @param string[] $urls
-     *
-     * @throws Exception
-     */
-    public static function setUrlsToProcess(array $urls): void
-    {
-        file_put_contents(static::getQueueFile(), json_encode($urls));
-    }
-
-
-    /**
-     * Returns all URL that are left to process (in the queue).
-     *
-     * @return array
-     *
-     * @throws Exception
-     */
-    public static function getUrlsToProcess(): array
-    {
-        $rawData = File::getFileContent(static::getQueueFile());
-
-        if (!$rawData) {
-            return [];
-        }
-
-        return json_decode($rawData, true);
-    }
-
-
-    /**
-     * Clears the list of URLs to process.
-     *
-     * @throws Exception
-     */
-    public static function removeAllUrlsToProcess(): void
-    {
-        static::setUrlsToProcess([]);
-    }
-
-
-    /**
-     * Removes the given URL from the list of URLs to process.
-     *
-     * @param string $url
-     *
-     * @return string[]
-     *
-     * @throws Exception
-     */
-    public static function removeUrlToProcess(string $url): array
-    {
-        $urls = static::getUrlsToProcess();
-
-        $urlKey = array_search($url, $urls);
-        if ($urlKey !== false) {
-            unset($urls[$urlKey]);
-
-            // use array_values() to reset array indizes
-            $urls = array_values($urls);
-
-            static::setUrlsToProcess($urls);
-        }
-
-        return $urls;
     }
 
 
