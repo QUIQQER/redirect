@@ -165,7 +165,51 @@ class EventHandler
             return;
         }
 
-        Manager::addRedirectsFromSession($Site);
+        $Project = $Site->getProject();
+
+        // Add redirects from old urls to new urls
+        try {
+            $siteId     = $Site->getId();
+            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($siteId));
+            $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
+
+            Manager::addRedirect($siteOldUrl, $siteNewUrl, $Project);
+            TemporaryStorage::removeOldUrlForSiteId($siteId);
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
+        }
+
+        // Add redirects for children
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+            // We need a try-catch inside the loop to continue adding redirects for other children, if one throws an error
+            try {
+                /** @var Site $ChildSite */
+                $childSiteId = $ChildSite->getId();
+
+                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($childSiteId));
+                if (!$childOldUrl) {
+                    continue;
+                }
+
+                // When moving a site the cache is cleared only for the parent and not it's children.
+                // This causes child-URLs to return the old URL instead of the new one.
+                // So we have to manually delete the cache before querying the new URL.
+                $ChildSite->deleteCache();
+                $childNewUrl = Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten());
+
+                Manager::addRedirect($childOldUrl, $childNewUrl, $Project);
+
+                TemporaryStorage::removeOldUrlForSiteId($childSiteId);
+            } catch (\Exception $Exception) {
+                Log::writeException($Exception);
+                continue;
+            }
+        }
+
+        // Redirect add completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
     }
 
 
