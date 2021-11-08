@@ -64,33 +64,6 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
 
 
         /**
-         * Processes the children of a site.
-         * Adding redirects for each one or showing new dialogs to add custom redirects
-         *
-         * @param {string} sourceUrl - URL for the redirect
-         * @param {string} targetUrl - Target of the redirect
-         * @param {boolean} skipChildren - Skip showing a dialog for each child
-         * @param {string} projectName
-         * @param {string} projectLanguage
-         *
-         * @return {Promise}
-         */
-        processFurtherUrls: function (sourceUrl, targetUrl, skipChildren, projectName, projectLanguage) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_redirect_ajax_processFurtherUrls', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    sourceUrl      : sourceUrl,
-                    targetUrl      : targetUrl,
-                    skipChildren   : skipChildren ? 1 : 0,
-                    projectName    : projectName,
-                    projectLanguage: projectLanguage
-                });
-            });
-        },
-
-
-        /**
          * Returns all redirects for a given project and language
          *
          * @param {string} projectName
