@@ -106,6 +106,9 @@ class Url
      */
     public static function isInternal($url)
     {
+        // Remove all slashes from the beginning and end of the path
+        $url = trim($url, '/');
+
         return strpos($url, 'index.php?id=') === 0;
     }
 
