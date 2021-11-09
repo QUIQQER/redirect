@@ -9,7 +9,8 @@ final class UrlTest extends TestCase
     {
         $this->assertEquals(
             '/',
-            Url::prepareSourceUrl('https://example.xy'), 'Missing path does not return empty string'
+            Url::prepareSourceUrl('https://example.xy'),
+            'Missing path does not return empty string'
         );
 
         $this->assertEquals(
@@ -55,8 +56,10 @@ final class UrlTest extends TestCase
 
     public function testGetRelevantPartsFromUrl(): void
     {
-        $this->assertEmpty(Url::getRelevantPartsFromUrl('https://example.xy'),
-            'Missing path does not return empty string');
+        $this->assertEmpty(
+            Url::getRelevantPartsFromUrl('https://example.xy'),
+            'Missing path does not return empty string'
+        );
 
         $this->assertEquals(
             '/testPath/testFile.html#testFragment?testQueryA=testValueA&testQueryB=testValueB',

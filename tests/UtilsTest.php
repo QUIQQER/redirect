@@ -5,7 +5,6 @@ use QUI\Redirect\TemporaryStorage;
 use QUI\Redirect\TestUtil;
 use QUI\Redirect\Url;
 
-
 final class UtilsTest extends TestCase
 {
     public function testMakeChildrenArrayForAddRedirectDialog(): void
