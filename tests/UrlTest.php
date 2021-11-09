@@ -1,5 +1,7 @@
 <?php
 
+namespace QUI\Redirect\Test;
+
 use PHPUnit\Framework\TestCase;
 use QUI\Redirect\Url;
 
