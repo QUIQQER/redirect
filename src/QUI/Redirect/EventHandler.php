@@ -8,6 +8,7 @@ namespace QUI\Redirect;
 
 use QUI\Exception;
 use QUI\Package\Package;
+use QUI\Package\PackageNotLicensedException;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
@@ -175,6 +176,16 @@ class EventHandler
 
             Manager::addRedirect($siteOldUrl, $siteNewUrl, $Project);
             TemporaryStorage::removeOldUrlForSiteId($siteId);
+        } catch (PackageNotLicensedException $Exception) {
+            // Maximum number of redirects for the system's license reached
+            \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
+                'quiqqer/redirect',
+                'site.move.error_license',
+                ['error' => $Exception->getMessage()]
+            ));
+
+            // No need to try adding the redirects for the children -> just exit.
+            return;
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -200,6 +211,16 @@ class EventHandler
                 Manager::addRedirect($childOldUrl, $childNewUrl, $Project);
 
                 TemporaryStorage::removeOldUrlForSiteId($childSiteId);
+            } catch (PackageNotLicensedException $Exception) {
+                // Maximum number of redirects for the system's license reached
+                \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
+                    'quiqqer/redirect',
+                    'site.move.error_license',
+                    ['error' => $Exception->getMessage()]
+                ));
+
+                // No need to try adding the redirects for the children -> just exit.
+                return;
             } catch (\Exception $Exception) {
                 Log::writeException($Exception);
                 continue;
