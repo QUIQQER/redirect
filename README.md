@@ -23,9 +23,15 @@ This package allows up **50 redirects** (across all projects). If your project(s
 
 https://store.quiqqer.com/Modules/Redirect
 
+
 Setup
 ------------
 The package name is: `quiqqer/redirect`
+
+
+Unit Tests
+----------
+See `tests/README.md` for more information about the unit tests.
 
 
 Contribute
