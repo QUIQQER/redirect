@@ -22,6 +22,9 @@
         "quiqqer\/utils": "^1.15.1|dev-master|dev-dev",
         "quiqqer-asset/hyperlist":  "1.0.*"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    },
     "autoload": {
         "psr-4": {
             "QUI\\Redirect\\": "src\/QUI\/Redirect"
