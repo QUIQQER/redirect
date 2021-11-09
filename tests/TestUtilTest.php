@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 use QUI\Redirect\TemporaryStorage;
 use QUI\Redirect\TestUtil;
 
-
 final class TestUtilTest extends TestCase
 {
     public function testGetDefaultProject(): void

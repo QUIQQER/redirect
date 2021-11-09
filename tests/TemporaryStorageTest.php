@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 use QUI\Redirect\TemporaryStorage;
 use QUI\Redirect\TestUtil;
 
-
 final class TemporaryStorageTest extends TestCase
 {
     public function testSetOldUrls(): void
@@ -90,6 +89,5 @@ final class TemporaryStorageTest extends TestCase
         $this->assertEquals($pathToKeep, TemporaryStorage::getOldUrlForSiteId($siteIdToKeep), 'Other URLs were removed from the temporary storage');
 
         TemporaryStorage::setOldUrls([]);
-
     }
 }

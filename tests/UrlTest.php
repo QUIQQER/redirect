@@ -1,10 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use QUI\Redirect\TemporaryStorage;
-use QUI\Redirect\TestUtil;
 use QUI\Redirect\Url;
-
 
 final class UrlTest extends TestCase
 {
@@ -114,7 +111,8 @@ final class UrlTest extends TestCase
     {
         $this->assertEquals(
             '/',
-            Url::prepareSourceUrl('https://example.xy'), 'Missing path does not return empty string'
+            Url::prepareSourceUrl('https://example.xy'),
+            'Missing path does not return empty string'
         );
 
         $this->assertEquals(
