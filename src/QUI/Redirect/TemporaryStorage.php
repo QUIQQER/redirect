@@ -123,7 +123,7 @@ class TemporaryStorage
 
     /**
      * Returns the old URL for a given site id.
-     * If the old URL is not found, false is returned.
+     * If the old URL is not found, an empty string is returned.
      *
      * @param int $siteId
      *
@@ -136,7 +136,7 @@ class TemporaryStorage
         $oldUrls = static::getOldUrls();
 
         if (!isset($oldUrls[$siteId])) {
-            return false;
+            return '';
         }
 
         return $oldUrls[$siteId];
