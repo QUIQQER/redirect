@@ -56,12 +56,6 @@
         </locale>
 
 
-
-        <locale name="window.redirect.children.skip">
-            <de><![CDATA[Ziel-URL für alle weiteren Seiten übernehmen]]></de>
-            <en><![CDATA[Apply target-URL to all further sites]]></en>
-        </locale>
-
         <locale name="window.redirect.url.source">
             <de><![CDATA[Quell-URL]]></de>
             <en><![CDATA[Source-URL]]></en>
