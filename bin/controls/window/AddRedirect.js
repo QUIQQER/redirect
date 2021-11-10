@@ -48,7 +48,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             texticon: false,
             icon: 'fa fa-share',
             ok_button: {
-                text: QUILocale.get(lg, 'site.delete.popup.button.ok.text'),
+                text: QUILocale.get(lg, 'window.redirect.children.add'),
                 textimage: 'fa fa-plus'
             },
             cancel_button: {
@@ -181,7 +181,13 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 sourceUrl: this.getAttribute('sourceUrl') || '',
                 sourceUrlReadOnly: this.getAttribute('sourceUrlReadOnly'),
                 note: QUILocale.get(lg, 'window.redirect.url.target.note'),
-                showChildren: children.length
+                showChildren: children.length,
+                labelSource: QUILocale.get(lg, 'window.redirect.url.source'),
+                labelTarget: QUILocale.get(lg, 'window.redirect.url.target'),
+                labelEnableAll: QUILocale.get(lg, 'window.redirect.children.enableAll'),
+                labelApplyParent: QUILocale.get(lg, 'window.redirect.children.applyParent'),
+                labelChildAdd: QUILocale.get(lg, 'window.redirect.children.add'),
+                labelChildren: QUILocale.get(lg, 'window.redirect.children')
             });
 
             this.$SourceUrlInput = Content.getElementById('add-redirect-parent-source');

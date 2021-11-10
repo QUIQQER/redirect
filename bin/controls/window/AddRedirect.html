@@ -5,7 +5,7 @@
             <td>
                 <div>
                     <label class="field-container">
-                        <span class="field-container-item">Source:</span>
+                        <span class="field-container-item">{{labelSource}}:</span>
                         <input type="text"
                                class="field-container-field"
                                id="add-redirect-parent-source"
@@ -20,7 +20,7 @@
             <td>
                 <div>
                     <label class="field-container" id="add-redirect-target-label">
-                        <span class="field-container-item">Target:</span>
+                        <span class="field-container-item">{{labelTarget}}:</span>
                         <!-- Input is injected via JS -->
                     </label>
                     <span id="add-redirect-note">{{note}}</span>
@@ -34,22 +34,23 @@
         <div>
             <label>
                 <input type="checkbox" checked id="add-redirect-enable-all-children"/>
-                Add redirects for all children
+                {{labelEnableAll}}
             </label>
             <button id="add-redirect-apply-to-all-children"
-                    class="qui-button qui-button-cancel btn-light qui-utils-noselect">
-                <span class="qui-button-text">Apply parent target to all children</span>
+                    class="qui-button qui-button-cancel btn-light qui-utils-noselect"
+            >
+                <span class="qui-button-text">{{labelApplyParent}}</span>
             </button>
         </div>
         <div>
             <details open>
-                <summary>Children</summary>
+                <summary>{{labelChildren}}</summary>
                 <table id="add-redirect-children-table">
                     <thead>
                     <tr>
-                        <th>Add</th>
-                        <th>Source</th>
-                        <th>Target</th>
+                        <th>{{labelChildAdd}}</th>
+                        <th>{{labelSource}}</th>
+                        <th>{{labelTarget}}</th>
                     </tr>
                     </thead>
                     <tbody id="add-redirect-children">
