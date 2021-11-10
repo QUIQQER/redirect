@@ -41,8 +41,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         ],
 
         options: {
-            maxWidth: 600,
-            maxHeight: 700,
+            maxWidth: 500,
+            maxHeight: 300,
             title: QUILocale.get(lg, 'window.redirect.title'),
             autoclose: false,
             texticon: false,
@@ -110,6 +110,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 child.enabled = true;
                 return child;
             }));
+
+            if (this.getChildren().length) {
+                this.setAttribute('maxHeight', 600);
+            }
 
             // window.RDIALOG = this;
         },
@@ -194,7 +198,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             // ChildrenContainer.classList.add("container");
 
             const config = {
-                height: 350,
+                height: 225,
                 itemHeight: 50,
                 total: children.length,
 
