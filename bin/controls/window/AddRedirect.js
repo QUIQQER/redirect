@@ -257,6 +257,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
             let child = this.getChildren()[rowNumber];
 
+            const isSourceInputReadOnly = this.getAttribute('sourceUrlReadOnly');
+
             const EnabledInputRow = document.createElement('td');
             const EnabledInput = document.createElement('input');
             EnabledInput.type = 'checkbox';
@@ -272,7 +274,12 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             // Source URL text input
             const SourceInputRow = document.createElement('td');
             const SourceInput = document.createElement('input');
-            SourceInput.readOnly = false;
+
+            if (isSourceInputReadOnly) {
+                SourceInput.readOnly = true;
+                SourceInput.disabled = true;
+            }
+
             SourceInput.value = child.source;
             SourceInput.oninput = (event) => {
                 // Immediately update the information in data.children
