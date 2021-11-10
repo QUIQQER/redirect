@@ -41,7 +41,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         ],
 
         options: {
-            maxWidth: 500,
+            maxWidth: 600,
             maxHeight: 300,
             title: QUILocale.get(lg, 'window.redirect.title'),
             autoclose: false,
@@ -289,17 +289,31 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             SourceInputRow.appendChild(SourceInput);
             Wrapper.appendChild(SourceInputRow);
 
-            // Target URL text input
+
             const TargetInputRow = document.createElement('td');
-            const TargetInput = document.createElement('input');
-            TargetInput.readOnly = false;
-            TargetInput.value = child.target;
-            TargetInput.oninput = (event) => {
-                // Immediately update the information in data.children
-                // This has to be done, since the input may unload from the Hyperlist when scrolling
-                child.target = event.target.value;
-            };
-            TargetInputRow.appendChild(TargetInput);
+
+            // Target URL text input
+            const TargetInput = new SiteInput({
+                external: true,
+                project: this.getAttribute('projectName'),
+                lang: this.getAttribute('projectLanguage')
+            });
+
+            // Turn the parameterized URL from the select into it's SEO/rewritten URL
+            TargetInput.addEvent('select', (paramUrl) => {
+                RedirectHandler.getRewrittenUrl(paramUrl).then((seoUrl) => {
+                    if (!seoUrl) {
+                        return;
+                    }
+
+                    TargetInput.$Input.value = seoUrl;
+                    child.target = seoUrl;
+                });
+            });
+
+            TargetInput.inject(TargetInputRow);
+            TargetInput.$Input.value = child.target;
+
             Wrapper.appendChild(TargetInputRow);
 
             return Wrapper;
