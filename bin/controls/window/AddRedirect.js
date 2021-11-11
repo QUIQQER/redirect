@@ -192,10 +192,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
 
             const ChildrenContainer = Content.getElementById('add-redirect-children');
-            // ChildrenContainer.classList.add("container");
 
             const config = {
-                height: 275,
+                height: 265,
                 itemHeight: 170,
                 total: children.length,
 
