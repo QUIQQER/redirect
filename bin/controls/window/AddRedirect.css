@@ -2,14 +2,6 @@
     float: none;
 }
 
-#add-redirect-children-table {
-    display: block;
-}
-
-#add-redirect-children {
-    display: block;
-}
-
 .add-redirect-dialog-content {
     display: flex;
     align-items: center;

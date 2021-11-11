@@ -15,10 +15,11 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
     URL_OPT_DIR + 'bin/quiqqer-asset/hyperlist/hyperlist/dist/hyperlist.js',
 
     'text!package/quiqqer/redirect/bin/controls/window/AddRedirect.html',
+    'text!package/quiqqer/redirect/bin/controls/window/AddRedirectChildRow.html',
 
     'css!package/quiqqer/redirect/bin/controls/window/AddRedirect.css'
 
-], function (QUI, QUIConfirm, SiteInput, RedirectHandler, QUILocale, Mustache, HyperList, template) {
+], function (QUI, QUIConfirm, SiteInput, RedirectHandler, QUILocale, Mustache, HyperList, template, childRowTemplate) {
     "use strict";
 
     var lg = 'quiqqer/redirect';
@@ -205,8 +206,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             // ChildrenContainer.classList.add("container");
 
             const config = {
-                height: 225,
-                itemHeight: 50,
+                height: 275,
+                itemHeight: 170,
                 total: children.length,
 
                 generate: this.generateHyperlistRowForChild
@@ -254,46 +255,36 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         },
 
         generateHyperlistRowForChild: function (rowNumber) {
-            const Wrapper = document.createElement("tr");
+            const child = this.getChildren()[rowNumber];
 
-            let child = this.getChildren()[rowNumber];
+            const Template = document.createElement("template");
 
-            const isSourceInputReadOnly = this.getAttribute('sourceUrlReadOnly');
+            Template.innerHTML = Mustache.render(childRowTemplate, {
+                sourceUrl: child.source,
+                sourceUrlReadOnly: this.getAttribute('sourceUrlReadOnly'),
+                labelSource: QUILocale.get(lg, 'window.redirect.url.source'),
+                labelTarget: QUILocale.get(lg, 'window.redirect.url.target'),
+                labelEnabled: QUILocale.get(lg, 'window.redirect.children.add')
+            });
 
-            const EnabledInputRow = document.createElement('td');
-            const EnabledInput = document.createElement('input');
-            EnabledInput.type = 'checkbox';
+            // Our row is the first child of the template element's content
+            const Row = Template.content.firstChild;
+
+            const EnabledInput = Row.querySelector('.add-redirect-child-enabled');
             EnabledInput.checked = child.enabled;
             EnabledInput.oninput = (event) => {
                 // Immediately update the information in data.children
                 // This has to be done, since the input may unload from the Hyperlist when scrolling
                 child.enabled = event.target.checked;
             };
-            EnabledInputRow.appendChild(EnabledInput);
-            Wrapper.appendChild(EnabledInputRow);
 
-            // Source URL text input
-            const SourceInputRow = document.createElement('td');
-            const SourceInput = document.createElement('input');
-
-            if (isSourceInputReadOnly) {
-                SourceInput.readOnly = true;
-                SourceInput.disabled = true;
-            }
-
-            SourceInput.value = child.source;
+            const SourceInput = Row.querySelector('.add-redirect-child-source');
             SourceInput.oninput = (event) => {
                 // Immediately update the information in data.children
                 // This has to be done, since the input may unload from the Hyperlist when scrolling
                 child.source = event.target.value;
             };
-            SourceInputRow.appendChild(SourceInput);
-            Wrapper.appendChild(SourceInputRow);
 
-
-            const TargetInputRow = document.createElement('td');
-
-            // Target URL text input
             const TargetInput = new SiteInput({
                 external: true,
                 project: this.getAttribute('projectName'),
@@ -312,12 +303,13 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 });
             });
 
-            TargetInput.inject(TargetInputRow);
+            TargetInput.inject(
+                Row.querySelector('.add-redirect-child-target-label')
+            );
+
             TargetInput.$Input.value = child.target;
 
-            Wrapper.appendChild(TargetInputRow);
-
-            return Wrapper;
+            return Row;
         },
 
 
