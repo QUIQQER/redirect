@@ -1,5 +1,7 @@
 /**
- * @module package/quiqqer/redirect/bin/controls/window/SiteDelete
+ * Dialog that can be used to add redirects.
+ *
+ * @module package/quiqqer/redirect/bin/controls/window/AddRedirect
  * @author www.pcsg.de (Jan Wennrich)
  */
 define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
@@ -75,6 +77,11 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         $HyperlistContainer: false,
 
 
+        /**
+         * Initializes the popup.
+         *
+         * @param {Object} options
+         */
         initialize: function (options) {
             this.parent(options);
 
@@ -114,6 +121,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
         },
 
+        /**
+         * Called after the popup was resized.
+         */
         $onResize: function() {
             if (!this.Hyperlist || !this.HyperlistConfig || !this.$HyperlistContainer) {
                 return;
@@ -176,7 +186,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             });
         },
 
-
+        /**
+         * Called automatically when the dialog/popup opens.
+         */
         $onOpen: function () {
             let Content = this.getContent(),
                 children = this.getChildren();
@@ -250,6 +262,15 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         },
 
+        /**
+         * Generates a row for the Hyperlist.
+         * The parameter specifies the row to generate.
+         * This method is called by Hyperlist to refresh it's content.
+         *
+         * @param {number} rowNumber
+         *
+         * @returns {ChildNode}
+         */
         generateHyperlistRowForChild: function (rowNumber) {
             const child = this.getChildren()[rowNumber];
 
@@ -334,18 +355,38 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             return this.$TargetSiteInput.$Input.value;
         },
 
+        /**
+         * Returns all children.
+         *
+         * @returns {Object[]}
+         */
         getChildren: function () {
             return this.getAttribute('children');
         },
 
+        /**
+         * Returns only the children where the enabled checkbox is checked.
+         *
+         * @returns {Object[]}
+         */
         getEnabledChildren: function () {
             return this.getChildren().filter(child => child.enabled);
         },
 
+        /**
+         * Sets the children redirects.
+         * The parameter should be an array containing objects with the properties: source, target and enabled
+         *
+         * @param {Object[]} children
+         */
         setChildren: function (children) {
             this.setAttribute('children', children);
         },
 
+        /**
+         * Refreshes/Redraws the Hyperlist.
+         * Should be called when the settings, size or data of the Hyperlist changes.
+         */
         refreshHyperlist: function () {
             this.Hyperlist.refresh(this.$HyperlistContainer, this.HyperlistConfig);
         },
