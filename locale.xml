@@ -121,11 +121,6 @@
             <en><![CDATA[You have to select a target-URL.]]></en>
         </locale>
 
-        <locale name="window.redirect.url.target.note">
-            <de><![CDATA[URLs, die mit "index.php?" beginnen, werden zu ihren sprechenden URLs umgeschrieben.]]></de>
-            <en><![CDATA[URLs, starting with "index.php?", will be rewritten to their proper URLs.]]></en>
-        </locale>
-
         <locale name="site.delete.popup.error.result">
             <de><![CDATA[Die Umleitung konnte nicht hinzugefügt werden.]]></de>
             <en><![CDATA[The redirect could not be added.]]></en>

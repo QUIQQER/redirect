@@ -180,7 +180,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             Content.innerHTML = Mustache.render(template, {
                 sourceUrl: this.getAttribute('sourceUrl') || '',
                 sourceUrlReadOnly: this.getAttribute('sourceUrlReadOnly'),
-                note: QUILocale.get(lg, 'window.redirect.url.target.note'),
                 showChildren: children.length,
                 labelSource: QUILocale.get(lg, 'window.redirect.url.source'),
                 labelTarget: QUILocale.get(lg, 'window.redirect.url.target'),
