@@ -31,6 +31,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         Binds: [
             'initialize',
+            '$onResize',
             '$onOpen',
             '$onSubmit',
             'generateHyperlistRowForChild',
@@ -69,13 +70,18 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
         $ApplyToAllChildrenButton: false,
         $AddRedirectsForAllChildrenInput: false,
 
+        Hyperlist: false,
+        HyperlistConfig: {},
+        $HyperlistContainer: false,
+
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
                 'onSubmit': this.$onSubmit,
-                'onOpen': this.$onOpen
+                'onOpen': this.$onOpen,
+                'onResize': this.$onResize
             });
 
             this.$TargetSiteInput = new SiteInput({
@@ -108,6 +114,14 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             }
         },
 
+        $onResize: function() {
+            if (!this.Hyperlist || !this.HyperlistConfig || !this.$HyperlistContainer) {
+                return;
+            }
+
+            this.HyperlistConfig.height = this.getContent().getSize().y - 225;
+            this.refreshHyperlist();
+        },
 
         /**
          * Called when the popup is submitted
@@ -191,9 +205,9 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 return;
             }
 
-            const ChildrenContainer = Content.getElementById('add-redirect-children');
+            this.$HyperlistContainer = Content.getElementById('add-redirect-children');
 
-            const config = {
+            this.HyperlistConfig = {
                 height: 265,
                 itemHeight: 170,
                 total: children.length,
@@ -201,13 +215,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 generate: this.generateHyperlistRowForChild
             };
 
-            const List = HyperList.create(ChildrenContainer, config);
-
-            // window.onresize = event => {
-            //     config.height = window.innerHeight;
-            //     List.refresh(ChildrenContainer, config);
-            // };
-
+            this.Hyperlist = HyperList.create(this.$HyperlistContainer, this.HyperlistConfig);
 
             this.$AddRedirectsForAllChildrenInput = Content.getElementById('add-redirect-enable-all-children');
             this.$AddRedirectsForAllChildrenInput.onchange = (event) => {
@@ -219,7 +227,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return child;
                 }));
 
-                List.refresh(ChildrenContainer, config);
+                this.refreshHyperlist();
             };
 
             this.$ApplyToAllChildrenButton = Content.getElementById('add-redirect-apply-to-all-children');
@@ -237,7 +245,7 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                     return child;
                 }));
 
-                List.refresh(ChildrenContainer, config);
+                this.refreshHyperlist();
             };
 
         },
@@ -336,6 +344,10 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
 
         setChildren: function (children) {
             this.setAttribute('children', children);
-        }
+        },
+
+        refreshHyperlist: function () {
+            this.Hyperlist.refresh(this.$HyperlistContainer, this.HyperlistConfig);
+        },
     });
 });
