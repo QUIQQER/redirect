@@ -10,6 +10,12 @@
     display: block;
 }
 
+.add-redirect-dialog-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /*
 .add-redirect-popup {
     align-items: stretch;

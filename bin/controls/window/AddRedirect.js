@@ -177,6 +177,8 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             let Content = this.getContent(),
                 children = this.getChildren();
 
+            Content.classList.add('add-redirect-dialog-content');
+
             Content.innerHTML = Mustache.render(template, {
                 sourceUrl: this.getAttribute('sourceUrl') || '',
                 sourceUrlReadOnly: this.getAttribute('sourceUrlReadOnly'),
