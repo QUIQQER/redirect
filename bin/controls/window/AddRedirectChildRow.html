@@ -1,0 +1,38 @@
+<table class="data-table data-table-flexbox add-redirect-child">
+    <tbody>
+    <tr>
+        <td>
+            <label class="field-container hasCheckbox">
+                <span class="field-container-item">{{labelEnabled}}:</span>
+                <span class="field-container-field">
+                    <input type="checkbox" class="add-redirect-child-enabled">
+                </span>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <label class="field-container">
+                    <span class="field-container-item">{{labelSource}}:</span>
+                    <input type="text"
+                           class="field-container-field add-redirect-child-source"
+                           {{#sourceUrlReadOnly}}readonly disabled{{/sourceUrlReadOnly}}
+                    value="{{sourceUrl}}"
+                    />
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                <label class="field-container add-redirect-child-target-label">
+                    <span class="field-container-item">{{labelTarget}}:</span>
+                    <!-- Input is injected via JS -->
+                </label>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
