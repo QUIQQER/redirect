@@ -96,15 +96,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
                 });
             });
 
-            // let tmpChildren = [];
-            // for (let i = 0; i < 10000; i++) {
-            //     tmpChildren.push({
-            //         source: '/test/hallo/' + i,
-            //         target: ''
-            //     });
-            // }
-            // this.setChildren(tmpChildren);
-
             // Add the enabled property to all children.
             // Enabled means that a redirect for the child should be added on submit.
             this.setChildren(this.getChildren().map(child => {
@@ -115,8 +106,6 @@ define('package/quiqqer/redirect/bin/controls/window/AddRedirect', [
             if (this.getChildren().length) {
                 this.setAttribute('maxHeight', 600);
             }
-
-            // window.RDIALOG = this;
         },
 
 
