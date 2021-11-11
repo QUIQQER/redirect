@@ -8,6 +8,10 @@
     justify-content: center;
 }
 
+#add-redirect-controls {
+    margin-bottom: 20px;
+}
+
 /*
 .add-redirect-popup {
     align-items: stretch;

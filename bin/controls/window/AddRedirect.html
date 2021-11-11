@@ -30,16 +30,16 @@
     </table>
     {{#showChildren}}
     <div>
-        <div>
-            <label>
-                <input type="checkbox" checked id="add-redirect-enable-all-children"/>
-                {{labelEnableAll}}
-            </label>
+        <div id="add-redirect-controls">
             <button id="add-redirect-apply-to-all-children"
                     class="qui-button qui-button-cancel btn-light qui-utils-noselect"
             >
                 <span class="qui-button-text">{{labelApplyParent}}</span>
             </button>
+            <div>
+                <input type="checkbox" checked id="add-redirect-enable-all-children"/>
+                {{labelEnableAll}}
+            </div>
         </div>
         <div>
             <details open>
