@@ -42,25 +42,20 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
 
 
         /**
-         * Processes the children of a site.
-         * Adding redirects for each one or showing new dialogs to add custom redirects
+         * Adds the given redirects to the system.
          *
-         * @param {string} sourceUrl - URL for the redirect
-         * @param {string} targetUrl - Target of the redirect
-         * @param {boolean} skipChildren - Skip showing a dialog for each child
+         * @param {Array<Object>} redirects - Array of objects with a "source" and "target" properties.
          * @param {string} projectName
          * @param {string} projectLanguage
          *
-         * @return {Promise}
+         * @returns {Promise}
          */
-        processFurtherUrls: function (sourceUrl, targetUrl, skipChildren, projectName, projectLanguage) {
+        addRedirects: function (redirects, projectName, projectLanguage) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_quiqqer_redirect_ajax_processFurtherUrls', resolve, {
+                QUIAjax.post('package_quiqqer_redirect_ajax_addRedirects', resolve, {
                     'package'      : pkg,
                     onError        : reject,
-                    sourceUrl      : sourceUrl,
-                    targetUrl      : targetUrl,
-                    skipChildren   : skipChildren ? 1 : 0,
+                    redirects      : JSON.stringify(redirects),
                     projectName    : projectName,
                     projectLanguage: projectLanguage
                 });
@@ -162,6 +157,28 @@ define('package/quiqqer/redirect/bin/classes/Redirect', [
                     sourceUrls     : JSON.encode(sourceUrls),
                     projectName    : projectName,
                     projectLanguage: projectLanguage
+                });
+            });
+        },
+
+        /**
+         * Converts a given param URL to a SEO URL.
+         * Returns a promise which resolves with the SEO url or false on error.
+         *
+         * (Calling this function makes an Ajax request to the server)
+         *
+         * @example Turns 'index.php?id=7&project=Mainproject&lang=de' into '/example'
+         *
+         * @param {string} paramUrl
+         *
+         * @returns {Promise}
+         */
+        getRewrittenUrl: function (paramUrl) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_quiqqer_redirect_ajax_getRewrittenUrl', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    paramUrl : paramUrl
                 });
             });
         }

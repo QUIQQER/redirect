@@ -106,6 +106,9 @@ class Url
      */
     public static function isInternal($url)
     {
+        // Remove all slashes from the beginning and end of the path
+        $url = trim($url, '/');
+
         return strpos($url, 'index.php?id=') === 0;
     }
 
@@ -115,20 +118,16 @@ class Url
      * When the second parameter is set to false no slash will be prepended.
      *
      * @param $url - The URL which's path should be returned
-     * @param $prependSlash - Return the path with a prepended slash
      *
      * @return string
      */
-    public static function getPath($url, $prependSlash = true)
+    public static function getPath($url)
     {
         $url = parse_url($url, PHP_URL_PATH);
 
-        if ($prependSlash && strpos($url, "/") !== 0) {
+        // Prepend slash if it does not exist
+        if (strpos($url, "/") !== 0) {
             $url = "/" . $url;
-        }
-
-        if (!$prependSlash && strpos($url, "/") === 0) {
-            $url = substr_replace($url, '', 0, 1);
         }
 
         return $url;

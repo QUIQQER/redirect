@@ -1,0 +1,54 @@
+<div id="add-redirect-dialog-content-wrapper">
+    <table class="data-table data-table-flexbox">
+        <tbody>
+        <tr>
+            <td>
+                <div>
+                    <label class="field-container">
+                        <span class="field-container-item">{{labelSource}}:</span>
+                        <input type="text"
+                               class="field-container-field"
+                               id="add-redirect-parent-source"
+                               {{#sourceUrlReadOnly}}readonly disabled{{/sourceUrlReadOnly}}
+                               value="{{sourceUrl}}"
+                        />
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <label class="field-container" id="add-redirect-target-label">
+                        <span class="field-container-item">{{labelTarget}}:</span>
+                        <!-- Input is injected via JS -->
+                    </label>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {{#showChildren}}
+    <div>
+        <div id="add-redirect-controls">
+            <button id="add-redirect-apply-to-all-children"
+                    class="qui-button qui-button-cancel btn-light qui-utils-noselect"
+            >
+                <span class="qui-button-text">{{labelApplyParent}}</span>
+            </button>
+            <div>
+                <input type="checkbox" checked id="add-redirect-enable-all-children"/>
+                {{labelEnableAll}}
+            </div>
+        </div>
+        <div>
+            <details open>
+                <summary>{{labelChildren}}</summary>
+                <div id="add-redirect-children">
+                    <!-- Filled dynamically via JS (Hyper List) -->
+                </div>
+            </details>
+        </div>
+    </div>
+    {{/showChildren}}
+</div>

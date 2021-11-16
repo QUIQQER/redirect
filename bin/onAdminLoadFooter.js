@@ -14,10 +14,10 @@ require([
                 new AddRedirectPopup({
                     sourceUrl        : data.sourceUrl,
                     targetUrl        : data.targetUrl,
-                    showSkip         : data.showSkip,
                     sourceUrlReadOnly: true,
                     projectName      : data.projectName,
-                    projectLanguage  : data.projectLanguage
+                    projectLanguage  : data.projectLanguage,
+                    children         : data.children
                 }).open();
             });
         }
