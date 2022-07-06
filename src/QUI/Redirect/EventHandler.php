@@ -54,7 +54,7 @@ class EventHandler
     public static function onSiteDelete($siteId, Project $Project)
     {
         try {
-            $Site = $Project->get($siteId);
+            $Site = new Site\Edit($Project, $siteId);
 
             if (!\QUI\Redirect\Site::isActive($Site)) {
                 return;
