@@ -21,6 +21,24 @@ use \Symfony\Component\HttpFoundation\Response;
 class EventHandler
 {
     /**
+     * Array that contains IDs of sites that were already processed onSiteSaveBefore.
+     * This is required to ensure that every site is only processed once per request.
+     * Otherwise, the old and new URLs can get messed up, showing the add-redirect-dialog multiple times or never.
+     *
+     * @var array
+     */
+    protected static array $sitesProcessedOnSiteSaveBefore = [];
+
+    /**
+     * Array that contains IDs of sites that were already processed onSiteSave.
+     * This is required to ensure that every site is only processed once per request.
+     * Otherwise, the old and new URLs can get messed up, showing the add-redirect-dialog multiple times or never.
+     *
+     * @var array
+     */
+    protected static array $sitesProcessedOnSiteSave = [];
+
+    /**
      * Called as an event when an error code/header is shown/returned
      *
      * @param $code
@@ -242,12 +260,22 @@ class EventHandler
      */
     public static function onSiteSaveBefore(Site\Edit $Site)
     {
+        $siteId = $Site->getId();
+
+        // Make sure this is only executed/called once per site per request
+        if (isset(self::$sitesProcessedOnSiteSaveBefore[$siteId])) {
+            return;
+        }
+
+        // Store that the given site was processed for this request
+        self::$sitesProcessedOnSiteSaveBefore[$siteId] = true;
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($Site->getId() == 1) {
+            if ($siteId == 1) {
                 return;
             }
 
@@ -266,16 +294,26 @@ class EventHandler
      */
     public static function onSiteSave(Site\Edit $Site)
     {
+        $siteId = $Site->getId();
+
+        // Make sure this is only executed/called once per site per request
+        if (isset(self::$sitesProcessedOnSiteSave[$siteId])) {
+            return;
+        }
+
+        // Store that the given site was processed for this request
+        self::$sitesProcessedOnSiteSave[$siteId] = true;
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($Site->getId() == 1) {
+            if ($siteId == 1) {
                 return;
             }
 
-            $oldUrl = TemporaryStorage::getOldUrlForSiteId($Site->getId());
+            $oldUrl = TemporaryStorage::getOldUrlForSiteId($siteId);
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
