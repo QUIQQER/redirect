@@ -7,7 +7,6 @@
 namespace QUI\Redirect;
 
 use QUI\Exception;
-use QUI\Package\Package;
 use QUI\Package\PackageNotLicensedException;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
@@ -167,7 +166,7 @@ class EventHandler
             return;
         }
 
-        TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
+        TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
     }
 
 
@@ -188,12 +187,10 @@ class EventHandler
 
         // Add redirects from old urls to new urls
         try {
-            $siteId     = $Site->getId();
-            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($siteId));
+            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($Site));
             $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
 
             Manager::addRedirect($siteOldUrl, $siteNewUrl, $Project);
-            TemporaryStorage::removeOldUrlForSiteId($siteId);
         } catch (PackageNotLicensedException $Exception) {
             // Maximum number of redirects for the system's license reached
             \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
@@ -206,6 +203,9 @@ class EventHandler
             return;
         } catch (Exception $Exception) {
             Log::writeException($Exception);
+        } finally {
+            // finally block is always executed, even if return is called in the try-catch
+            TemporaryStorage::removeUrl($Site);
         }
 
         // Add redirects for children
@@ -213,9 +213,7 @@ class EventHandler
             // We need a try-catch inside the loop to continue adding redirects for other children, if one throws an error
             try {
                 /** @var Site $ChildSite */
-                $childSiteId = $ChildSite->getId();
-
-                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($childSiteId));
+                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($ChildSite));
                 if (!$childOldUrl) {
                     continue;
                 }
@@ -227,8 +225,6 @@ class EventHandler
                 $childNewUrl = Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten());
 
                 Manager::addRedirect($childOldUrl, $childNewUrl, $Project);
-
-                TemporaryStorage::removeOldUrlForSiteId($childSiteId);
             } catch (PackageNotLicensedException $Exception) {
                 // Maximum number of redirects for the system's license reached
                 \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
@@ -242,6 +238,9 @@ class EventHandler
             } catch (\Exception $Exception) {
                 Log::writeException($Exception);
                 continue;
+            } finally {
+                // finally block is always executed, even if return or continue is called in the try-catch
+                TemporaryStorage::removeUrl($ChildSite);
             }
         }
 
@@ -279,7 +278,7 @@ class EventHandler
                 return;
             }
 
-            TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
+            TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -313,7 +312,7 @@ class EventHandler
                 return;
             }
 
-            $oldUrl = TemporaryStorage::getOldUrlForSiteId($siteId);
+            $oldUrl = TemporaryStorage::getUrl($Site);
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
@@ -337,6 +336,12 @@ class EventHandler
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
+        }
+
+        TemporaryStorage::removeUrl($Site);
+
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+            TemporaryStorage::removeUrl($ChildSite);
         }
     }
 
