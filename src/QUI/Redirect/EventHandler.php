@@ -7,7 +7,6 @@
 namespace QUI\Redirect;
 
 use QUI\Exception;
-use QUI\Package\Package;
 use QUI\Package\PackageNotLicensedException;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
@@ -20,6 +19,24 @@ use \Symfony\Component\HttpFoundation\Response;
  */
 class EventHandler
 {
+    /**
+     * Array that contains IDs of sites that were already processed onSiteSaveBefore.
+     * This is required to ensure that every site is only processed once per request.
+     * Otherwise, the old and new URLs can get messed up, showing the add-redirect-dialog multiple times or never.
+     *
+     * @var array
+     */
+    protected static array $sitesProcessedOnSiteSaveBefore = [];
+
+    /**
+     * Array that contains IDs of sites that were already processed onSiteSave.
+     * This is required to ensure that every site is only processed once per request.
+     * Otherwise, the old and new URLs can get messed up, showing the add-redirect-dialog multiple times or never.
+     *
+     * @var array
+     */
+    protected static array $sitesProcessedOnSiteSave = [];
+
     /**
      * Called as an event when an error code/header is shown/returned
      *
@@ -149,7 +166,7 @@ class EventHandler
             return;
         }
 
-        TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
+        TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
     }
 
 
@@ -170,12 +187,10 @@ class EventHandler
 
         // Add redirects from old urls to new urls
         try {
-            $siteId     = $Site->getId();
-            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($siteId));
+            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($Site));
             $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
 
             Manager::addRedirect($siteOldUrl, $siteNewUrl, $Project);
-            TemporaryStorage::removeOldUrlForSiteId($siteId);
         } catch (PackageNotLicensedException $Exception) {
             // Maximum number of redirects for the system's license reached
             \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
@@ -188,6 +203,9 @@ class EventHandler
             return;
         } catch (Exception $Exception) {
             Log::writeException($Exception);
+        } finally {
+            // finally block is always executed, even if return is called in the try-catch
+            TemporaryStorage::removeUrl($Site);
         }
 
         // Add redirects for children
@@ -195,9 +213,7 @@ class EventHandler
             // We need a try-catch inside the loop to continue adding redirects for other children, if one throws an error
             try {
                 /** @var Site $ChildSite */
-                $childSiteId = $ChildSite->getId();
-
-                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getOldUrlForSiteId($childSiteId));
+                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($ChildSite));
                 if (!$childOldUrl) {
                     continue;
                 }
@@ -209,8 +225,6 @@ class EventHandler
                 $childNewUrl = Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten());
 
                 Manager::addRedirect($childOldUrl, $childNewUrl, $Project);
-
-                TemporaryStorage::removeOldUrlForSiteId($childSiteId);
             } catch (PackageNotLicensedException $Exception) {
                 // Maximum number of redirects for the system's license reached
                 \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
@@ -224,6 +238,9 @@ class EventHandler
             } catch (\Exception $Exception) {
                 Log::writeException($Exception);
                 continue;
+            } finally {
+                // finally block is always executed, even if return or continue is called in the try-catch
+                TemporaryStorage::removeUrl($ChildSite);
             }
         }
 
@@ -242,16 +259,26 @@ class EventHandler
      */
     public static function onSiteSaveBefore(Site\Edit $Site)
     {
+        $siteId = $Site->getId();
+
+        // Make sure this is only executed/called once per site per request
+        if (isset(self::$sitesProcessedOnSiteSaveBefore[$siteId])) {
+            return;
+        }
+
+        // Store that the given site was processed for this request
+        self::$sitesProcessedOnSiteSaveBefore[$siteId] = true;
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($Site->getId() == 1) {
+            if ($siteId == 1) {
                 return;
             }
 
-            TemporaryStorage::setOldUrlsRecursivelyFromSite($Site);
+            TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -266,16 +293,26 @@ class EventHandler
      */
     public static function onSiteSave(Site\Edit $Site)
     {
+        $siteId = $Site->getId();
+
+        // Make sure this is only executed/called once per site per request
+        if (isset(self::$sitesProcessedOnSiteSave[$siteId])) {
+            return;
+        }
+
+        // Store that the given site was processed for this request
+        self::$sitesProcessedOnSiteSave[$siteId] = true;
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($Site->getId() == 1) {
+            if ($siteId == 1) {
                 return;
             }
 
-            $oldUrl = TemporaryStorage::getOldUrlForSiteId($Site->getId());
+            $oldUrl = TemporaryStorage::getUrl($Site);
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
             if ($newUrl == $oldUrl) {
@@ -299,6 +336,12 @@ class EventHandler
             );
         } catch (Exception $Exception) {
             Log::writeException($Exception);
+        }
+
+        TemporaryStorage::removeUrl($Site);
+
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+            TemporaryStorage::removeUrl($ChildSite);
         }
     }
 

@@ -5,26 +5,21 @@ namespace QUI\Redirect\Test;
 use PHPUnit\Framework\TestCase;
 use QUI\Redirect\TemporaryStorage;
 use QUI\Redirect\TestUtil;
+use QUI\Redirect\Url;
 
 final class TemporaryStorageTest extends TestCase
 {
-    public function testSetOldUrls(): void
+    public function testStoreAndGetUrl(): void
     {
-        $urls = [
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath()
-        ];
+        $RandomSite = TestUtil::getRandomSite();
 
-        TemporaryStorage::setOldUrls($urls);
+        $randomUrl = Url::prepareSourceUrl($RandomSite->getUrlRewritten());
 
-        $this->assertEquals($urls, TemporaryStorage::getOldUrls());
+        TemporaryStorage::storeUrl($RandomSite);
 
-        TemporaryStorage::setOldUrls([]);
+        $this->assertEquals($randomUrl, TemporaryStorage::getUrl($RandomSite));
 
-        $this->assertEmpty(TemporaryStorage::getOldUrls());
+        TemporaryStorage::removeUrl($RandomSite);
     }
 
     public function testSetOldUrlsRecursivelyFromSite(): void
@@ -37,59 +32,13 @@ final class TemporaryStorageTest extends TestCase
         );
     }
 
-    public function testGetOldUrls(): void
+    public function testRemoveUrl(): void
     {
-        $this->markTestIncomplete(
-            'This test would do the same as testSetOldUrls.
-            Therefore it has not been implemented.
-            If you know a better way on how to test this, feel free to implement it.'
-        );
-    }
+        $RandomSite = TestUtil::getRandomSite();
 
-    public function testGetOldUrlForSiteId(): void
-    {
-        $siteId = TestUtil::getRandomNumber();
-        $path   = TestUtil::getRandomPath();
+        TemporaryStorage::storeUrl($RandomSite);
+        TemporaryStorage::removeUrl($RandomSite);
 
-        $urls = [
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            $siteId => $path,
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath()
-        ];
-
-        TemporaryStorage::setOldUrls($urls);
-
-        $this->assertEquals($path, TemporaryStorage::getOldUrlForSiteId($siteId));
-
-        TemporaryStorage::setOldUrls([]);
-
-        $this->assertEmpty(TemporaryStorage::getOldUrlForSiteId(TestUtil::getRandomNumber()));
-    }
-
-    public function testRemoveOldUrlForSiteId(): void
-    {
-        $siteIdToDelete = TestUtil::getRandomNumber();
-        $pathToDelete   = TestUtil::getRandomPath();
-
-        $siteIdToKeep = TestUtil::getRandomNumber();
-        $pathToKeep   = TestUtil::getRandomPath();
-
-        $urls = [
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath(),
-            $siteIdToDelete => $pathToDelete,
-            $siteIdToKeep => $pathToKeep,
-            TestUtil::getRandomNumber() => TestUtil::getRandomPath()
-        ];
-
-        TemporaryStorage::setOldUrls($urls);
-        TemporaryStorage::removeOldUrlForSiteId($siteIdToDelete);
-
-        $this->assertEmpty(TemporaryStorage::getOldUrlForSiteId(TestUtil::getRandomNumber()), 'URL was not removed from temporary storage');
-        $this->assertEquals($pathToKeep, TemporaryStorage::getOldUrlForSiteId($siteIdToKeep), 'Other URLs were removed from the temporary storage');
-
-        TemporaryStorage::setOldUrls([]);
+        $this->assertEmpty(TemporaryStorage::getUrl($RandomSite));
     }
 }

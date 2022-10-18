@@ -10,72 +10,24 @@ use QUI\Exception;
 use QUI\Projects\Site;
 use QUI\Utils\System\File;
 
+use function file_put_contents;
+use function is_dir;
+
 class TemporaryStorage
 {
-    /**
-     * Returns the path to the directory where the data is temporarily stored.
-     * There is a separate folder for each user/session.
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    protected static function getDirectory(): string
-    {
-        $directory = \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
-
-        if (!is_dir($directory)) {
-            File::mkdir($directory);
-        }
-
-        return $directory;
-    }
-
-
-
-    /**
-     * Returns the path to the file that stores old URLs.
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    protected static function getOldUrlsFile(): string
-    {
-        return static::getDirectory() . 'old_urls.json';
-    }
-
-
-    /**
-     * Sets the list of URLs to process.
-     *
-     * @param array $urls
-     *
-     * @throws Exception
-     */
-    public static function setOldUrls(array $urls): void
-    {
-        file_put_contents(static::getOldUrlsFile(), json_encode($urls));
-    }
-
-
     /**
      * Sets the list of old URLs from a given site and it's children.
      *
      * @param \QUI\Interfaces\Projects\Site $Site
      *
      * @return bool
-     *
-     * @throws Exception
      */
-    public static function setOldUrlsRecursivelyFromSite(\QUI\Interfaces\Projects\Site $Site): bool
+    public static function storeUrlsRecursivelyFromSite(\QUI\Interfaces\Projects\Site $Site): bool
     {
         $isTotalAddUrlSuccessful = true;
 
-        $oldUrls = [];
-
         try {
-            $oldUrls[$Site->getId()] = Url::prepareSourceUrl($Site->getUrlRewritten());
+            static::storeUrl($Site);
         } catch (Exception $Exception) {
             $isTotalAddUrlSuccessful = false;
         }
@@ -85,7 +37,7 @@ class TemporaryStorage
             // Use a separate try to continue on error
             try {
                 $isChildAddUrlSuccessful      = true;
-                $oldUrls[$ChildSite->getId()] = Url::prepareSourceUrl($ChildSite->getUrlRewritten());
+                static::storeUrl($ChildSite);
             } catch (Exception $Exception) {
                 $isChildAddUrlSuccessful = false;
             }
@@ -95,67 +47,93 @@ class TemporaryStorage
             }
         }
 
-        static::setOldUrls($oldUrls);
-
         return $isTotalAddUrlSuccessful;
     }
 
+    /**
+     * Generates a key that can be used to identify the old url in the temporary storage.
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return string
+     */
+    protected static function generateKey(\QUI\Interfaces\Projects\Site $Site): string
+    {
+        return "{$Site->getProject()->getName()}_{$Site->getProject()->getLang()}_{$Site->getId()}";
+    }
 
     /**
-     * Returns the list/array of old URLs.
-     * The site id is the array's index and the old URL is the corresponding value.
+     * Stores the URL of the given site in the temporary storage.
      *
-     * @return array
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return void
      *
      * @throws Exception
      */
-    public static function getOldUrls(): array
+    public static function storeUrl(\QUI\Interfaces\Projects\Site $Site): void
     {
-        $oldUrls = json_decode(File::getFileContent(static::getOldUrlsFile()), true);
+        $path = static::getFilePath($Site);
 
-        if (!$oldUrls) {
-            $oldUrls = [];
-        }
+        $url = Url::prepareSourceUrl($Site->getUrlRewritten());
 
-        return $oldUrls;
+        file_put_contents($path, $url);
     }
 
-
     /**
-     * Returns the old URL for a given site id.
-     * If the old URL is not found, an empty string is returned.
+     * Returns the path of the file used to store the old url for the given site.
      *
-     * @param int $siteId
+     * @param \QUI\Interfaces\Projects\Site $Site
      *
      * @return string
      *
      * @throws Exception
      */
-    public static function getOldUrlForSiteId(int $siteId): string
+    protected static function getFilePath(\QUI\Interfaces\Projects\Site $Site): string
     {
-        $oldUrls = static::getOldUrls();
+        $directory = \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
 
-        if (!isset($oldUrls[$siteId])) {
-            return '';
+        if (!is_dir($directory)) {
+            File::mkdir($directory);
         }
 
-        return $oldUrls[$siteId];
+        return $directory . static::generateKey($Site);
     }
 
-
     /**
-     * Removes the old URL of a given site ID from the list of old URLs.
+     * Returns the old url for a given site.
+     * Returns an empty string if no old url exists.
      *
-     * @param int $siteId
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return string
      *
      * @throws Exception
      */
-    public static function removeOldUrlForSiteId(int $siteId): void
+    public static function getUrl(\QUI\Interfaces\Projects\Site $Site): string
     {
-        $oldUrls = static::getOldUrls();
+        $filePath = static::getFilePath($Site);
 
-        unset($oldUrls[$siteId]);
+        $url = File::getFileContent($filePath);
 
-        static::setOldUrls($oldUrls);
+        if (empty($url)) {
+            $url = '';
+        }
+
+        return $url;
+    }
+
+    /**
+     * Removes the entry/file for the given site.
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site
+     *
+     * @return void
+     *
+     * @throws Exception
+     */
+    public static function removeUrl(\QUI\Interfaces\Projects\Site $Site): void
+    {
+        File::unlink(static::getFilePath($Site));
     }
 }
