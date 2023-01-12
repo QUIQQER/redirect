@@ -184,41 +184,7 @@ class EventHandler
      */
     public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
     {
-        if (!\QUI\Redirect\Site::isActive($Site)) {
-            return;
-        }
-
-        // Add redirects from old urls to new urls
-        try {
-            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($Site));
-            $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
-
-            Manager::addRedirectForSiteAndChildren($Site, $siteOldUrl, $siteNewUrl);
-        } catch (PackageNotLicensedException $Exception) {
-            // Maximum number of redirects for the system's license reached
-            \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
-                'quiqqer/redirect',
-                'site.move.error_license',
-                ['error' => $Exception->getMessage()]
-            ));
-
-            // No need to try adding the redirects for the children -> just exit.
-            return;
-        } catch (Exception $Exception) {
-            Log::writeException($Exception);
-        } finally {
-            // finally block is always executed, even if return is called in the try-catch
-            try {
-                TemporaryStorage::removeUrl($Site);
-            } catch (Exception $Exception) {
-                Log::writeException($Exception);
-            }
-        }
-
-        // Redirect add completed
-        \QUI::getMessagesHandler()->addInformation(
-            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
-        );
+        static::handleOnSiteMoveOrSave($Site);
     }
 
 
@@ -249,7 +215,7 @@ class EventHandler
         }
 
         try {
-            TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
+            TemporaryStorage::storeUrl($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
@@ -258,7 +224,7 @@ class EventHandler
 
     /**
      * Called as an event when a site is saved.
-     * Adds redirects from URLs stored in the session.
+     * Add redirects from URLs stored in the session.
      *
      * @param Site\Edit $Site - The saved site
      */
@@ -278,42 +244,49 @@ class EventHandler
             return;
         }
 
+        static::handleOnSiteMoveOrSave($Site);
+    }
+
+    protected static function handleOnSiteMoveOrSave(Site\Edit $Site)
+    {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
+        // Add redirects from old urls to new urls
         try {
-            $oldUrl = TemporaryStorage::getUrl($Site);
-            $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
+            $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($Site));
+            $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
 
-            if ($newUrl == $oldUrl) {
+            if ($siteOldUrl == $siteNewUrl) {
                 return;
             }
 
-            $Project = $Site->getProject();
+            Manager::addRedirectForSiteAndChildren($Site, $siteOldUrl, $siteNewUrl);
+        } catch (PackageNotLicensedException $Exception) {
+            // Maximum number of redirects for the system's license reached
+            \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
+                'quiqqer/redirect',
+                'site.move.error_license',
+                ['error' => $Exception->getMessage()]
+            ));
 
-            $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
-                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
-                $oldUrl,
-                $newUrl
-            );
-
-            Frontend::showAddRedirectDialog(
-                $oldUrl,
-                $newUrl,
-                $Project->getName(),
-                $Project->getLang(),
-                $childrenUrls
-            );
+            // No need to try adding the redirects for the children -> just exit.
+            return;
         } catch (Exception $Exception) {
             Log::writeException($Exception);
         }
 
-        TemporaryStorage::removeUrl($Site);
-
-        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-            TemporaryStorage::removeUrl($ChildSite);
+        try {
+            TemporaryStorage::removeUrl($Site);
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
         }
+
+        // Redirect add completed
+        \QUI::getMessagesHandler()->addInformation(
+            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        );
     }
 
 
