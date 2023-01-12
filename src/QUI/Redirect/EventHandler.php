@@ -166,13 +166,18 @@ class EventHandler
             return;
         }
 
-        TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
+        try {
+            TemporaryStorage::storeUrl($Site);
+        } catch (Exception $Exception) {
+            Log::writeException($Exception);
+            return;
+        }
     }
 
 
     /**
      * Called as an event when a site is moved to a new location.
-     * Adds redirects fire the sites' new URLs.
+     * Add redirects for the sites' new URLs.
      *
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
@@ -183,14 +188,12 @@ class EventHandler
             return;
         }
 
-        $Project = $Site->getProject();
-
         // Add redirects from old urls to new urls
         try {
             $siteOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($Site));
             $siteNewUrl = Url::prepareInternalTargetUrl($Site->getUrlRewritten());
 
-            Manager::addRedirect($siteOldUrl, $siteNewUrl, $Project);
+            Manager::addRedirectForSiteAndChildren($Site, $siteOldUrl, $siteNewUrl);
         } catch (PackageNotLicensedException $Exception) {
             // Maximum number of redirects for the system's license reached
             \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
@@ -205,42 +208,10 @@ class EventHandler
             Log::writeException($Exception);
         } finally {
             // finally block is always executed, even if return is called in the try-catch
-            TemporaryStorage::removeUrl($Site);
-        }
-
-        // Add redirects for children
-        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-            // We need a try-catch inside the loop to continue adding redirects for other children, if one throws an error
             try {
-                /** @var Site $ChildSite */
-                $childOldUrl = Url::prepareSourceUrl(TemporaryStorage::getUrl($ChildSite));
-                if (!$childOldUrl) {
-                    continue;
-                }
-
-                // When moving a site the cache is cleared only for the parent and not it's children.
-                // This causes child-URLs to return the old URL instead of the new one.
-                // So we have to manually delete the cache before querying the new URL.
-                $ChildSite->deleteCache();
-                $childNewUrl = Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten());
-
-                Manager::addRedirect($childOldUrl, $childNewUrl, $Project);
-            } catch (PackageNotLicensedException $Exception) {
-                // Maximum number of redirects for the system's license reached
-                \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
-                    'quiqqer/redirect',
-                    'site.move.error_license',
-                    ['error' => $Exception->getMessage()]
-                ));
-
-                // No need to try adding the redirects for the children -> just exit.
-                return;
-            } catch (\Exception $Exception) {
+                TemporaryStorage::removeUrl($Site);
+            } catch (Exception $Exception) {
                 Log::writeException($Exception);
-                continue;
-            } finally {
-                // finally block is always executed, even if return or continue is called in the try-catch
-                TemporaryStorage::removeUrl($ChildSite);
             }
         }
 
