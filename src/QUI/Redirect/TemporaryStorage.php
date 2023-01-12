@@ -7,7 +7,6 @@
 namespace QUI\Redirect;
 
 use QUI\Exception;
-use QUI\Projects\Site;
 use QUI\Utils\System\File;
 
 use function file_put_contents;
@@ -15,41 +14,6 @@ use function is_dir;
 
 class TemporaryStorage
 {
-    /**
-     * Sets the list of old URLs from a given site and it's children.
-     *
-     * @param \QUI\Interfaces\Projects\Site $Site
-     *
-     * @return bool
-     */
-    public static function storeUrlsRecursivelyFromSite(\QUI\Interfaces\Projects\Site $Site): bool
-    {
-        $isTotalAddUrlSuccessful = true;
-
-        try {
-            static::storeUrl($Site);
-        } catch (Exception $Exception) {
-            $isTotalAddUrlSuccessful = false;
-        }
-
-        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-            /** @var Site $ChildSite */
-            // Use a separate try to continue on error
-            try {
-                $isChildAddUrlSuccessful      = true;
-                static::storeUrl($ChildSite);
-            } catch (Exception $Exception) {
-                $isChildAddUrlSuccessful = false;
-            }
-
-            if (!$isChildAddUrlSuccessful) {
-                $isTotalAddUrlSuccessful = false;
-            }
-        }
-
-        return $isTotalAddUrlSuccessful;
-    }
-
     /**
      * Generates a key that can be used to identify the old url in the temporary storage.
      *
