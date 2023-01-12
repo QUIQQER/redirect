@@ -148,6 +148,62 @@ class Manager
     }
 
     /**
+     * Automatically adds redirects for the given site and its children based on the site's source and target URL.
+     *
+     * @param \QUI\Interfaces\Projects\Site $Site
+     * @param string $sourceUrl
+     * @param string $targetUrl
+     *
+     * @return void
+     *
+     * @throws \QUI\Package\PackageNotLicensedException
+     */
+    public static function addRedirectForSiteAndChildren(
+        QUI\Interfaces\Projects\Site $Site,
+        string $sourceUrl,
+        string $targetUrl
+    ): void {
+        $Project = $Site->getProject();
+
+        Manager::addRedirect($sourceUrl, $targetUrl, $Project);
+
+        // Add redirects for children
+        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
+            // We need a try-catch inside the loop to continue adding redirects for other children, if one throws an error
+            try {
+                // When moving a site the cache is cleared only for the parent and not it's children.
+                // This causes child-URLs to return the old URL instead of the new one.
+                // So we have to manually delete the cache before querying the new URL.
+                $ChildSite->deleteCache();
+
+                $childTargetUrl = Url::prepareInternalTargetUrl($ChildSite->getUrlRewritten());
+
+                /** @var Site $ChildSite */
+                $childOldUrl = Utils::generateChildSourceUrlFromParentRedirectUrls(
+                    $childTargetUrl,
+                    $sourceUrl,
+                    $targetUrl
+                );
+
+                if (!$childOldUrl) {
+                    continue;
+                }
+
+                Manager::addRedirect($childOldUrl, $childTargetUrl, $Project);
+            } catch (PackageNotLicensedException $Exception) {
+                // Maximum number of redirects for the system's license reached
+                throw $Exception;
+
+                // No need to try adding the redirects for the children -> just exit.
+                return;
+            } catch (\Exception $Exception) {
+                Log::writeException($Exception);
+                continue;
+            }
+        }
+    }
+
+    /**
      * Check license requirements for quiqqer/redirect usage.
      *
      * @return void
