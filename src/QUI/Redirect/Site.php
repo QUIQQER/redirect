@@ -20,40 +20,28 @@ use QUI\System\Log;
 class Site
 {
     /**
-     * Returns ALL (grand-)children of a site.
+     * Returns ALL (grand-)children of a site as a generator.
      * This means that even children of children are returned.
-     *
-     * Be careful about performance when using this!
      *
      * @param \QUI\Interfaces\Projects\Site $Site
      * @param array $params - Parameters to query children
      *                      $params['where']
      *                      $params['limit']
-     * @param boolean $loadChildren - Load the children entirely
      *
-     * @return \QUI\Interfaces\Projects\Site[]
+     * @return \Generator
      */
-    public static function getChildrenRecursive(
-        \QUI\Interfaces\Projects\Site $Site,
-        $params = [],
-        $loadChildren = false
-    ) {
-        try {
-            $children = $Site->getChildren($params, $loadChildren);
-        } catch (Exception $Exception) {
-            return [];
-        }
+    public static function getChildrenRecursive(\QUI\Interfaces\Projects\Site $Site, array $params = []): \Generator
+    {
+        $Project = $Site->getProject();
 
-        $grandChildren = [];
-        foreach ($children as $Child) {
-            /** @var \QUI\Interfaces\Projects\Site $Child */
-            $grandChildren = array_merge(
-                $grandChildren,
-                static::getChildrenRecursive($Child, $loadChildren)
-            );
+        foreach ($Site->getChildrenIdsRecursive($params) as $childId) {
+            try {
+                yield $Project->get($childId);
+            } catch (Exception $Exception) {
+                Log::writeException($Exception);
+                continue;
+            };
         }
-
-        return array_merge($children, $grandChildren);
     }
 
 
