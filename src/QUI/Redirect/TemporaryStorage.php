@@ -91,7 +91,7 @@ class TemporaryStorage
      */
     protected static function getFilePath(\QUI\Interfaces\Projects\Site $Site): string
     {
-        $directory = \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
+        $directory = self::getDirectory();
 
         if (!is_dir($directory)) {
             File::mkdir($directory);
@@ -135,5 +135,30 @@ class TemporaryStorage
     public static function removeUrl(\QUI\Interfaces\Projects\Site $Site): void
     {
         File::unlink(static::getFilePath($Site));
+    }
+
+    /**
+     * Removes all stored urls for the current user.
+     *
+     * @return void
+     *
+     * @throws \QUI\Exception
+     */
+    public static function removeAllUrls()
+    {
+        File::unlink(static::getDirectory());
+    }
+
+    /**
+     * Returns the path to the directory where the urls are stored.
+     * Uses separate folders for each user.
+     *
+     * @return string
+     *
+     * @throws \QUI\Exception
+     */
+    protected static function getDirectory(): string
+    {
+        return \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
     }
 }
