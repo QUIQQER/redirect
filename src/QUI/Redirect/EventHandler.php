@@ -167,6 +167,7 @@ class EventHandler
         }
 
         try {
+            TemporaryStorage::removeAllUrls();
             TemporaryStorage::storeUrl($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -215,6 +216,7 @@ class EventHandler
         }
 
         try {
+            TemporaryStorage::removeAllUrls();
             TemporaryStorage::storeUrl($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
