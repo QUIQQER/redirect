@@ -269,15 +269,15 @@ class EventHandler
         // Store that the given site was processed for this request
         self::$sitesProcessedOnSiteSaveBefore[$siteId] = true;
 
+        if ($siteId == 1) {
+            return;
+        }
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($siteId == 1) {
-                return;
-            }
-
             TemporaryStorage::storeUrlsRecursivelyFromSite($Site);
         } catch (Exception $Exception) {
             Log::writeException($Exception);
@@ -303,15 +303,15 @@ class EventHandler
         // Store that the given site was processed for this request
         self::$sitesProcessedOnSiteSave[$siteId] = true;
 
+        if ($siteId == 1) {
+            return;
+        }
+
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
         try {
-            if ($siteId == 1) {
-                return;
-            }
-
             $oldUrl = TemporaryStorage::getUrl($Site);
             $newUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
 
