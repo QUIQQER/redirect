@@ -102,7 +102,7 @@ class TemporaryStorage
 
     /**
      * Returns the old url for a given site.
-     * Returns an empty string if no old url exists.
+     * Throws an exception, if no old url exists.
      *
      * @param \QUI\Interfaces\Projects\Site $Site
      *
@@ -117,7 +117,7 @@ class TemporaryStorage
         $url = File::getFileContent($filePath);
 
         if (empty($url)) {
-            $url = '';
+            throw new Exception('URL for this site does not exist.');
         }
 
         return $url;

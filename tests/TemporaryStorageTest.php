@@ -3,6 +3,7 @@
 namespace QUI\Redirect\Test;
 
 use PHPUnit\Framework\TestCase;
+use QUI\Exception;
 use QUI\Redirect\TemporaryStorage;
 use QUI\Redirect\TestUtil;
 use QUI\Redirect\Url;
@@ -39,6 +40,7 @@ final class TemporaryStorageTest extends TestCase
         TemporaryStorage::storeUrl($RandomSite);
         TemporaryStorage::removeUrl($RandomSite);
 
-        $this->assertEmpty(TemporaryStorage::getUrl($RandomSite));
+        $this->expectException(Exception::class);
+        TemporaryStorage::getUrl($RandomSite);
     }
 }
