@@ -7,7 +7,6 @@
 namespace QUI\Redirect;
 
 use QUI\Exception;
-use QUI\Projects\Site;
 use QUI\Utils\System\File;
 
 use function file_put_contents;
@@ -15,41 +14,6 @@ use function is_dir;
 
 class TemporaryStorage
 {
-    /**
-     * Sets the list of old URLs from a given site and it's children.
-     *
-     * @param \QUI\Interfaces\Projects\Site $Site
-     *
-     * @return bool
-     */
-    public static function storeUrlsRecursivelyFromSite(\QUI\Interfaces\Projects\Site $Site): bool
-    {
-        $isTotalAddUrlSuccessful = true;
-
-        try {
-            static::storeUrl($Site);
-        } catch (Exception $Exception) {
-            $isTotalAddUrlSuccessful = false;
-        }
-
-        foreach (\QUI\Redirect\Site::getChildrenRecursive($Site) as $ChildSite) {
-            /** @var Site $ChildSite */
-            // Use a separate try to continue on error
-            try {
-                $isChildAddUrlSuccessful      = true;
-                static::storeUrl($ChildSite);
-            } catch (Exception $Exception) {
-                $isChildAddUrlSuccessful = false;
-            }
-
-            if (!$isChildAddUrlSuccessful) {
-                $isTotalAddUrlSuccessful = false;
-            }
-        }
-
-        return $isTotalAddUrlSuccessful;
-    }
-
     /**
      * Generates a key that can be used to identify the old url in the temporary storage.
      *
@@ -91,7 +55,7 @@ class TemporaryStorage
      */
     protected static function getFilePath(\QUI\Interfaces\Projects\Site $Site): string
     {
-        $directory = \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
+        $directory = self::getDirectory();
 
         if (!is_dir($directory)) {
             File::mkdir($directory);
@@ -102,7 +66,7 @@ class TemporaryStorage
 
     /**
      * Returns the old url for a given site.
-     * Returns an empty string if no old url exists.
+     * Throws an exception, if no old url exists.
      *
      * @param \QUI\Interfaces\Projects\Site $Site
      *
@@ -117,7 +81,7 @@ class TemporaryStorage
         $url = File::getFileContent($filePath);
 
         if (empty($url)) {
-            $url = '';
+            throw new Exception('URL for this site does not exist.');
         }
 
         return $url;
@@ -135,5 +99,30 @@ class TemporaryStorage
     public static function removeUrl(\QUI\Interfaces\Projects\Site $Site): void
     {
         File::unlink(static::getFilePath($Site));
+    }
+
+    /**
+     * Removes all stored urls for the current user.
+     *
+     * @return void
+     *
+     * @throws \QUI\Exception
+     */
+    public static function removeAllUrls()
+    {
+        File::unlink(static::getDirectory());
+    }
+
+    /**
+     * Returns the path to the directory where the urls are stored.
+     * Uses separate folders for each user.
+     *
+     * @return string
+     *
+     * @throws \QUI\Exception
+     */
+    protected static function getDirectory(): string
+    {
+        return \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
     }
 }
