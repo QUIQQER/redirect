@@ -1,6 +1,7 @@
 {
     "name": "quiqqer\/redirect",
     "type": "quiqqer-module",
+    "version": "1.3.0",
     "description": "Automatically redirect moved, deleted, renamed and deactivated sites",
     "license": "PCSG QPL-1.0",
     "authors": [
