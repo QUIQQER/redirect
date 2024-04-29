@@ -1,33 +1,32 @@
 {
-    "name": "quiqqer\/redirect",
-    "type": "quiqqer-module",
-    "description": "Automatically redirect moved, deleted, renamed and deactivated sites",
-    "license": "PCSG QPL-1.0",
-    "authors": [
-        {
-            "name": "Jan Wennrich",
-            "email": "support@pcsg.de",
-            "homepage": "https:\/\/www.pcsg.de",
-            "role": "Developer"
-        }
-    ],
-    "support": {
-        "email": "support@pcsg.de",
-        "url": "https:\/\/www.pcsg.de"
-    },
-    "require": {
-        "php": ">=7.4",
-
-        "quiqqer\/quiqqer": "^1.5.3|dev-master|dev-dev",
-        "quiqqer\/utils": "^1.15.1|dev-master|dev-dev",
-        "quiqqer-asset/hyperlist":  "1.0.*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9"
-    },
-    "autoload": {
-        "psr-4": {
-            "QUI\\Redirect\\": "src\/QUI\/Redirect"
-        }
+  "name": "quiqqer/redirect",
+  "type": "quiqqer-module",
+  "description": "Automatically redirect moved, deleted, renamed and deactivated sites",
+  "license": "PCSG QPL-1.0",
+  "authors": [
+    {
+      "name": "Jan Wennrich",
+      "email": "support@pcsg.de",
+      "homepage": "https://www.pcsg.de",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "email": "support@pcsg.de",
+    "url": "https://www.pcsg.de"
+  },
+  "require": {
+    "php": "^8.1",
+    "quiqqer/core": "^2",
+    "quiqqer/utils": "^2",
+    "quiqqer-asset/hyperlist": "1.0.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
+  "autoload": {
+    "psr-4": {
+      "QUI\\Redirect\\": "src/QUI/Redirect"
+    }
+  }
 }
