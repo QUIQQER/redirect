@@ -7,19 +7,24 @@
  *
  * @return boolean
  */
-\QUI::$Ajax->registerFunction(
+
+use QUI\Redirect\Manager;
+use QUI\Redirect\Permission;
+use QUI\System\Log;
+
+QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_deleteRedirect',
     function ($sourceUrl, $projectName, $projectLanguage) {
         try {
             $Project = QUI::getProject($projectName, $projectLanguage);
 
-            return \QUI\Redirect\Manager::deleteRedirect($sourceUrl, $Project);
-        } catch (\QUI\Exception $Exception) {
-            \QUI\System\Log::writeException($Exception);
+            return Manager::deleteRedirect($sourceUrl, $Project);
+        } catch (QUI\Exception $Exception) {
+            Log::writeException($Exception);
 
             return false;
         }
     },
     ['sourceUrl', 'projectName', 'projectLanguage'],
-    \QUI\Redirect\Permission::REDIRECT_DELETE
+    Permission::REDIRECT_DELETE
 );

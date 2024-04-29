@@ -13,7 +13,7 @@ namespace QUI\Redirect;
 class Url
 {
     /**
-     * Prepares an URL to be used as a source URL.
+     * Prepares a URL to be used as a source URL.
      * This means:
      *   - only leaving the URLs' path behind
      *   - prepending a slash
@@ -23,12 +23,11 @@ class Url
      *
      * @return string
      */
-    public static function prepareSourceUrl($url)
+    public static function prepareSourceUrl(string $url): string
     {
         $url = static::getRelevantPartsFromUrl($url);
-        $url = static::stripLanguageFromPath($url);
 
-        return $url;
+        return static::stripLanguageFromPath($url);
     }
 
     /**
@@ -61,7 +60,7 @@ class Url
     }
 
 
-    public static function stripLanguageFromPath($url)
+    public static function stripLanguageFromPath(string $url): string
     {
         // Remove all slashes from the beginning and end of the path
         $url = trim($url, '/');
@@ -74,26 +73,22 @@ class Url
         }
 
         // Append a slash
-        $url = "/" . $url;
-
-        return $url;
+        return "/" . $url;
     }
 
 
     /**
-     * Prepares an URL to be used as an internal target URL.
+     * Prepares a URL to be used as an internal target URL.
      * This means only leaving the URLs' path behind and prepending a slash.
      *
      * @param string $url - The URL to be prepared
      *
      * @return string
      */
-    public static function prepareInternalTargetUrl($url)
+    public static function prepareInternalTargetUrl(string $url): string
     {
         $path = static::getPath($url);
-        $path = self::stripLanguageFromPath($path);
-
-        return $path;
+        return self::stripLanguageFromPath($path);
     }
 
 
@@ -101,32 +96,31 @@ class Url
      * Returns if a given URL is an internal URL (starting with "index.php?id=")
      *
      * @param string $url - The URL to test
-     *
      * @return boolean
      */
-    public static function isInternal($url)
+    public static function isInternal(string $url): bool
     {
         // Remove all slashes from the beginning and end of the path
         $url = trim($url, '/');
 
-        return strpos($url, 'index.php?id=') === 0;
+        return str_starts_with($url, 'index.php?id=');
     }
 
 
     /**
-     * Returns the path of an URL with a prepended slash.
+     * Returns the path of a URL with a prepended slash.
      * When the second parameter is set to false no slash will be prepended.
      *
-     * @param $url - The URL which's path should be returned
+     * @param $url - The URL which path should be returned
      *
      * @return string
      */
-    public static function getPath($url)
+    public static function getPath($url): string
     {
         $url = parse_url($url, PHP_URL_PATH);
 
         // Prepend slash if it does not exist
-        if (strpos($url, "/") !== 0) {
+        if (!str_starts_with($url, "/")) {
             $url = "/" . $url;
         }
 
@@ -134,7 +128,7 @@ class Url
     }
 
 
-    public static function getQueryString($url)
+    public static function getQueryString($url): bool|array|int|string|null
     {
         return parse_url($url, PHP_URL_QUERY);
     }

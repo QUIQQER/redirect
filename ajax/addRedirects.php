@@ -1,6 +1,9 @@
 <?php
 
 use QUI\Package\PackageNotLicensedException;
+use QUI\Redirect\Manager;
+use QUI\Redirect\Project;
+use QUI\System\Log;
 
 /**
  * Adds the given redirects to the system.
@@ -11,13 +14,12 @@ use QUI\Package\PackageNotLicensedException;
  *
  * @return boolean
  */
-\QUI::$Ajax->registerFunction(
+QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_addRedirects',
     function ($redirects, $projectName = "", $projectLanguage = "") {
         try {
             $success = true;
-
-            $Project = \QUI\Redirect\Project::getFromParameters($projectName, $projectLanguage);
+            $Project = Project::getFromParameters($projectName, $projectLanguage);
 
             if (!$Project) {
                 return false;
@@ -26,7 +28,7 @@ use QUI\Package\PackageNotLicensedException;
             $redirects = json_decode($redirects, true);
 
             foreach ($redirects as $redirect) {
-                $result = \QUI\Redirect\Manager::addRedirect($redirect['source'], $redirect['target'], $Project);
+                $result = Manager::addRedirect($redirect['source'], $redirect['target'], $Project);
 
                 if (!$result) {
                     $success = false;
@@ -35,19 +37,19 @@ use QUI\Package\PackageNotLicensedException;
         } catch (PackageNotLicensedException $Exception) {
             throw $Exception;
         } catch (\QUI\Exception $Exception) {
-            \QUI\System\Log::writeException($Exception);
+            Log::writeException($Exception);
 
             return false;
         }
 
         if ($success) {
-            \QUI::getMessagesHandler()->addInformation(
-                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+            QUI::getMessagesHandler()->addInformation(
+                QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
             );
         } else {
             // TODO: add individual message informing which redirects couldn't be added
-            \QUI::getMessagesHandler()->addInformation(
-                \QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
+            QUI::getMessagesHandler()->addInformation(
+                QUI::getLocale()->get('quiqqer/redirect', 'site.move.error')
             );
         }
 
