@@ -6,7 +6,6 @@
 
 namespace QUI\Redirect;
 
-
 use QUI;
 use QUI\Projects\Project;
 
