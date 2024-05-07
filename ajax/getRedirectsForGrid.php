@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * This file contains package_quiqqer_redirect_ajax_getRedirectsForGrid
+ */
+
 use QUI\Redirect\Manager;
 use QUI\System\Log;
 use QUI\Utils\Grid;

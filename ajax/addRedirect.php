@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * This file contains package_quiqqer_redirect_ajax_addRedirect
+ */
+
 use QUI\Package\PackageNotLicensedException;
 use QUI\Redirect\Manager;
 use QUI\Redirect\Project;
