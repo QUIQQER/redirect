@@ -7,6 +7,7 @@
 namespace QUI\Redirect;
 
 
+use QUI;
 use QUI\Exception;
 
 /**
@@ -22,17 +23,17 @@ class Project
      * @param string $projectName
      * @param string $projectLanguage
      *
-     * @return bool|\QUI\Projects\Project
+     * @return bool|QUI\Projects\Project
      */
-    public static function getFromParameters($projectName = "", $projectLanguage = "")
+    public static function getFromParameters(string $projectName = "", string $projectLanguage = ""): QUI\Projects\Project|bool
     {
         try {
             if ($projectName) {
-                return \QUI::getProject($projectName, $projectLanguage);
+                return QUI::getProject($projectName, $projectLanguage);
             }
 
-            return $Project = \QUI::getProjectManager()->get();
-        } catch (Exception $Exception) {
+            return QUI::getProjectManager()->get();
+        } catch (Exception) {
             return false;
         }
     }

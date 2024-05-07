@@ -6,6 +6,8 @@
 
 namespace QUI\Redirect;
 
+use QUI;
+
 /**
  * Class with various helper-methods for the redirect module
  *
@@ -20,7 +22,7 @@ class Frontend
      * Triggers the (frontend) JavaScript on site delete callback
      *
      * @param string $sourceUrl - The url of the deleted site
-     * @param string $targetUrl - The redirect's target URL
+     * @param string $targetUrl - The redirects target URL
      * @param string $projectName - The project's name
      * @param string $projectLanguage - The project's language
      */
@@ -30,15 +32,15 @@ class Frontend
         string $projectName = "",
         string $projectLanguage = "",
         array $children = []
-    ) {
-        \QUI::getAjax()->triggerGlobalJavaScriptCallback(
+    ): void {
+        QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'redirectShowAddRedirectDialog',
             [
-                'sourceUrl'       => $sourceUrl,
-                'targetUrl'       => $targetUrl,
-                'projectName'     => $projectName,
+                'sourceUrl' => $sourceUrl,
+                'targetUrl' => $targetUrl,
+                'projectName' => $projectName,
                 'projectLanguage' => $projectLanguage,
-                'children'        => $children
+                'children' => $children
             ]
         );
     }
