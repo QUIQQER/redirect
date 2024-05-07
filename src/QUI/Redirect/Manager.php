@@ -13,6 +13,8 @@ use QUI\Projects\Site;
 use QUI\System\Log;
 use QUI\Package\PackageNotLicensedException;
 
+use function current;
+
 /**
  * Class Manager
  * @package QUI\Redirect
@@ -34,7 +36,7 @@ class Manager
      *
      * @return boolean
      */
-    public static function attemptRedirect($url, Project $Project)
+    public static function attemptRedirect($url, Project $Project): bool
     {
         $redirectUrl = static::getRedirectForUrl($url, $Project);
 
@@ -43,15 +45,15 @@ class Manager
         }
 
         // Append the query string
-        $requestUri = \QUI::getRequest()->getRequestUri();
-        $query      = Url::getQueryString($requestUri);
+        $requestUri = QUI::getRequest()->getRequestUri();
+        $query = Url::getQueryString($requestUri);
 
         if (!empty($query)) {
-            $redirectUrl .= '?'.$query;
+            $redirectUrl .= '?' . $query;
         }
 
         if (!$Project->hasVHost()) {
-            $redirectUrl = '/'.$Project->getLang().$redirectUrl;
+            $redirectUrl = '/' . $Project->getLang() . $redirectUrl;
         }
 
         // TODO: check/ask if 302 redirect in development is okay
@@ -60,12 +62,12 @@ class Manager
             $code = 302;
         }
 
-        return \QUI::getRewrite()->showErrorHeader($code, $redirectUrl);
+        return QUI::getRewrite()->showErrorHeader($code, $redirectUrl);
     }
 
 
     /**
-     * Returns the redirect path for an URL and project from the database.
+     * Returns the redirect path for a URL and project from the database.
      * If no entry is found false is returned.
      *
      * @param string $url
@@ -73,11 +75,11 @@ class Manager
      *
      * @return bool|string URL on success, false on missing entry
      */
-    public static function getRedirectForUrl($url, Project $Project)
+    public static function getRedirectForUrl(string $url, Project $Project): bool|string
     {
         try {
-            $redirectData = \QUI::getDataBase()->fetch([
-                'from'  => Database::getTableName($Project),
+            $redirectData = QUI::getDataBase()->fetch([
+                'from' => Database::getTableName($Project),
                 'where' => [
                     Database::COLUMN_ID => md5(urldecode($url))
                 ],
@@ -88,10 +90,8 @@ class Manager
                 return false;
             }
 
-            $targetUrl = $redirectData[0][Database::COLUMN_TARGET_URL];
-
-            return $targetUrl;
-        } catch (Exception $Exception) {
+            return $redirectData[0][Database::COLUMN_TARGET_URL];
+        } catch (Exception) {
             return false;
         }
     }
@@ -106,9 +106,9 @@ class Manager
      *
      * @return bool
      *
-     * @throws QUI\Package\PackageNotLicensedException
+     * @throws PackageNotLicensedException
      */
-    public static function addRedirect($sourceUrl, $targetUrl, Project $Project)
+    public static function addRedirect(string $sourceUrl, string $targetUrl, Project $Project): bool
     {
         // Check license requirements
         self::checkLicense();
@@ -130,10 +130,10 @@ class Manager
                 }
             }
 
-            \QUI::getDataBase()->replace(
+            QUI::getDataBase()->replace(
                 Database::getTableName($Project),
                 [
-                    Database::COLUMN_ID         => md5(urldecode($sourceUrl)),
+                    Database::COLUMN_ID => md5(urldecode($sourceUrl)),
                     Database::COLUMN_SOURCE_URL => $sourceUrl,
                     Database::COLUMN_TARGET_URL => $targetUrl,
                 ]
@@ -150,13 +150,13 @@ class Manager
     /**
      * Automatically adds redirects for the given site and its children based on the site's source and target URL.
      *
-     * @param \QUI\Interfaces\Projects\Site $Site
+     * @param QUI\Interfaces\Projects\Site $Site
      * @param string $sourceUrl
      * @param string $targetUrl
      *
      * @return void
      *
-     * @throws \QUI\Package\PackageNotLicensedException
+     * @throws PackageNotLicensedException
      */
     public static function addRedirectForSiteAndChildren(
         QUI\Interfaces\Projects\Site $Site,
@@ -193,9 +193,6 @@ class Manager
             } catch (PackageNotLicensedException $Exception) {
                 // Maximum number of redirects for the system's license reached
                 throw $Exception;
-
-                // No need to try adding the redirects for the children -> just exit.
-                return;
             } catch (\Exception $Exception) {
                 Log::writeException($Exception);
                 continue;
@@ -207,9 +204,9 @@ class Manager
      * Check license requirements for quiqqer/redirect usage.
      *
      * @return void
-     * @throws QUI\Package\PackageNotLicensedException
+     * @throws PackageNotLicensedException
      */
-    protected static function checkLicense()
+    protected static function checkLicense(): void
     {
         try {
             if (self::getRedirectCount() < self::FREE_REDIRECTS) {
@@ -226,13 +223,13 @@ class Manager
 
         $urls = QUI::getPackageManager()->getPackageStoreUrls('quiqqer/redirect');
         $lang = QUI::getLocale()->getCurrent();
-        $url  = null;
+        $url = null;
 
         if (!empty($urls[$lang])) {
             $url = $urls[$lang];
         }
 
-        throw new QUI\Package\PackageNotLicensedException(
+        throw new PackageNotLicensedException(
             'quiqqer/redirect',
             [
                 'quiqqer/redirect',
@@ -254,14 +251,14 @@ class Manager
      *
      * @return array
      */
-    public static function getRedirects(Project $Project)
+    public static function getRedirects(Project $Project): array
     {
         try {
-            return \QUI::getDataBase()->fetch([
-                'select' => Database::COLUMN_SOURCE_URL.','.Database::COLUMN_TARGET_URL,
-                'from'   => Database::getTableName($Project)
+            return QUI::getDataBase()->fetch([
+                'select' => Database::COLUMN_SOURCE_URL . ',' . Database::COLUMN_TARGET_URL,
+                'from' => Database::getTableName($Project)
             ]);
-        } catch (\QUI\Database\Exception $Exception) {
+        } catch (QUI\Database\Exception $Exception) {
             Log::writeException($Exception);
 
             return [];
@@ -271,12 +268,12 @@ class Manager
     /**
      * Get number of redirects in the system
      *
-     * @param Project $Project (optional) - Get number of redirects of a specific project [default: cross-project redirect count]
+     * @param Project|null $Project $Project (optional) - Get number of redirects of a specific project [default: cross-project redirect count]
      * @return int
      *
-     * @throws QUI\Exception
+     * @throws QUI\Database\Exception
      */
-    public static function getRedirectCount(Project $Project = null)
+    public static function getRedirectCount(Project $Project = null): int
     {
         if (!empty($Project)) {
             $projects = [$Project];
@@ -288,12 +285,12 @@ class Manager
 
         /** @var Project $Project */
         foreach ($projects as $Project) {
-            $result = \QUI::getDataBase()->fetch([
+            $result = QUI::getDataBase()->fetch([
                 'count' => 1,
-                'from'  => Database::getTableName($Project)
+                'from' => Database::getTableName($Project)
             ]);
 
-            $redirectCount += (int)\current(\current($result));
+            $redirectCount += (int)current(current($result));
         }
 
         return $redirectCount;
@@ -310,21 +307,23 @@ class Manager
      *
      * @throws QUI\Permissions\Exception
      */
-    public static function deleteRedirect($sourceUrl, Project $Project)
+    public static function deleteRedirect(string $sourceUrl, Project $Project): bool
     {
-        QUI\Permissions\Permission::checkPermission(\QUI\Redirect\Permission::REDIRECT_DELETE);
+        QUI\Permissions\Permission::checkPermission(Permission::REDIRECT_DELETE);
 
         try {
-            \QUI::getDataBase()->delete(
+            QUI::getDataBase()->delete(
                 Database::getTableName($Project),
                 [
                     Database::COLUMN_ID => md5(urldecode($sourceUrl))
                 ]
             );
-        } catch (\QUI\Database\Exception $Exception) {
+        } catch (QUI\Database\Exception $Exception) {
             Log::writeException($Exception);
 
             return false;
         }
+
+        return true;
     }
 }

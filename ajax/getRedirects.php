@@ -9,15 +9,19 @@
  *
  * @return boolean
  */
+
+use QUI\Redirect\Manager;
+use QUI\System\Log;
+
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_getRedirects',
     function ($projectName, $projectLanguage) {
         try {
             $Project = QUI::getProject($projectName, $projectLanguage);
 
-            return \QUI\Redirect\Manager::getRedirects($Project);
+            return Manager::getRedirects($Project);
         } catch (\QUI\Exception $Exception) {
-            \QUI\System\Log::writeException($Exception);
+            Log::writeException($Exception);
 
             return [];
         }

@@ -6,6 +6,7 @@
 
 namespace QUI\Redirect;
 
+use QUI;
 use QUI\Exception;
 use QUI\Utils\System\File;
 
@@ -106,9 +107,9 @@ class TemporaryStorage
      *
      * @return void
      *
-     * @throws \QUI\Exception
+     * @throws Exception
      */
-    public static function removeAllUrls()
+    public static function removeAllUrls(): void
     {
         File::unlink(static::getDirectory());
     }
@@ -119,10 +120,10 @@ class TemporaryStorage
      *
      * @return string
      *
-     * @throws \QUI\Exception
+     * @throws Exception
      */
     protected static function getDirectory(): string
     {
-        return \QUI::getPackage('quiqqer/redirect')->getVarDir() . \QUI::getUserBySession()->getId() . '/';
+        return QUI::getPackage('quiqqer/redirect')->getVarDir() . QUI::getUserBySession()->getId() . '/';
     }
 }

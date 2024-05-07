@@ -6,6 +6,7 @@
 
 namespace QUI\Redirect;
 
+use Generator;
 use QUI\Exception;
 use QUI\System\Log;
 
@@ -28,9 +29,9 @@ class Site
      *                      $params['where']
      *                      $params['limit']
      *
-     * @return \Generator
+     * @return Generator
      */
-    public static function getChildrenRecursive(\QUI\Interfaces\Projects\Site $Site, array $params = []): \Generator
+    public static function getChildrenRecursive(\QUI\Interfaces\Projects\Site $Site, array $params = []): Generator
     {
         $Project = $Site->getProject();
 
@@ -40,13 +41,13 @@ class Site
             } catch (Exception $Exception) {
                 Log::writeException($Exception);
                 continue;
-            };
+            }
         }
     }
 
 
     /**
-     * Returns ALL (grand-)childrens' URLs of a site.
+     * Returns ALL (grand-)children URLs of a site.
      * This means that even URLs from children of children are returned.
      *
      * Be careful about performance when using this!

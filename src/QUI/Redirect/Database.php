@@ -6,7 +6,7 @@
 
 namespace QUI\Redirect;
 
-
+use QUI;
 use QUI\Projects\Project;
 
 /**
@@ -41,8 +41,8 @@ class Database
      *
      * @return string
      */
-    public static function getTableName(Project $Project)
+    public static function getTableName(Project $Project): string
     {
-        return \QUI::getDBProjectTableName('redirects', $Project);
+        return QUI::getDBProjectTableName('redirects', $Project);
     }
 }

@@ -6,12 +6,13 @@
 
 namespace QUI\Redirect;
 
+use QUI;
 use QUI\Exception;
 use QUI\Package\PackageNotLicensedException;
 use QUI\Projects\Project;
 use QUI\Projects\Site;
 use QUI\System\Log;
-use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class EventHandler
@@ -40,10 +41,10 @@ class EventHandler
     /**
      * Called as an event when an error code/header is shown/returned
      *
-     * @param $code
-     * @param $url
+     * @param int $code
+     * @param string $url
      */
-    public static function onErrorHeaderShow($code, $url)
+    public static function onErrorHeaderShow(int $code, string $url): void
     {
         // We only care about 404 and 303 codes
         if ($code != Response::HTTP_NOT_FOUND && $code != Response::HTTP_SEE_OTHER) {
@@ -51,12 +52,12 @@ class EventHandler
         }
 
         try {
-            $path = Url::prepareSourceUrl(\QUI::getRequest()->getRequestUri());
+            $path = Url::prepareSourceUrl(QUI::getRequest()->getRequestUri());
             Manager::attemptRedirect(
                 $path,
-                \QUI::getRewrite()->getProject()
+                QUI::getRewrite()->getProject()
             );
-        } catch (Exception $Exception) {
+        } catch (Exception) {
             // TODO: Error Handling ?
         }
     }
@@ -65,10 +66,10 @@ class EventHandler
     /**
      * Called as an event when a site is deleted
      *
-     * @param $siteId
+     * @param int $siteId
      * @param Project $Project
      */
-    public static function onSiteDelete($siteId, Project $Project)
+    public static function onSiteDelete(int $siteId, Project $Project): void
     {
         try {
             $Site = new Site\Edit($Project, $siteId);
@@ -78,11 +79,10 @@ class EventHandler
             }
 
             $sourceUrl = Url::prepareSourceUrl($Site->getUrlRewritten());
-
             $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
-            $targetUrl  = '';
+            $targetUrl = '';
 
             if ($ParentSite) {
                 $targetUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
@@ -110,13 +110,13 @@ class EventHandler
     /**
      * Called as an event when a site is deactivated
      *
-     * @param \QUI\Interfaces\Projects\Site $Site - The deactivated site
+     * @param QUI\Interfaces\Projects\Site $Site - The deactivated site
      */
-    public static function onSiteDeactivate(\QUI\Interfaces\Projects\Site $Site)
+    public static function onSiteDeactivate(QUI\Interfaces\Projects\Site $Site): void
     {
         // Sites restored from trash are moved and then deactivated.
         // Their status (before deactivation) is "-1".
-        // Therefore checking if the site is active, prevents adding redirects for sites moved from trash.
+        // Therefore, checking if the site is active, prevents adding redirects for sites moved from trash.
         // related: quiqqer/redirect#11
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -128,7 +128,7 @@ class EventHandler
             $Project = $Site->getProject();
 
             $ParentSite = $Site->getParent();
-            $targetUrl  = '';
+            $targetUrl = '';
 
             if ($ParentSite) {
                 $targetUrl = Url::prepareInternalTargetUrl($ParentSite->getUrlRewritten());
@@ -160,7 +160,7 @@ class EventHandler
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
      */
-    public static function onSiteMoveBefore(Site\Edit $Site, $parentId)
+    public static function onSiteMoveBefore(Site\Edit $Site, int $parentId): void
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -183,7 +183,7 @@ class EventHandler
      * @param Site\Edit $Site - The site moved
      * @param int $parentId - The new parent id
      */
-    public static function onSiteMoveAfter(Site\Edit $Site, $parentId)
+    public static function onSiteMoveAfter(Site\Edit $Site, int $parentId): void
     {
         static::handleOnSiteMoveOrSave($Site);
     }
@@ -194,8 +194,9 @@ class EventHandler
      * Stores the sites' old URLs in the session.
      *
      * @param Site\Edit $Site - The saved site
+     * @throws Exception
      */
-    public static function onSiteSaveBefore(Site\Edit $Site)
+    public static function onSiteSaveBefore(Site\Edit $Site): void
     {
         $siteId = $Site->getId();
 
@@ -229,8 +230,9 @@ class EventHandler
      * Add redirects from URLs stored in the session.
      *
      * @param Site\Edit $Site - The saved site
+     * @throws Exception
      */
-    public static function onSiteSave(Site\Edit $Site)
+    public static function onSiteSave(Site\Edit $Site): void
     {
         $siteId = $Site->getId();
 
@@ -249,7 +251,7 @@ class EventHandler
         static::handleOnSiteMoveOrSave($Site);
     }
 
-    protected static function handleOnSiteMoveOrSave(Site\Edit $Site)
+    protected static function handleOnSiteMoveOrSave(Site\Edit $Site): void
     {
         if (!\QUI\Redirect\Site::isActive($Site)) {
             return;
@@ -267,11 +269,13 @@ class EventHandler
             Manager::addRedirectForSiteAndChildren($Site, $siteOldUrl, $siteNewUrl);
         } catch (PackageNotLicensedException $Exception) {
             // Maximum number of redirects for the system's license reached
-            \QUI::getMessagesHandler()->addAttention(\QUI::getLocale()->get(
-                'quiqqer/redirect',
-                'site.move.error_license',
-                ['error' => $Exception->getMessage()]
-            ));
+            QUI::getMessagesHandler()->addAttention(
+                QUI::getLocale()->get(
+                    'quiqqer/redirect',
+                    'site.move.error_license',
+                    ['error' => $Exception->getMessage()]
+                )
+            );
 
             // No need to try adding the redirects for the children -> just exit.
             return;
@@ -286,8 +290,8 @@ class EventHandler
         }
 
         // Redirect add completed
-        \QUI::getMessagesHandler()->addInformation(
-            \QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
+        QUI::getMessagesHandler()->addInformation(
+            QUI::getLocale()->get('quiqqer/redirect', 'site.move.info')
         );
     }
 
@@ -297,9 +301,9 @@ class EventHandler
      *
      * Injects JS code into it
      */
-    public static function onAdminLoadFooter()
+    public static function onAdminLoadFooter(): void
     {
-        $jsFile = URL_OPT_DIR.'quiqqer/redirect/bin/onAdminLoadFooter.js';
-        echo '<script src="'.$jsFile.'"></script>';
+        $jsFile = URL_OPT_DIR . 'quiqqer/redirect/bin/onAdminLoadFooter.js';
+        echo '<script src="' . $jsFile . '"></script>';
     }
 }

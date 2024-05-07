@@ -5,6 +5,10 @@
  *
  * @param string[] $sourceUrl - An array of the to be removed redirects' source-URLs
  */
+
+use QUI\Redirect\Manager;
+use QUI\Redirect\Permission;
+
 \QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_deleteRedirects',
     function ($sourceUrls, $projectName, $projectLanguage) {
@@ -12,16 +16,16 @@
 
         try {
             $Project = QUI::getProject($projectName, $projectLanguage);
-        } catch (\QUI\Exception $Exception) {
+        } catch (\QUI\Exception) {
             return false;
         }
 
         foreach ($sourceUrls as $sourceUrl) {
-            \QUI\Redirect\Manager::deleteRedirect($sourceUrl, $Project);
+            Manager::deleteRedirect($sourceUrl, $Project);
         }
 
         return true;
     },
     ['sourceUrls', 'projectName', 'projectLanguage'],
-    \QUI\Redirect\Permission::REDIRECT_DELETE
+    Permission::REDIRECT_DELETE
 );

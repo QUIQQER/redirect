@@ -7,7 +7,6 @@
 namespace QUI\Redirect;
 
 use function strlen;
-use function substr;
 use function substr_replace;
 
 /**
@@ -28,7 +27,7 @@ class Utils
 
             if ($parentSourceUrl && $parentTargetUrl) {
                 // Check if $childUrl begins with $parentSourceUrl
-                if (substr($childUrl, 0, strlen($parentSourceUrl)) === $parentSourceUrl) {
+                if (str_starts_with($childUrl, $parentSourceUrl)) {
                     $replacement = $parentTargetUrl;
 
                     // Replacing with just a slash, results in double slashes in the beginning -> replace with nothing
