@@ -9,14 +9,17 @@
  *
  * @return boolean
  */
-\QUI::$Ajax->registerFunction(
+
+use QUI\Projects\Site\Utils;
+
+QUI::$Ajax->registerFunction(
     'package_quiqqer_redirect_ajax_getRewrittenUrl',
     function ($paramUrl) {
         try {
-            $Site = \QUI\Projects\Site\Utils::getSiteByLink($paramUrl);
+            $Site = Utils::getSiteByLink($paramUrl);
 
             return $Site->getUrlRewritten();
-        } catch (\QUI\Exception $Exception) {
+        } catch (QUI\Exception) {
             return false;
         }
     },
