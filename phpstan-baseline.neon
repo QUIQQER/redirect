@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^If condition is always false\\.$#"
+			count: 1
+			path: src/QUI/Redirect/Manager.php
+
+		-
+			message: "#^Parameter \\#2 \\$message of class QUI\\\\Package\\\\PackageNotLicensedException constructor expects string\\|null, array\\<int, array\\<string, int\\>\\|string\\> given\\.$#"
+			count: 1
+			path: src/QUI/Redirect/Manager.php
