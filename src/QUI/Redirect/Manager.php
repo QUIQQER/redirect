@@ -58,7 +58,7 @@ class Manager
 
         // TODO: check/ask if 302 redirect in development is okay
         $code = 301;
-        if (DEVELOPMENT) {
+        if (DEVELOPMENT) { // @phpstan-ignore-line
             $code = 302;
         }
 
@@ -75,7 +75,7 @@ class Manager
      *
      * @return bool|string URL on success, false on missing entry
      */
-    public static function getRedirectForUrl(string $url, Project $Project): bool|string
+    public static function getRedirectForUrl(string $url, Project $Project): bool | string
     {
         try {
             $redirectData = QUI::getDataBase()->fetch([
@@ -231,13 +231,11 @@ class Manager
 
         throw new PackageNotLicensedException(
             'quiqqer/redirect',
-            [
+            QUI::getLocale()->get(
                 'quiqqer/redirect',
                 'PackageNotLicensedException.message',
-                [
-                    'freeRedirects' => self::FREE_REDIRECTS
-                ]
-            ],
+                ['freeRedirects' => self::FREE_REDIRECTS]
+            ),
             $url
         );
     }
@@ -273,7 +271,7 @@ class Manager
      *
      * @throws QUI\Database\Exception
      */
-    public static function getRedirectCount(Project $Project = null): int
+    public static function getRedirectCount(null | Project $Project = null): int
     {
         if (!empty($Project)) {
             $projects = [$Project];
