@@ -74,7 +74,7 @@ class EventHandler
         try {
             $Site = new Site\Edit($Project, $siteId);
 
-            if (!\QUI\Redirect\Site::isActive($Site)) {
+            if (!QUI\Redirect\Site::isActive($Site)) {
                 return;
             }
 
@@ -89,7 +89,7 @@ class EventHandler
             }
 
             $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
-                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
+                QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
                 $sourceUrl,
                 $targetUrl
             );
@@ -118,7 +118,7 @@ class EventHandler
         // Their status (before deactivation) is "-1".
         // Therefore, checking if the site is active, prevents adding redirects for sites moved from trash.
         // related: quiqqer/redirect#11
-        if (!\QUI\Redirect\Site::isActive($Site)) {
+        if (!QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
@@ -135,7 +135,7 @@ class EventHandler
             }
 
             $childrenUrls = Utils::makeChildrenArrayForAddRedirectDialog(
-                \QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
+                QUI\Redirect\Site::getChildrenUrlsRecursive($Site),
                 $sourceUrl,
                 $targetUrl
             );
@@ -162,7 +162,7 @@ class EventHandler
      */
     public static function onSiteMoveBefore(Site\Edit $Site, int $parentId): void
     {
-        if (!\QUI\Redirect\Site::isActive($Site)) {
+        if (!QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
@@ -212,7 +212,7 @@ class EventHandler
             return;
         }
 
-        if (!\QUI\Redirect\Site::isActive($Site)) {
+        if (!QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
@@ -253,7 +253,7 @@ class EventHandler
 
     protected static function handleOnSiteMoveOrSave(Site\Edit $Site): void
     {
-        if (!\QUI\Redirect\Site::isActive($Site)) {
+        if (!QUI\Redirect\Site::isActive($Site)) {
             return;
         }
 
@@ -280,13 +280,13 @@ class EventHandler
             // No need to try adding the redirects for the children -> just exit.
             return;
         } catch (Exception $Exception) {
-            Log::writeException($Exception);
+            Log::addDebug($Exception->getMessage());
         }
 
         try {
             TemporaryStorage::removeUrl($Site);
         } catch (Exception $Exception) {
-            Log::writeException($Exception);
+            Log::addDebug($Exception->getMessage());
         }
 
         // Redirect add completed
